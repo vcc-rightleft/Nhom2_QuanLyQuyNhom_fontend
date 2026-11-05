@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý quỹ nhóm</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Quản lý quỹ nhóm</h1>
+        <p>Quản lý thành viên và thông tin quỹ</p>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2 id="formTitle">Thêm thành viên</h2>
+
+            <form id="memberForm">
+                <input type="hidden" id="memberId">
+
+                <label>Họ và tên</label>
+                <input type="text" id="name" placeholder="Nhập họ tên" required>
+
+                <label>Email</label>
+                <input type="email" id="email" placeholder="Nhập email" required>
+
+                <button type="submit" id="submitBtn">Thêm thành viên</button>
+                <button type="button" id="cancelBtn" class="secondary" hidden>
+                    Hủy sửa
+                </button>
+            </form>
+
+            <p id="message"></p>
+        </section>
+
+        <section class="card">
+            <div class="table-header">
+                <h2>Danh sách thành viên</h2>
+                <button type="button" onclick="loadMembers()">Tải lại</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="memberList">
+                    <tr>
+                        <td colspan="4">Đang tải dữ liệu...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
