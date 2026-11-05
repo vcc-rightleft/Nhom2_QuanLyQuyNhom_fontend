@@ -1,11 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>CRUD Mẫu</title>
 </head>
-<body>
-    
+
+<body data-root="../">
+    <h2>Thêm mục mới (Test API)</h2>
+    <form id="item-form">
+        <input type="text" id="name" placeholder="Tên món" required>
+        <input type="number" id="price" placeholder="Giá tiền" required>
+        <input type="text" id="description" placeholder="Mô tả">
+        <button type="submit">Thêm</button>
+    </form>
+
+    <hr style="margin: 20px 0;">
+
+    <h2>Danh sách Items từ MySQL</h2>
+    <table border="1" cellpadding="8" style="border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên</th>
+                <th>Giá</th>
+                <th>Mô tả</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="item-list"></tbody>
+    </table>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/layout.js"></script>
+    <script src="../js/pages/items.js"></script>
 </body>
+
 </html>
