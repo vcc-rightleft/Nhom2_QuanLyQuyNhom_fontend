@@ -1,0 +1,173 @@
+// ERD - Hệ thống Quản lý Quỹ Nhóm
+// Thiết kế vật lý đề xuất theo SRS-GROUP-FUND-001 v1.0
+// Lưu ý: notifications và debt_reminders là bảng bổ sung theo tên bảng đề bài;
+// SRS chưa mô tả chi tiết cấu trúc hai bảng này.
+
+Table users {
+  user_id bigint [pk, increment]
+  display_name varchar(100) [not null]
+  email varchar(255) [unique]
+  phone varchar(20) [unique]
+  password_hash varchar(255) [not null]
+  system_role varchar(20) [not null, default: 'USER', note: 'ADMIN hoặc USER; Host là quyền theo nhóm']
+  status varchar(20) [not null, default: 'ACTIVE', note: 'ACTIVE, LOCKED']
+  created_at datetime [not null]
+  updated_at datetime
+}
+
+Table fund_groups {
+  group_id bigint [pk, increment]
+  name varchar(150) [not null]
+  description text
+  host_id bigint [not null]
+  status varchar(20) [not null, default: 'ACTIVE', note: 'ACTIVE, ARCHIVED, DELETION_PENDING, DELETED']
+  allow_member_view_fund boolean [not null, default: true]
+  allow_partial_payment boolean [not null, default: true]
+  allow_overdraft boolean [not null, default: false]
+  created_at datetime [not null]
+  last_activity_at datetime
+  deleted_at datetime
+}
+Table group_members {
+  membership_id bigint [pk, increment]
+  group_id bigint [not null]
+  user_id bigint [not null]
+  role_in_group varchar(20) [not null, default: 'USER', note: 'HOST hoặc USER']
+  status varchar(20) [not null, default: 'ACTIVE', note: 'ACTIVE, LEFT, INVITED']
+  joined_at datetime
+
+  indexes {
+    (group_id, user_id) [unique]
+  }
+}
+Table bills {
+  bill_id bigint [pk, increment]
+  group_id bigint [not null]
+  merchant_name varchar(200) [not null]
+  total_amount bigint [not null, note: 'VND; số nguyên, >= 0']
+  split_type varchar(20) [not null, note: 'EQUAL hoặc BY_ITEM']
+  service_fee bigint [not null, default: 0]
+  discount_amount bigint [not null, default: 0]
+  tip_amount bigint [not null, default: 0]
+  extra_amount bigint [not null, default: 0]
+  note text
+  receipt_image_url varchar(500)
+  occurred_at datetime [not null]
+  created_by bigint [not null]
+  status varchar(20) [not null, default: 'CONFIRMED', note: 'DRAFT, CONFIRMED, ADJUSTED']
+  created_at datetime [not null]
+}
+
+Table bill_items {
+  bill_item_id bigint [pk, increment]
+  bill_id bigint [not null]
+  item_name varchar(200) [not null]
+  quantity decimal(10,2) [not null]
+  unit_price bigint [not null, note: 'VND']
+  item_total bigint [not null, note: 'VND']
+  note text
+}
+
+Table bill_shares {
+  bill_share_id bigint [pk, increment]
+  bill_id bigint [not null]
+  bill_item_id bigint
+  user_id bigint [not null]
+  quantity_share decimal(10,2)
+  amount_share bigint [not null, note: 'VND; phần phải trả đã phân bổ']
+  share_type varchar(20) [not null, note: 'EQUAL hoặc ITEM']
+  created_at datetime [not null]
+
+  indexes {
+    (bill_id, bill_item_id, user_id) [unique]
+  }
+}
+
+Table fund_transactions {
+  transaction_id bigint [pk, increment]
+  group_id bigint [not null]
+  type varchar(20) [not null, note: 'INCOME, EXPENSE, ADJUSTMENT']
+  amount bigint [not null, note: 'VND; số nguyên dương']
+  method varchar(30) [not null, note: 'CASH, BANK_TRANSFER, OTHER']
+  description text
+  reference_code varchar(100)
+  occurred_at datetime [not null]
+  created_by bigint [not null]
+  created_at datetime [not null]
+}
+
+Table debts {
+  debt_id bigint [pk, increment]
+  group_id bigint [not null]
+  user_id bigint [not null]
+  bill_id bigint
+  debt_type varchar(20) [not null, note: 'BILL, FUND, ADJUSTMENT']
+  description varchar(255)
+  amount_due bigint [not null, note: 'VND']
+  amount_paid bigint [not null, default: 0, note: 'VND; có thể tính từ payments']
+  due_date datetime
+  status varchar(25) [not null, default: 'UNPAID', note: 'UNPAID, PARTIAL, PAID, DISPUTED, ADJUSTED']
+  created_at datetime [not null]
+  updated_at datetime
+}
+
+Table payments {
+  payment_id bigint [pk, increment]
+  debt_id bigint [not null]
+  amount bigint [not null, note: 'VND; số tiền thực nhận']
+  method varchar(30) [not null, note: 'CASH, BANK_TRANSFER, OTHER']
+  received_at datetime [not null]
+  confirmed_by bigint [not null, note: 'Host xác nhận']
+  reference_code varchar(100)
+  note text
+  status varchar(20) [not null, default: 'CONFIRMED', note: 'PENDING, CONFIRMED, REJECTED, REVERSED']
+  created_at datetime [not null]
+}
+
+Table notifications {
+  notification_id bigint [pk, increment]
+  user_id bigint [not null]
+  group_id bigint
+  title varchar(200) [not null]
+  message text [not null]
+  notification_type varchar(50) [not null]
+  related_type varchar(30)
+  related_id bigint
+  is_read boolean [not null, default: false]
+  created_at datetime [not null]
+  read_at datetime
+}
+
+Table debt_reminders {
+  reminder_id bigint [pk, increment]
+  debt_id bigint [not null]
+  sender_id bigint [not null, note: 'Host hoặc người được ủy quyền']
+  recipient_id bigint [not null]
+  message text
+  sent_at datetime [not null]
+  channel varchar(20) [not null, default: 'IN_APP', note: 'IN_APP, EMAIL']
+  status varchar(20) [not null, default: 'SENT', note: 'SENT, FAILED']
+}
+
+// Relationships
+Ref: fund_groups.host_id > users.user_id
+Ref: group_members.group_id > fund_groups.group_id
+Ref: group_members.user_id > users.user_id
+Ref: bills.group_id > fund_groups.group_id
+Ref: bills.created_by > users.user_id
+Ref: bill_items.bill_id > bills.bill_id
+Ref: bill_shares.bill_id > bills.bill_id
+Ref: bill_shares.bill_item_id > bill_items.bill_item_id
+Ref: bill_shares.user_id > users.user_id
+Ref: fund_transactions.group_id > fund_groups.group_id
+Ref: fund_transactions.created_by > users.user_id
+Ref: debts.group_id > fund_groups.group_id
+Ref: debts.user_id > users.user_id
+Ref: debts.bill_id > bills.bill_id
+Ref: payments.debt_id > debts.debt_id
+Ref: payments.confirmed_by > users.user_id
+Ref: notifications.user_id > users.user_id
+Ref: notifications.group_id > fund_groups.group_id
+Ref: debt_reminders.debt_id > debts.debt_id
+Ref: debt_reminders.sender_id > users.user_id
+Ref: debt_reminders.recipient_id > users.user_id
