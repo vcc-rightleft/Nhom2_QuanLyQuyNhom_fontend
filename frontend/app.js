@@ -1,160 +1,246 @@
+const API_BASE_URL = 'http://localhost:8000/api';
 
-const API_URL = "http://127.0.0.1:8000/members";
+const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('vi-VN').format(amount || 0) + ' ₫';
+};
 
-const memberForm = document.getElementById("memberForm");
-const memberList = document.getElementById("memberList");
-const memberId = document.getElementById("memberId");
-const nameInput = document.getElementById("name");
-const emailInput = document.getElementById("email");
-const formTitle = document.getElementById("formTitle");
-const submitBtn = document.getElementById("submitBtn");
-const cancelBtn = document.getElementById("cancelBtn");
-const message = document.getElementById("message");
+const groupCardsContainer = document.getElementById('groupCardsContainer');
+const groupDetailSection = document.getElementById('groupDetailSection');
+const createGroupModal = document.getElementById('createGroupModal');
 
-// Lấy danh sách thành viên từ API
-async function loadMembers() {
+// GỌI API BACKEND
+const fetchMyGroups = async () => {
     try {
-        const response = await fetch(API_URL);
-
-        if (!response.ok) {
-            throw new Error("Không lấy được danh sách");
-        }
-
-        const members = await response.json();
-
-        memberList.innerHTML = "";
-
-        if (members.length === 0) {
-            memberList.innerHTML = `
-                <tr>
-                    <td colspan="4">Chưa có thành viên</td>
-                </tr>
-            `;
-            return;
-        }
-
-        members.forEach(member => {
-            memberList.innerHTML += `
-                <tr>
-                    <td>${member.id}</td>
-                    <td>${member.name}</td>
-                    <td>${member.email}</td>
-                    <td>
-                        <button class="edit-btn"
-                            onclick="editMember(${member.id}, '${encodeURIComponent(member.name)}', '${encodeURIComponent(member.email)}')">
-                            Sửa
-                        </button>
-                        <button class="delete-btn"
-                            onclick="deleteMember(${member.id})">
-                            Xóa
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-
+        const response = await fetch(`${API_BASE_URL}/groups/my-groups`);
+        if (!response.ok) throw new Error('Không thể tải danh sách nhóm');
+        return await response.json();
     } catch (error) {
-        memberList.innerHTML = `
-            <tr><td colspan="4">Không kết nối được API</td></tr>
-        `;
-        showMessage(error.message, "red");
+        console.error(error);
+        return [];
     }
-}
+};
 
-// Thêm hoặc cập nhật thành viên
-memberForm.addEventListener("submit", async function(event) {
-    event.preventDefault();
-
-    const data = {
-        name: nameInput.value.trim(),
-        email: emailInput.value.trim()
-    };
-
-    const id = memberId.value;
-
-    const url = id ? `${API_URL}/${id}` : API_URL;
-    const method = id ? "PUT" : "POST";
-
+const createGroupAPI = async (groupData) => {
     try {
-        const response = await fetch(url, {
-            method: method,
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
+        const response = await fetch(`${API_BASE_URL}/groups/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(groupData)
         });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            throw new Error(result.detail || "Có lỗi xảy ra");
-        }
-
-        showMessage(id ? "Cập nhật thành công!" : "Thêm thành viên thành công!", "green");
-
-        resetForm();
-        loadMembers();
-
+        if (!response.ok) throw new Error('Lỗi khi tạo nhóm');
+        return await response.json();
     } catch (error) {
-        showMessage(error.message, "red");
+        console.error(error);
+        alert('Tạo nhóm thất bại!');
+        return null;
     }
-});
+};
 
-// Chuyển thành viên sang chế độ sửa
-function editMember(id, name, email) {
-    memberId.value = id;
-    nameInput.value = decodeURIComponent(name);
-    emailInput.value = decodeURIComponent(email);
+const joinGroupAPI = async (inviteCode) => {
+    try {
+        const cleanCode = inviteCode.replace('#', '').trim();
+        const response = await fetch(`${API_BASE_URL}/groups/join?invite_code=${encodeURIComponent(cleanCode)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.detail || 'Mã mời không hợp lệ hoặc bạn đã ở trong nhóm');
+        }
+        return await response.json();
+    } catch (error) {
+        alert(error.message);
+        return null;
+    }
+};
 
-    formTitle.textContent = "Cập nhật thành viên";
-    submitBtn.textContent = "Lưu thay đổi";
-    cancelBtn.hidden = false;
+const fetchGroupDetailAPI = async (groupId) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/groups/${groupId}`);
+        if (!response.ok) return null;
+        return await response.json();
+    } catch (error) {
+        return null;
+    }
+};
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
-}
+const fetchGroupMembersAPI = async (groupId) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/groups/${groupId}/members`);
+        if (!response.ok) return [];
+        return await response.json();
+    } catch (error) {
+        return [];
+    }
+};
 
-// Xóa thành viên
-async function deleteMember(id) {
-    if (!confirm("Bạn có chắc muốn xóa thành viên này?")) {
+// HIỂN THỊ DANH SÁCH CARD NHÓM CHUẨN FIGMA
+const stripColors = ['strip-lime', 'strip-blue', 'strip-yellow'];
+
+const renderDashboard = async () => {
+    const groups = await fetchMyGroups();
+    groupCardsContainer.innerHTML = '';
+
+    if (groups.length === 0) {
+        groupCardsContainer.innerHTML = '<div class="empty-cell">Bạn chưa tham gia nhóm nào. Hãy bấm "+ Tạo nhóm mới" ở góc trên!</div>';
         return;
     }
 
-    try {
-        const response = await fetch(`${API_URL}/${id}`, {
-            method: "DELETE"
+    groups.forEach((group, index) => {
+        const stripClass = stripColors[index % stripColors.length];
+        const groupId = group.group_id || group.id;
+        const groupName = group.group_name || group.name || 'Nhóm chưa đặt tên';
+        const inviteCode = group.invite_code ? `#${group.invite_code.replace('#', '')}` : `Vai trò: ${group.role || 'HOST'}`;
+
+        const card = document.createElement('div');
+        card.className = 'group-card';
+        card.innerHTML = `
+            <div class="card-strip ${stripClass}">
+                <span>#GRP-${groupId} • ${inviteCode}</span>
+                <span class="status-pill">● Hoạt động</span>
+            </div>
+            <div class="card-content">
+                <h3>${groupName}</h3>
+                <div class="card-meta">
+                    <div>Vai trò của bạn: <b>${group.role || 'HOST'}</b></div>
+                    <div>Số thành viên: ${group.member_count || 1} người</div>
+                </div>
+            </div>
+            <div class="card-bottom">
+                <div>
+                    <div class="balance-caption">Số dư quỹ chung</div>
+                    <div class="balance-num">${formatCurrency(group.fund_balance)}</div>
+                </div>
+                <button class="btn-brutal btn-lime view-detail-btn" data-id="${groupId}" data-name="${groupName}">Xem chi tiết</button>
+            </div>
+        `;
+        groupCardsContainer.appendChild(card);
+    });
+
+    document.querySelectorAll('.view-detail-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const id = e.currentTarget.getAttribute('data-id');
+            const fallbackName = e.currentTarget.getAttribute('data-name');
+            await openGroupDetail(id, fallbackName);
         });
+    });
+};
 
-        const result = await response.json();
+// MỞ KHUNG CHI TIẾT NHÓM BÊN DƯỚI
+const openGroupDetail = async (groupId, fallbackName) => {
+    const [detail, members] = await Promise.all([
+        fetchGroupDetailAPI(groupId),
+        fetchGroupMembersAPI(groupId)
+    ]);
 
-        if (!response.ok) {
-            throw new Error(result.detail || "Xóa thất bại");
-        }
+    groupDetailSection.classList.remove('hidden');
 
-        showMessage("Xóa thành viên thành công!", "green");
-        loadMembers();
+    const title = (detail && (detail.group_name || detail.name)) || fallbackName;
+    const code = (detail && detail.invite_code) ? `#${detail.invite_code.replace('#', '')}` : `#GRP-${groupId}`;
 
-    } catch (error) {
-        showMessage(error.message, "red");
+    document.getElementById('detailGroupTitle').textContent = `${title} (#GRP-${groupId})`;
+    document.getElementById('detailInviteCode').textContent = code;
+
+    const tbody = document.getElementById('memberTableBody');
+    document.getElementById('memberCountLabel').textContent = members.length;
+
+    if (members.length > 0) {
+        tbody.innerHTML = members.map(m => `
+            <tr>
+                <td><b>${m.full_name || m.username || m.name || 'Thành viên #' + m.user_id}</b></td>
+                <td><span class="tag-yellow">${m.role || 'Member'}</span></td>
+                <td style="color:#16a34a;">● Đã xác thực</td>
+            </tr>
+        `).join('');
+    } else {
+        tbody.innerHTML = '<tr><td colspan="3" class="empty-cell">Chưa tải được danh sách thành viên.</td></tr>';
     }
-}
 
-// Đưa form về trạng thái thêm mới
-function resetForm() {
-    memberForm.reset();
-    memberId.value = "";
+    groupDetailSection.scrollIntoView({ behavior: 'smooth' });
+};
 
-    formTitle.textContent = "Thêm thành viên";
-    submitBtn.textContent = "Thêm thành viên";
-    cancelBtn.hidden = true;
-}
+// CHUYỂN ĐỔI CÁC TAB TRONG CHI TIẾT NHÓM
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
 
-cancelBtn.addEventListener("click", resetForm);
+        const target = e.currentTarget.getAttribute('data-target');
+        e.currentTarget.classList.add('active');
+        document.getElementById(target).classList.add('active');
+    });
+});
 
-// Hiển thị thông báo
-function showMessage(text, color) {
-    message.textContent = text;
-    message.style.color = color;
-}
+// CHUYỂN ĐỔI MÀN HÌNH TRÊN THANH NAVBAR
+document.querySelectorAll('.nav-pill').forEach(pill => {
+    pill.addEventListener('click', (e) => {
+        document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+        e.currentTarget.classList.add('active');
 
-// Tải dữ liệu khi mở trang
-loadMembers();
+        const view = e.currentTarget.getAttribute('data-view');
+        if (view === 'view-auth') {
+            document.getElementById('view-auth').classList.remove('hidden');
+            document.getElementById('view-dashboard').classList.add('hidden');
+        } else {
+            document.getElementById('view-auth').classList.add('hidden');
+            document.getElementById('view-dashboard').classList.remove('hidden');
+        }
+    });
+});
+
+// XỬ LÝ MODAL TẠO NHÓM
+const closeModal = () => {
+    createGroupModal.classList.add('hidden');
+    document.getElementById('newGroupName').value = '';
+    document.getElementById('newGroupDesc').value = '';
+};
+
+document.getElementById('openCreateModalBtn').addEventListener('click', () => {
+    createGroupModal.classList.remove('hidden');
+});
+document.getElementById('closeModalIcon').addEventListener('click', closeModal);
+document.getElementById('cancelCreateBtn').addEventListener('click', closeModal);
+
+document.getElementById('confirmCreateBtn').addEventListener('click', async () => {
+    const name = document.getElementById('newGroupName').value.trim();
+    const description = document.getElementById('newGroupDesc').value.trim();
+
+    if (!name) {
+        alert('Vui lòng nhập tên nhóm quỹ!');
+        return;
+    }
+
+    const created = await createGroupAPI({ name, description });
+    if (created) {
+        closeModal();
+        await renderDashboard();
+    }
+});
+
+// XỬ LÝ NHẬP MÃ MỜI VÀO NHÓM
+const handleJoin = async (inputId) => {
+    const input = document.getElementById(inputId);
+    const code = input.value.trim();
+    if (!code) return alert('Vui lòng nhập mã mời!');
+
+    const res = await joinGroupAPI(code);
+    if (res) {
+        alert('Tham gia nhóm thành công!');
+        input.value = '';
+        document.getElementById('view-auth').classList.add('hidden');
+        document.getElementById('view-dashboard').classList.remove('hidden');
+        await renderDashboard();
+    }
+};
+
+document.getElementById('joinGroupBtn').addEventListener('click', () => handleJoin('inviteCodeInput'));
+document.getElementById('quickJoinBtn').addEventListener('click', () => handleJoin('quickJoinInput'));
+
+// SAO CHÉP MÃ MỜI
+document.getElementById('copyCodeBtn').addEventListener('click', () => {
+    const code = document.getElementById('detailInviteCode').textContent.replace('#', '');
+    navigator.clipboard.writeText(code);
+    alert(`Đã sao chép mã: ${code}`);
+});
+
+renderDashboard();
