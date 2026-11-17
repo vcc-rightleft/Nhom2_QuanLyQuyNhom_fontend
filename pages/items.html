@@ -3,40 +3,38 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>CRUD Mẫu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách Items — SQUAD.CASH</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 
-<body data-root="../">
-    <h2>Thêm mục mới (Test API)</h2>
-    <form id="item-form">
-        <input type="text" id="name" placeholder="Tên món" required>
-        <input type="number" id="price" placeholder="Giá tiền" required>
-        <input type="text" id="description" placeholder="Mô tả">
-        <button type="submit">Thêm</button>
-    </form>
+<body class="min-h-screen flex flex-col relative p-6">
+    <div class="max-w-5xl w-full mx-auto space-y-6">
+        <div class="card-clean p-6 bg-white flex items-center justify-between">
+            <div>
+                <span class="font-mono text-xs font-bold bg-lime px-2.5 py-1 rounded border border-ink">PROTECTED
+                    PAGE</span>
+                <h1 class="font-display font-bold text-2xl mt-2">Trang Quản lý Items (Yêu cầu Đăng nhập)</h1>
+            </div>
+            <a href="../index.html" class="btn-outline px-4 py-2 rounded-xl font-bold text-xs">← Quay về Trang chính</a>
+        </div>
+    </div>
 
-    <hr style="margin: 20px 0;">
-
-    <h2>Danh sách Items từ MySQL</h2>
-    <table border="1" cellpadding="8" style="border-collapse: collapse;">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Tên</th>
-                <th>Giá</th>
-                <th>Mô tả</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody id="item-list"></tbody>
-    </table>
-
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="../js/config.js"></script>
-    <script src="../js/api.js"></script>
     <script src="../js/utils.js"></script>
-    <script src="../js/layout.js"></script>
-    <script src="../js/pages/items.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // Tự động chặn trang nếu chưa có Token đăng nhập
+        window.addEventListener("DOMContentLoaded", () => {
+            if (!getAccessToken()) {
+                alert("Bạn cần đăng nhập để truy cập trang này!");
+                window.location.href = "../index.html";
+            }
+        });
+    </script>
 </body>
 
 </html>
