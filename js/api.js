@@ -1,5 +1,7 @@
+import { API_BASE_URL } from "./config.js";
+
 const http = axios.create({
-  baseURL: CONFIG.API_BASE_URL,
+  baseURL: API_BASE_URL,
 });
 
 http.interceptors.response.use(
@@ -13,3 +15,6 @@ const api = {
   put: (url, data) => http.put(url, data),
   delete: (url) => http.delete(url),
 };
+
+window.api = api;
+export default api;

@@ -2,20 +2,30 @@
 <html lang="vi">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Trang chủ - Test Kết Nối</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản Lý Quỹ Nhóm - Nhóm 2</title>
+    <link rel="stylesheet" href="./css/fund.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 
 <body data-root="./">
-    <h1>Kiểm tra kết nối hệ thống</h1>
-    <div id="status">Đang kiểm tra...</div>
+    <header
+        style="padding: 12px 20px; background: #1e293b; color: #fff; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <strong style="margin-right: 12px;">Quản Lý Quỹ Nhóm</strong>
+        <button class="nav-tab active" data-tab="fund" style="padding: 6px 12px; cursor: pointer;">Quỹ chung</button>
+        <button class="nav-tab" data-tab="home" style="padding: 6px 12px; cursor: pointer;">Kiểm tra Backend</button>
+        <a href="./pages/formbill.html" style="color: #93c5fd; text-decoration: none; margin-left: 8px;">Tạo hoá đơn</a>
+        <a href="./pages/debts.html" style="color: #93c5fd; text-decoration: none; margin-left: 8px;">Công nợ của
+            tôi</a>
+        <a href="./frontend/index.html" style="color: #93c5fd; text-decoration: none; margin-left: 8px;">Quản lý
+            Nhóm</a>
+    </header>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="js/config.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/layout.js"></script>
-    <script src="js/pages/home.js"></script>
+    <main id="app" style="padding: 20px; max-width: 1100px; margin: 0 auto;"></main>
+
+    <script type="module" src="./js/api.js"></script>
+    <script type="module" src="./js/layout.js"></script>
 </body>
 
 </html>

@@ -1,13 +1,10 @@
-document.addEventListener("DOMContentLoaded", async () => {
-  const statusEl = document.getElementById("status");
+import api from "../api.js";
+
+export async function renderHome(container) {
   try {
-    const res = await api.get("/health");
-    if (res.database === "connected") {
-      statusEl.innerHTML = "<b style='color: green;'> Backend OK · MySQL: connected</b>";
-    } else {
-      statusEl.innerHTML = "<b style='color: orange;'> Backend OK · MySQL: disconnected</b>";
-    }
+    const res = await api.get("/api/health");
+    container.innerHTML = `<p style="color: green;">Kết nối Backend thành công: ${JSON.stringify(res)}</p>`;
   } catch (err) {
-    statusEl.innerHTML = "<b style='color: red;'> Không kết nối được backend</b>";
+    container.innerHTML = `<p style="color: red;">Không kết nối được backend: ${err.message}</p>`;
   }
-});
+}
