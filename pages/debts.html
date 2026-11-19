@@ -4,484 +4,407 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Công nợ của tôi - Quản Lý Quỹ Nhóm</title>
-    <link rel="stylesheet" href="../css/style.css" />
+    <title>SQUAD.CASH — Trang Công Nợ Của Tôi (T3CD249)</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap"
+        rel="stylesheet" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        ink: '#121212',
+                        muted: '#57534E',
+                        canvas: '#F6F5F0',
+                        line: '#121212',
+                        lime: '#D4FF00',
+                        coral: '#FF5E36',
+                        indigo: '#4F46E5',
+                        violet: '#7C3AED',
+                        amber: '#FACC15',
+                        cyan: '#38BDF8',
+                    },
+                },
+            },
+        };
+    </script>
+
     <style>
-        /* Bổ sung style riêng cho trang Công nợ của tôi (T3CD249) */
-        .debt-summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
+        :root {
+            --bg-canvas: #F6F5F0;
+            --ink: #121212;
+            --muted: #57534E;
+            --lime: #D4FF00;
+            --coral: #FF5E36;
+            --amber: #FACC15;
+            --cyan: #38BDF8;
+            --violet: #7C3AED;
         }
 
-        .summary-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            border-left: 5px solid #cbd5e1;
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--ink);
+            background-color: var(--bg-canvas);
+            background-image: radial-gradient(rgba(18, 18, 18, 0.14) 1.15px, transparent 1.15px);
+            background-size: 18px 18px;
         }
 
-        .summary-card.owe {
-            border-left-color: #ef4444;
+        .font-display {
+            font-family: 'Space Grotesk', sans-serif;
         }
 
-        .summary-card.owed {
-            border-left-color: #10b981;
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
         }
 
-        .summary-card.net {
-            border-left-color: #3b82f6;
+        .card-clean {
+            background-color: #FFFFFF;
+            border: 2px solid #121212;
+            border-radius: 16px;
+            box-shadow: 4px 4px 0px #121212;
         }
 
-        .summary-card .label {
-            font-size: 13px;
-            color: #64748b;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 8px;
+        .modal-shell {
+            background-color: #FFFFFF;
+            border: 2.5px solid #121212;
+            border-radius: 28px;
+            box-shadow: 7px 7px 0px #121212;
         }
 
-        .summary-card .amount {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1e293b;
+        .modal-summary-box {
+            background-color: #FAF9F6;
+            border: 2px solid #121212;
+            border-radius: 20px;
+            box-shadow: 0px 4px 0px #121212;
         }
 
-        .summary-card.owe .amount {
-            color: #dc2626;
+        .modal-input-pill {
+            background-color: #FFFFFF;
+            border: 2px solid #121212;
+            border-radius: 18px;
+            color: #121212;
+            outline: none;
+            transition: box-shadow 0.14s ease, background-color 0.14s ease;
         }
 
-        .summary-card.owed .amount {
-            color: #059669;
+        .modal-input-pill:focus {
+            background-color: #FFFDF7;
+            box-shadow: 3px 3px 0px #121212;
         }
 
-        .filter-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 20px;
-            background: #fff;
-            padding: 16px;
-            border-radius: 12px;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-            align-items: center;
+        .btn-cta-lime {
+            background-color: #D4FF00;
+            color: #121212;
+            border: 2px solid #121212;
+            box-shadow: 3px 3px 0px #121212;
+            transition: all 0.14s ease;
+            cursor: pointer;
         }
 
-        .filter-bar select,
-        .filter-bar input {
-            padding: 8px 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 14px;
+        .btn-cta-lime:hover {
+            background-color: #C4F000;
+            transform: translate(-1px, -1px);
+            box-shadow: 4px 4px 0px #121212;
+        }
+
+        .btn-cta-lime:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #121212;
+        }
+
+        .btn-outline {
+            background-color: #FFFFFF;
+            color: #121212;
+            border: 2px solid #121212;
+            box-shadow: 2px 2px 0px #121212;
+            transition: all 0.14s ease;
+            cursor: pointer;
+        }
+
+        .btn-outline:hover {
+            background-color: #ECEAE2;
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px #121212;
+        }
+
+        .btn-outline:active {
+            transform: translate(1px, 1px);
+            box-shadow: 0px 0px 0px #121212;
+        }
+
+        .input-clean {
+            background-color: #FFFFFF;
+            border: 2px solid #121212;
+            border-radius: 10px;
+            color: #121212;
             outline: none;
         }
 
-        .group-debt-section {
-            background: #fff;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
+        .input-clean:focus {
+            box-shadow: 2px 2px 0px #121212;
         }
 
-        .group-header {
-            background: #f8fafc;
-            padding: 14px 20px;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .group-title {
+        .fr-badge {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
             font-weight: 700;
-            font-size: 16px;
-            color: #0f172a;
-        }
-
-        .debt-item {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 20px;
-            border-bottom: 1px solid #f1f5f9;
-            gap: 12px;
-        }
-
-        .debt-item:last-child {
-            border-bottom: none;
-        }
-
-        .debt-info h4 {
-            margin: 0 0 4px 0;
-            font-size: 15px;
-            color: #1e293b;
-        }
-
-        .debt-meta {
-            font-size: 13px;
-            color: #64748b;
-        }
-
-        .debt-actions {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .debt-amount {
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        .badge {
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .badge-unpaid {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-
-        .badge-pending {
-            background: #fef3c7;
-            color: #b45309;
-        }
-
-        .badge-paid {
-            background: #d1fae5;
-            color: #047857;
-        }
-
-        .badge-receive {
-            background: #e0f2fe;
-            color: #0369a1;
-        }
-
-        .btn-pay {
-            background: #2563eb;
-            color: #fff;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-pay:hover {
-            background: #1d4ed8;
-        }
-
-        .btn-pay:disabled {
-            background: #94a3b8;
-            cursor: not-allowed;
-        }
-
-        /* Modal Xác nhận thanh toán */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 16px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-box {
-            background: #fff;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 24px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            color: #64748b;
-        }
-
-        .bank-card {
-            background: #f8fafc;
-            border: 1px dashed #94a3b8;
-            border-radius: 10px;
-            padding: 14px;
-            margin-bottom: 16px;
-        }
-
-        .bank-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .bank-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .copy-btn {
-            background: #e2e8f0;
-            border: none;
-            padding: 4px 8px;
+            background-color: #FACC15;
+            color: #121212;
+            border: 1.5px solid #121212;
             border-radius: 6px;
-            font-size: 12px;
+            padding: 1px 6px;
+            line-height: 1.35;
+        }
+
+        .upload-dropzone {
+            border: 2px dashed #121212;
+            border-radius: 18px;
+            background-color: #FAF9F6;
+            transition: all 0.15s ease;
             cursor: pointer;
-            font-weight: 600;
         }
 
-        .copy-btn:hover {
-            background: #cbd5e1;
+        .upload-dropzone:hover,
+        .upload-dropzone.drag-over {
+            background-color: #F4FFC2;
         }
 
-        .qr-wrapper {
-            text-align: center;
-            margin: 12px 0;
+        .debt-row {
+            transition: background-color 0.15s ease;
         }
 
-        .qr-wrapper img {
-            width: 170px;
-            height: 170px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
+        .debt-row:hover {
+            background-color: #EAE7DD;
         }
 
-        .upload-area {
-            border: 2px dashed #cbd5e1;
-            border-radius: 10px;
-            padding: 16px;
-            text-align: center;
-            cursor: pointer;
-            margin-top: 8px;
-            transition: border-color 0.2s;
+        .shadow-clean {
+            box-shadow: 2px 2px 0px #121212;
         }
 
-        .upload-area:hover {
-            border-color: #2563eb;
+        .shadow-bold-sm {
+            box-shadow: 3px 3px 0px #121212;
         }
 
-        .preview-img {
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: 8px;
-            margin-top: 12px;
-            display: none;
-            object-fit: contain;
-        }
-
-        .form-group {
-            margin-bottom: 14px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #334155;
-        }
-
-        .form-group textarea {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-family: inherit;
-            resize: vertical;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 18px;
+        .shadow-bold-md {
+            box-shadow: 4px 4px 0px #121212;
         }
     </style>
 </head>
 
-<body data-root="../">
-    <!-- Header / Sidebar sẽ được render từ js/layout.js -->
-    <div id="app-layout">
-        <main class="container" style="max-width: 1100px; margin: 24px auto; padding: 0 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div>
-                    <h1 style="margin: 0; font-size: 24px; color: #0f172a;">Công nợ của tôi</h1>
-                    <p style="margin: 4px 0 0; color: #64748b; font-size: 14px;">
-                        Theo dõi các khoản phải trả, khoản được nhận lại và gửi minh chứng thanh toán theo từng nhóm
+<body class="min-h-screen text-ink antialiased">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+        <!-- 1. TỔNG TÔI NỢ / TỔNG TÔI ĐƯỢC NỢ -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="card-clean p-5 sm:p-6 bg-white flex items-start justify-between gap-4">
+                <div class="space-y-1.5">
+                    <div class="flex items-center gap-2">
+                        <span
+                            class="font-mono text-xs font-bold uppercase px-2.5 py-0.5 rounded-md bg-rose-100 text-rose-800 border border-ink">
+                            TỔNG TÔI NỢ
+                        </span>
+                        <span class="fr-badge">T3CD249</span>
+                    </div>
+                    <div id="kpiTotalIOwe" class="font-mono font-extrabold text-3xl text-coral tracking-tight pt-1">
+                        0 đ
+                    </div>
+                    <p id="kpiIOweSub" class="text-xs text-muted">0 khoản chưa thanh toán</p>
+                </div>
+                <div
+                    class="w-11 h-11 rounded-2xl bg-coral text-white border-2 border-ink shadow-bold-sm flex items-center justify-center text-lg shrink-0">
+                    ↗
+                </div>
+            </div>
+
+            <div class="card-clean p-5 sm:p-6 bg-white flex items-start justify-between gap-4">
+                <div class="space-y-1.5">
+                    <div class="flex items-center gap-2">
+                        <span
+                            class="font-mono text-xs font-bold uppercase px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-ink">
+                            TỔNG TÔI ĐƯỢC NỢ
+                        </span>
+                        <span class="fr-badge">T3CD249</span>
+                    </div>
+                    <div id="kpiTotalOwedToMe"
+                        class="font-mono font-extrabold text-3xl text-emerald-700 tracking-tight pt-1">
+                        0 đ
+                    </div>
+                    <p id="kpiOwedToMeSub" class="text-xs text-muted">0 khoản chờ hoàn / nhận</p>
+                </div>
+                <div
+                    class="w-11 h-11 rounded-2xl bg-lime text-ink border-2 border-ink shadow-bold-sm flex items-center justify-center text-lg shrink-0">
+                    ↙
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. DANH SÁCH KHOẢN NỢ THEO NHÓM -->
+        <section class="card-clean p-6 sm:p-8 space-y-6 bg-white">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h1 class="font-display font-bold text-xl text-ink">Trang công nợ của tôi</h1>
+                        <span class="fr-badge">T3CD249</span>
+                    </div>
+                    <p class="text-xs text-muted">
+                        Xem các khoản <strong>Tôi nợ</strong> / <strong>Tôi được nợ</strong> theo nhóm, số tài khoản
+                        người nhận và bấm <strong>"Tôi đã trả"</strong> kèm ảnh minh chứng.
                     </p>
                 </div>
-            </div>
 
-            <!-- 1. Thẻ tổng quan: Tổng tôi nợ / Tổng được nợ / Chênh lệch -->
-            <div class="debt-summary-grid">
-                <div class="summary-card owe">
-                    <div class="label">Tổng tôi đang nợ</div>
-                    <div class="amount" id="total-i-owe">0 đ</div>
-                    <div style="font-size: 12px; color: #64748b; margin-top: 4px;" id="count-i-owe">0 khoản chưa thanh
-                        toán</div>
-                </div>
-                <div class="summary-card owed">
-                    <div class="label">Tổng tôi được nợ (Phải thu)</div>
-                    <div class="amount" id="total-owed-to-me">0 đ</div>
-                    <div style="font-size: 12px; color: #64748b; margin-top: 4px;" id="count-owed-to-me">0 khoản đang
-                        chờ thu</div>
-                </div>
-                <div class="summary-card net">
-                    <div class="label">Chênh lệch công nợ</div>
-                    <div class="amount" id="net-balance">0 đ</div>
-                    <div style="font-size: 12px; color: #64748b; margin-top: 4px;">(Được nợ - Tôi nợ)</div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <select id="groupFilterSelect" onchange="renderMyDebtsByGroup()"
+                        class="input-clean px-3.5 py-2 text-xs font-bold min-w-[200px]">
+                        <option value="all">Tất cả các nhóm</option>
+                        <option value="GRP-101">Chuyến Đi Đà Lạt Quý 4 (#GRP-101)</option>
+                        <option value="GRP-102">Team Dự Án Web Sprint 2 (#GRP-102)</option>
+                    </select>
+
+                    <select id="directionFilterSelect" onchange="renderMyDebtsByGroup()"
+                        class="input-clean px-3.5 py-2 text-xs font-bold min-w-[175px]">
+                        <option value="all">Tất cả khoản nợ</option>
+                        <option value="payable">Chỉ khoản Tôi nợ</option>
+                        <option value="receivable">Chỉ khoản Tôi được nợ</option>
+                    </select>
                 </div>
             </div>
 
-            <!-- 2. Bộ lọc theo nhóm, loại công nợ và trạng thái -->
-            <div class="filter-bar">
-                <select id="filter-group">
-                    <option value="all">Tất cả nhóm</option>
-                </select>
-                <select id="filter-type">
-                    <option value="all">Tất cả loại (Tôi nợ & Được nợ)</option>
-                    <option value="owe">Khoản tôi nợ</option>
-                    <option value="owed">Khoản tôi được nợ</option>
-                </select>
-                <select id="filter-status">
-                    <option value="all">Tất cả trạng thái</option>
-                    <option value="unpaid">Chưa trả</option>
-                    <option value="pending">Chờ duyệt minh chứng</option>
-                    <option value="paid">Đã thanh toán</option>
-                </select>
-                <input type="text" id="filter-search" placeholder="Tìm tên khoản chi, người nhận..."
-                    style="flex: 1; min-width: 200px;" />
+            <div id="groupedDebtsContainer" class="space-y-6">
+                <!-- Populated by JS -->
             </div>
-
-            <!-- 3. Danh sách công nợ gom theo từng nhóm -->
-            <div id="debt-groups-container">
-                <p style="text-align: center; color: #64748b; padding: 32px;">Đang tải dữ liệu công nợ...</p>
-            </div>
-        </main>
+        </section>
     </div>
 
-    <!-- 4. Modal "Tôi đã trả" + Thông tin STK người nhận + Upload ảnh biên lai -->
-    <div class="modal-overlay" id="pay-modal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h3 style="margin: 0; font-size: 18px; color: #0f172a;">Xác nhận thanh toán công nợ</h3>
-                <button class="modal-close" id="close-modal-btn">&times;</button>
+    <!-- MODAL "TÔI ĐÃ TRẢ" KÈM SỐ TÀI KHOẢN NGƯỜI NHẬN & UPLOAD ẢNH -->
+    <div id="modalMarkPaid"
+        class="fixed inset-0 z-50 hidden bg-ink/45 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="modal-shell max-w-lg w-full p-6 sm:p-7 space-y-5 bg-white my-auto">
+            <div class="flex items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <h3 class="font-display font-bold text-xl sm:text-2xl text-ink tracking-tight">Xác nhận Tôi Đã Trả
+                    </h3>
+                    <span class="fr-badge">T3CD249</span>
+                </div>
+                <button type="button" onclick="closeModal('modalMarkPaid')"
+                    class="text-muted hover:text-ink text-lg font-bold px-1.5 cursor-pointer"
+                    aria-label="Đóng">✕</button>
             </div>
 
-            <form id="payment-proof-form">
-                <input type="hidden" id="modal-debt-id" />
+            <form onsubmit="submitMarkPaidForm(event)" class="space-y-4">
+                <input type="hidden" id="payDebtId" />
 
-                <!-- Thông tin khoản nợ & Số tài khoản người nhận -->
-                <div class="bank-card">
-                    <div
-                        style="font-size: 12px; font-weight: 700; color: #2563eb; text-transform: uppercase; margin-bottom: 8px;">
-                        Thông tin chuyển khoản người nhận
+                <div class="modal-summary-box px-4 py-3.5 text-sm space-y-2">
+                    <div class="flex items-center justify-between gap-3">
+                        <span class="text-muted font-medium">Khoản nợ / Nhóm:</span>
+                        <span id="payDebtTitle" class="font-bold text-ink text-right"></span>
                     </div>
-                    <div class="bank-row">
-                        <span>Khoản thanh toán:</span>
-                        <strong id="modal-debt-title">-</strong>
+                    <div class="flex items-center justify-between gap-3 pt-1.5 border-t border-ink/10">
+                        <span class="text-muted font-medium">Người nhận:</span>
+                        <span id="payRecipientName" class="font-bold text-ink text-right"></span>
                     </div>
-                    <div class="bank-row">
-                        <span>Số tiền cần trả:</span>
-                        <strong style="color: #dc2626; font-size: 16px;" id="modal-debt-amount">0 đ</strong>
-                    </div>
-                    <div class="bank-row">
-                        <span>Người nhận:</span>
-                        <strong id="modal-receiver-name">-</strong>
-                    </div>
-                    <div class="bank-row">
-                        <span>Ngân hàng:</span>
-                        <strong id="modal-bank-name">-</strong>
-                    </div>
-                    <div class="bank-row">
-                        <span>Số tài khoản:</span>
-                        <div>
-                            <strong id="modal-account-number" style="color: #0f172a; letter-spacing: 0.5px;">-</strong>
-                            <button type="button" class="copy-btn" id="btn-copy-stk">Copy STK</button>
+                    <div class="flex items-center justify-between gap-3 pt-1.5 border-t border-ink/10">
+                        <span class="text-muted font-medium">STK người nhận:</span>
+                        <div class="flex items-center gap-2">
+                            <span id="payRecipientAccount" class="font-mono font-bold text-indigo text-right"></span>
+                            <button type="button" onclick="copyModalRecipientAccount()"
+                                class="btn-outline px-2.5 py-0.5 rounded-lg font-mono text-[11px] font-bold">
+                                Copy
+                            </button>
                         </div>
                     </div>
-                    <div class="bank-row">
-                        <span>Nội dung CK:</span>
-                        <div>
-                            <code id="modal-transfer-note"
-                                style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">-</code>
-                            <button type="button" class="copy-btn" id="btn-copy-note">Copy</button>
+                    <div class="flex items-center justify-between gap-3 pt-1.5 border-t border-ink/10">
+                        <span class="text-muted font-medium">Số tiền cần trả:</span>
+                        <span id="payRemainingText" class="font-mono font-extrabold text-rose-500 text-base"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-display font-bold text-xs uppercase tracking-wide text-ink mb-2">
+                        ẢNH MINH CHỨNG CHUYỂN KHOẢN <span class="text-coral">*</span>
+                    </label>
+                    <label id="receiptDropzone" for="receiptImageInput" class="upload-dropzone block p-4 text-center">
+                        <input id="receiptImageInput" type="file" accept="image/png,image/jpeg,image/webp"
+                            class="hidden" onchange="handleReceiptFileChange(event)" />
+                        <div id="uploadPlaceholder" class="space-y-1">
+                            <div class="font-display font-bold text-sm text-ink">📎 Chọn hoặc kéo thả ảnh biên lai</div>
+                            <div class="font-mono text-[11px] text-muted">PNG, JPG, WEBP (Tối đa 5MB)</div>
                         </div>
-                    </div>
-
-                    <!-- Mã VietQR tự động -->
-                    <div class="qr-wrapper">
-                        <img id="modal-vietqr-img" src="" alt="Mã VietQR thanh toán" />
-                        <div style="font-size: 11px; color: #64748b; margin-top: 4px;">Quét mã QR bằng ứng dụng ngân
-                            hàng</div>
-                    </div>
+                        <div id="uploadPreviewWrap" class="hidden space-y-2">
+                            <img id="receiptPreviewImg" src="" alt="Xem trước ảnh minh chứng"
+                                class="max-h-44 mx-auto rounded-xl border-2 border-ink object-contain bg-white" />
+                            <div class="flex items-center justify-center gap-2 text-xs">
+                                <span id="receiptFileName"
+                                    class="font-mono font-bold text-ink truncate max-w-[220px]"></span>
+                                <span
+                                    class="font-mono text-[11px] bg-lime border border-ink px-2 py-0.5 rounded font-bold">Đổi
+                                    ảnh</span>
+                            </div>
+                        </div>
+                    </label>
                 </div>
 
-                <!-- Upload ảnh minh chứng -->
-                <div class="form-group">
-                    <label for="proof-image-input">Ảnh biên lai / minh chứng chuyển khoản <span
-                            style="color: #dc2626;">*</span></label>
-                    <div class="upload-area" id="upload-dropzone">
-                        <div style="font-size: 14px; font-weight: 600; color: #334155;">Nhấn để chọn ảnh biên lai (JPG,
-                            PNG, WEBP)</div>
-                        <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Dung lượng tối đa 5MB</div>
-                        <input type="file" id="proof-image-input" accept="image/*" style="display: none;" required />
-                        <img id="proof-preview" class="preview-img" alt="Xem trước biên lai" />
-                    </div>
+                <div>
+                    <label class="block font-display font-bold text-xs uppercase tracking-wide text-ink mb-2">
+                        MÃ GIAO DỊCH / GHI CHÚ
+                    </label>
+                    <input id="payRefNote" type="text" placeholder="Ví dụ: Đã CK Vietcombank, mã FT263089912..."
+                        class="modal-input-pill w-full px-4 py-2.5 font-mono text-sm font-semibold" />
                 </div>
 
-                <div class="form-group">
-                    <label for="payment-note">Ghi chú thêm (tùy chọn)</label>
-                    <textarea id="payment-note" rows="2"
-                        placeholder="Ví dụ: Đã chuyển khoản qua VCB lúc 20:15..."></textarea>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="copy-btn" id="cancel-modal-btn"
-                        style="padding: 8px 16px; font-size: 14px;">Hủy</button>
-                    <button type="submit" class="btn-pay" id="submit-proof-btn"
-                        style="padding: 8px 18px; font-size: 14px;">
-                        Gửi xác nhận đã trả
+                <div class="flex items-center justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal('modalMarkPaid')"
+                        class="btn-outline px-6 py-2.5 rounded-2xl font-display font-bold text-sm">
+                        Hủy
+                    </button>
+                    <button type="submit"
+                        class="btn-cta-lime px-6 py-2.5 rounded-2xl font-display font-extrabold text-sm uppercase tracking-wide">
+                        TÔI ĐÃ TRẢ
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <script src="../js/config.js"></script>
-    <script src="../js/utils.js"></script>
-    <script src="../js/api.js"></script>
-    <script src="../js/layout.js"></script>
-    <script src="../js/pages/debts.js"></script>
+    <!-- MODAL XEM LẠI ẢNH MINH CHỨNG -->
+    <div id="modalViewReceipt" class="fixed inset-0 z-50 hidden bg-ink/45 flex items-center justify-center p-4">
+        <div class="modal-shell max-w-md w-full p-6 space-y-4 bg-white">
+            <div class="flex items-center justify-between gap-3">
+                <h3 id="viewReceiptTitle" class="font-display font-bold text-lg text-ink">Ảnh minh chứng</h3>
+                <button type="button" onclick="closeModal('modalViewReceipt')"
+                    class="text-muted hover:text-ink text-lg font-bold px-1.5 cursor-pointer"
+                    aria-label="Đóng">✕</button>
+            </div>
+            <div class="modal-summary-box p-3 text-center">
+                <img id="viewReceiptImg" src="" alt="Ảnh minh chứng thanh toán"
+                    class="max-h-72 mx-auto rounded-xl border-2 border-ink object-contain bg-white" />
+            </div>
+            <div id="viewReceiptNote"
+                class="font-mono text-xs text-muted bg-canvas p-3 rounded-xl border border-ink/20"></div>
+            <div class="flex justify-end">
+                <button type="button" onclick="closeModal('modalViewReceipt')"
+                    class="btn-cta-lime px-5 py-2 rounded-2xl font-display font-bold text-xs uppercase">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toastContainer"
+        class="fixed bottom-5 right-5 z-[60] flex flex-col gap-2 max-w-md w-full pointer-events-none px-4 sm:px-0">
+    </div>
+
+    <script src="../js/pages/debts.js" defer></script>
 </body>
 
 </html>
