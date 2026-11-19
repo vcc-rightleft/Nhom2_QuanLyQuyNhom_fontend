@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SQUAD.CASH — Trang Công Nợ Của Tôi (T3CD249)</title>
+    <title>SQUAD.CASH — Theo dõi Công nợ &amp; Xác nhận Thành viên Thanh toán</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -167,19 +167,6 @@
             line-height: 1.35;
         }
 
-        .upload-dropzone {
-            border: 2px dashed #121212;
-            border-radius: 18px;
-            background-color: #FAF9F6;
-            transition: all 0.15s ease;
-            cursor: pointer;
-        }
-
-        .upload-dropzone:hover,
-        .upload-dropzone.drag-over {
-            background-color: #F4FFC2;
-        }
-
         .debt-row {
             transition: background-color 0.15s ease;
         }
@@ -188,12 +175,23 @@
             background-color: #EAE7DD;
         }
 
-        .shadow-clean {
-            box-shadow: 2px 2px 0px #121212;
+        .progress-neo-track {
+            width: 100%;
+            height: 10px;
+            background-color: #F6F5F0;
+            border: 1.5px solid #121212;
+            border-radius: 999px;
+            overflow: hidden;
         }
 
-        .shadow-bold-sm {
-            box-shadow: 3px 3px 0px #121212;
+        .progress-neo-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #7C3AED 0%, #10B981 100%);
+            transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .shadow-clean {
+            box-shadow: 2px 2px 0px #121212;
         }
 
         .shadow-bold-md {
@@ -203,199 +201,149 @@
 </head>
 
 <body class="min-h-screen text-ink antialiased">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-        <!-- 1. TỔNG TÔI NỢ / TỔNG TÔI ĐƯỢC NỢ -->
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div class="card-clean p-5 sm:p-6 bg-white flex items-start justify-between gap-4">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+        <!-- THEO DÕI CÔNG NỢ & XÁC NHẬN THÀNH VIÊN THANH TOÁN -->
+        <section id="hTabContent-debts" class="card-clean p-6 sm:p-8 space-y-6 bg-white">
+            <div class="flex flex-wrap items-start justify-between gap-4">
                 <div class="space-y-1.5">
-                    <div class="flex items-center gap-2">
-                        <span
-                            class="font-mono text-xs font-bold uppercase px-2.5 py-0.5 rounded-md bg-rose-100 text-rose-800 border border-ink">
-                            TỔNG TÔI NỢ
-                        </span>
-                        <span class="fr-badge">T3CD249</span>
-                    </div>
-                    <div id="kpiTotalIOwe" class="font-mono font-extrabold text-3xl text-coral tracking-tight pt-1">
-                        0 đ
-                    </div>
-                    <p id="kpiIOweSub" class="text-xs text-muted">0 khoản chưa thanh toán</p>
-                </div>
-                <div
-                    class="w-11 h-11 rounded-2xl bg-coral text-white border-2 border-ink shadow-bold-sm flex items-center justify-center text-lg shrink-0">
-                    ↗
-                </div>
-            </div>
-
-            <div class="card-clean p-5 sm:p-6 bg-white flex items-start justify-between gap-4">
-                <div class="space-y-1.5">
-                    <div class="flex items-center gap-2">
-                        <span
-                            class="font-mono text-xs font-bold uppercase px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-ink">
-                            TỔNG TÔI ĐƯỢC NỢ
-                        </span>
-                        <span class="fr-badge">T3CD249</span>
-                    </div>
-                    <div id="kpiTotalOwedToMe"
-                        class="font-mono font-extrabold text-3xl text-emerald-700 tracking-tight pt-1">
-                        0 đ
-                    </div>
-                    <p id="kpiOwedToMeSub" class="text-xs text-muted">0 khoản chờ hoàn / nhận</p>
-                </div>
-                <div
-                    class="w-11 h-11 rounded-2xl bg-lime text-ink border-2 border-ink shadow-bold-sm flex items-center justify-center text-lg shrink-0">
-                    ↙
-                </div>
-            </div>
-        </section>
-
-        <!-- 2. DANH SÁCH KHOẢN NỢ THEO NHÓM -->
-        <section class="card-clean p-6 sm:p-8 space-y-6 bg-white">
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <div class="space-y-1">
                     <div class="flex flex-wrap items-center gap-2">
-                        <h1 class="font-display font-bold text-xl text-ink">Trang công nợ của tôi</h1>
-                        <span class="fr-badge">T3CD249</span>
+                        <h1 class="font-display font-bold text-xl text-ink">Theo dõi Công nợ &amp; Xác nhận Thành viên
+                            Thanh toán</h1>
+                        <span class="fr-badge">FR-HOST-005</span>
+                        <span class="fr-badge">FR-HOST-006</span>
                     </div>
                     <p class="text-xs text-muted">
-                        Xem các khoản <strong>Tôi nợ</strong> / <strong>Tôi được nợ</strong> theo nhóm, số tài khoản
-                        người nhận và bấm <strong>"Tôi đã trả"</strong> kèm ảnh minh chứng.
+                        Phân biệt rõ nợ đóng quỹ, nợ hóa đơn và khoản đang tranh chấp. Hỗ trợ ghi nhận <strong>Thanh
+                            toán một phần</strong> hoặc <strong>Trả đủ</strong> sau khi đối soát.
                     </p>
+
+                    <div class="pt-2 max-w-md space-y-1.5">
+                        <div class="flex items-baseline justify-between gap-3 text-xs font-mono font-bold">
+                            <span class="text-ink shrink-0">Tiến độ thu hồi công nợ<br />nhóm:</span>
+                            <span id="hostDebtProgressLabel" class="text-indigo text-right">41% Đã thu (1,000,000 đ /
+                                2,430,000 đ)</span>
+                        </div>
+                        <div class="progress-neo-track">
+                            <div id="hostDebtProgressBar" class="progress-neo-fill" style="width: 41%;"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
-                    <select id="groupFilterSelect" onchange="renderMyDebtsByGroup()"
-                        class="input-clean px-3.5 py-2 text-xs font-bold min-w-[200px]">
-                        <option value="all">Tất cả các nhóm</option>
-                        <option value="GRP-101">Chuyến Đi Đà Lạt Quý 4 (#GRP-101)</option>
-                        <option value="GRP-102">Team Dự Án Web Sprint 2 (#GRP-102)</option>
-                    </select>
-
-                    <select id="directionFilterSelect" onchange="renderMyDebtsByGroup()"
-                        class="input-clean px-3.5 py-2 text-xs font-bold min-w-[175px]">
-                        <option value="all">Tất cả khoản nợ</option>
-                        <option value="payable">Chỉ khoản Tôi nợ</option>
-                        <option value="receivable">Chỉ khoản Tôi được nợ</option>
+                    <select id="hostDebtFilter" onchange="renderHostDebtsTable()"
+                        class="input-clean px-3.5 py-2 text-xs font-bold min-w-[190px]">
+                        <option value="all">Tất cả khoản phải thu</option>
+                        <option value="fund">Chưa đóng quỹ</option>
+                        <option value="invoice">Chưa trả hóa đơn</option>
+                        <option value="disputed">Đang tranh chấp (Nhãn riêng)</option>
+                        <option value="paid">Đã thanh toán đủ</option>
                     </select>
                 </div>
             </div>
 
-            <div id="groupedDebtsContainer" class="space-y-6">
-                <!-- Populated by JS -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-y border-ink/20 bg-canvas font-mono text-[11px] text-muted uppercase">
+                            <th class="py-3 px-3.5">MÃ NỢ</th>
+                            <th class="py-3 px-3.5">THÀNH VIÊN</th>
+                            <th class="py-3 px-3.5">LOẠI &amp; NỘI DUNG</th>
+                            <th class="py-3 px-3.5 text-right">PHẢI TRẢ</th>
+                            <th class="py-3 px-3.5 text-right">ĐÃ TRẢ</th>
+                            <th class="py-3 px-3.5 text-right">CÒN NỢ</th>
+                            <th class="py-3 px-3.5 text-center">TRẠNG THÁI</th>
+                            <th class="py-3 px-3.5 text-right">THAO TÁC HOST</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hostDebtsTableBody" class="divide-y divide-ink/15 text-sm">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
             </div>
         </section>
     </div>
 
-    <!-- MODAL "TÔI ĐÃ TRẢ" KÈM SỐ TÀI KHOẢN NGƯỜI NHẬN & UPLOAD ẢNH -->
-    <div id="modalMarkPaid"
-        class="fixed inset-0 z-50 hidden bg-ink/45 flex items-center justify-center p-4 overflow-y-auto">
-        <div class="modal-shell max-w-lg w-full p-6 sm:p-7 space-y-5 bg-white my-auto">
+    <!-- MODAL XÁC NHẬN THANH TOÁN -->
+    <div id="modalConfirmPayment" class="fixed inset-0 z-50 hidden bg-ink/45 flex items-center justify-center p-4">
+        <div class="modal-shell max-w-lg w-full p-6 sm:p-7 space-y-5 bg-white">
             <div class="flex items-center justify-between gap-3">
                 <div class="flex flex-wrap items-center gap-2.5">
-                    <h3 class="font-display font-bold text-xl sm:text-2xl text-ink tracking-tight">Xác nhận Tôi Đã Trả
-                    </h3>
-                    <span class="fr-badge">T3CD249</span>
+                    <h3 class="font-display font-bold text-xl sm:text-2xl text-ink tracking-tight">Đối soát &amp; Xác
+                        nhận Thanh toán</h3>
+                    <span class="fr-badge">FR-HOST-005</span>
                 </div>
-                <button type="button" onclick="closeModal('modalMarkPaid')"
+                <button type="button" onclick="closeModal('modalConfirmPayment')"
                     class="text-muted hover:text-ink text-lg font-bold px-1.5 cursor-pointer"
                     aria-label="Đóng">✕</button>
             </div>
 
-            <form onsubmit="submitMarkPaidForm(event)" class="space-y-4">
+            <form onsubmit="submitConfirmPayment(event)" class="space-y-4">
                 <input type="hidden" id="payDebtId" />
 
                 <div class="modal-summary-box px-4 py-3.5 text-sm space-y-2">
                     <div class="flex items-center justify-between gap-3">
-                        <span class="text-muted font-medium">Khoản nợ / Nhóm:</span>
-                        <span id="payDebtTitle" class="font-bold text-ink text-right"></span>
+                        <span class="text-muted font-medium">Thành viên:</span>
+                        <span id="payMemberName" class="font-bold text-ink text-right"></span>
                     </div>
                     <div class="flex items-center justify-between gap-3 pt-1.5 border-t border-ink/10">
-                        <span class="text-muted font-medium">Người nhận:</span>
-                        <span id="payRecipientName" class="font-bold text-ink text-right"></span>
+                        <span class="text-muted font-medium">Khoản phải trả:</span>
+                        <span id="payDebtTitle" class="font-semibold text-ink text-right"></span>
                     </div>
                     <div class="flex items-center justify-between gap-3 pt-1.5 border-t border-ink/10">
-                        <span class="text-muted font-medium">STK người nhận:</span>
-                        <div class="flex items-center gap-2">
-                            <span id="payRecipientAccount" class="font-mono font-bold text-indigo text-right"></span>
-                            <button type="button" onclick="copyModalRecipientAccount()"
-                                class="btn-outline px-2.5 py-0.5 rounded-lg font-mono text-[11px] font-bold">
-                                Copy
-                            </button>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between gap-3 pt-1.5 border-t border-ink/10">
-                        <span class="text-muted font-medium">Số tiền cần trả:</span>
+                        <span class="text-muted font-medium">Số tiền còn nợ hiện tại:</span>
                         <span id="payRemainingText" class="font-mono font-extrabold text-rose-500 text-base"></span>
                     </div>
                 </div>
 
                 <div>
                     <label class="block font-display font-bold text-xs uppercase tracking-wide text-ink mb-2">
-                        ẢNH MINH CHỨNG CHUYỂN KHOẢN <span class="text-coral">*</span>
+                        SỐ TIỀN THỰC NHẬN (VND – HỖ TRỢ TRẢ MỘT PHẦN)
                     </label>
-                    <label id="receiptDropzone" for="receiptImageInput" class="upload-dropzone block p-4 text-center">
-                        <input id="receiptImageInput" type="file" accept="image/png,image/jpeg,image/webp"
-                            class="hidden" onchange="handleReceiptFileChange(event)" />
-                        <div id="uploadPlaceholder" class="space-y-1">
-                            <div class="font-display font-bold text-sm text-ink">📎 Chọn hoặc kéo thả ảnh biên lai</div>
-                            <div class="font-mono text-[11px] text-muted">PNG, JPG, WEBP (Tối đa 5MB)</div>
-                        </div>
-                        <div id="uploadPreviewWrap" class="hidden space-y-2">
-                            <img id="receiptPreviewImg" src="" alt="Xem trước ảnh minh chứng"
-                                class="max-h-44 mx-auto rounded-xl border-2 border-ink object-contain bg-white" />
-                            <div class="flex items-center justify-center gap-2 text-xs">
-                                <span id="receiptFileName"
-                                    class="font-mono font-bold text-ink truncate max-w-[220px]"></span>
-                                <span
-                                    class="font-mono text-[11px] bg-lime border border-ink px-2 py-0.5 rounded font-bold">Đổi
-                                    ảnh</span>
-                            </div>
-                        </div>
-                    </label>
+                    <input id="payReceivedAmount" type="number" required min="1000" step="1000"
+                        class="modal-input-pill w-full px-4 py-3 font-mono font-extrabold text-lg text-ink" />
+                    <p class="text-xs text-muted mt-1.5 leading-relaxed">
+                        Nếu nhỏ hơn số còn nợ: Ghi nhận <strong>Trả một phần</strong>. Nếu lớn hơn: Hệ thống sẽ cảnh báo
+                        xử lý phần dư.
+                    </p>
                 </div>
 
-                <div>
-                    <label class="block font-display font-bold text-xs uppercase tracking-wide text-ink mb-2">
-                        MÃ GIAO DỊCH / GHI CHÚ
-                    </label>
-                    <input id="payRefNote" type="text" placeholder="Ví dụ: Đã CK Vietcombank, mã FT263089912..."
-                        class="modal-input-pill w-full px-4 py-2.5 font-mono text-sm font-semibold" />
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label class="block font-display font-bold text-xs uppercase tracking-wide text-ink mb-2">
+                            PHƯƠNG THỨC NHẬN
+                        </label>
+                        <select id="payMethod" class="modal-input-pill w-full px-4 py-2.5 text-sm font-semibold">
+                            <option value="Chuyển khoản">Chuyển khoản</option>
+                            <option value="Tiền mặt">Tiền mặt</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-display font-bold text-xs uppercase tracking-wide text-ink mb-2">
+                            MÃ THAM CHIẾU / GHI CHÚ
+                        </label>
+                        <input id="payRefNote" type="text" required value="FT263089912"
+                            class="modal-input-pill w-full px-4 py-2.5 font-mono text-sm font-semibold" />
+                    </div>
                 </div>
+
+                <label class="flex items-start gap-2.5 text-xs sm:text-sm text-ink cursor-pointer pt-0.5 leading-snug">
+                    <input type="checkbox" required checked
+                        class="mt-1 w-4 h-4 rounded accent-violet-600 cursor-pointer shrink-0" />
+                    <span>Tôi (Host) xác nhận đã đối soát giao dịch thực tế trước khi cập nhật công nợ (Mục 2.3
+                        SRS).</span>
+                </label>
 
                 <div class="flex items-center justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeModal('modalMarkPaid')"
+                    <button type="button" onclick="closeModal('modalConfirmPayment')"
                         class="btn-outline px-6 py-2.5 rounded-2xl font-display font-bold text-sm">
                         Hủy
                     </button>
                     <button type="submit"
                         class="btn-cta-lime px-6 py-2.5 rounded-2xl font-display font-extrabold text-sm uppercase tracking-wide">
-                        TÔI ĐÃ TRẢ
+                        XÁC NHẬN ĐÃ THU TIỀN
                     </button>
                 </div>
             </form>
-        </div>
-    </div>
-
-    <!-- MODAL XEM LẠI ẢNH MINH CHỨNG -->
-    <div id="modalViewReceipt" class="fixed inset-0 z-50 hidden bg-ink/45 flex items-center justify-center p-4">
-        <div class="modal-shell max-w-md w-full p-6 space-y-4 bg-white">
-            <div class="flex items-center justify-between gap-3">
-                <h3 id="viewReceiptTitle" class="font-display font-bold text-lg text-ink">Ảnh minh chứng</h3>
-                <button type="button" onclick="closeModal('modalViewReceipt')"
-                    class="text-muted hover:text-ink text-lg font-bold px-1.5 cursor-pointer"
-                    aria-label="Đóng">✕</button>
-            </div>
-            <div class="modal-summary-box p-3 text-center">
-                <img id="viewReceiptImg" src="" alt="Ảnh minh chứng thanh toán"
-                    class="max-h-72 mx-auto rounded-xl border-2 border-ink object-contain bg-white" />
-            </div>
-            <div id="viewReceiptNote"
-                class="font-mono text-xs text-muted bg-canvas p-3 rounded-xl border border-ink/20"></div>
-            <div class="flex justify-end">
-                <button type="button" onclick="closeModal('modalViewReceipt')"
-                    class="btn-cta-lime px-5 py-2 rounded-2xl font-display font-bold text-xs uppercase">
-                    Đóng
-                </button>
-            </div>
         </div>
     </div>
 
