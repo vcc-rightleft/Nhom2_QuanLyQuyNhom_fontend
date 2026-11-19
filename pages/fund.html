@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tab Quỹ chung - Quản lý Quỹ Nhóm</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/fund.css">
+</head>
+
+<body data-root="../">
+    <main class="container fund-container">
+        <!-- Thanh tiêu đề nhóm & chuyển vai trò kiểm thử Host / Thành viên -->
+        <div class="group-topbar">
+            <div class="group-title-wrap">
+                <h1 id="groupName">Nhóm 2 - Du lịch &amp; Ăn uống</h1>
+                <p class="group-subtitle">
+                    Mã nhóm: <strong id="groupIdLabel">#1</strong> · Theo dõi số dư, thu/chi và các đợt đóng quỹ chung
+                </p>
+            </div>
+
+            <div class="role-switcher" title="Chuyển nhanh vai trò để kiểm thử quyền Host / Thành viên">
+                <span class="role-label">Vai trò:</span>
+                <button type="button" id="roleHostBtn" class="role-btn active" data-role="HOST">Host</button>
+                <button type="button" id="roleMemberBtn" class="role-btn" data-role="USER">Thành viên</button>
+            </div>
+        </div>
+
+        <!-- Tabs trong chi tiết nhóm -->
+        <div class="group-tabs">
+            <span class="tab-pill active">Quỹ chung</span>
+            <span class="tab-pill disabled" title="Tab khác của nhóm">Hóa đơn &amp; Chia tiền</span>
+            <span class="tab-pill disabled" title="Tab khác của nhóm">Công nợ</span>
+            <span class="tab-pill disabled" title="Tab khác của nhóm">Thành viên</span>
+        </div>
+
+        <!-- 1. THẺ SỐ DƯ + NÚT THU / CHI (CHỈ HOST) -->
+        <section class="card balance-card">
+            <div class="balance-header">
+                <div>
+                    <div class="balance-label">Số dư quỹ hiện tại</div>
+                    <div id="fundBalance" class="balance-amount">0 ₫</div>
+                    <div class="balance-formula">Công thức: Số dư = Tổng THU − Tổng CHI</div>
+                </div>
+
+                <!-- Nút Thu / Chi chỉ hiển thị cho Host -->
+                <div id="hostActionButtons" class="host-actions">
+                    <button type="button" id="btnOpenIncome" class="btn btn-income">+ Ghi nhận THU</button>
+                    <button type="button" id="btnOpenExpense" class="btn btn-expense">− Ghi nhận CHI</button>
+                    <button type="button" id="btnOpenCollection" class="btn btn-primary">+ Tạo đợt thu</button>
+                </div>
+
+                <!-- Thông báo khi xem dưới quyền Thành viên -->
+                <div id="memberOnlyNotice" class="host-notice hidden">
+                    Chỉ Host mới có quyền tạo giao dịch Thu/Chi và đợt thu quỹ.
+                </div>
+            </div>
+
+            <div class="balance-stats">
+                <div class="stat-box income">
+                    <div class="stat-title">Tổng THU (INCOME)</div>
+                    <div id="totalIncome" class="stat-value text-income">0 ₫</div>
+                </div>
+                <div class="stat-box expense">
+                    <div class="stat-title">Tổng CHI (EXPENSE)</div>
+                    <div id="totalExpense" class="stat-value text-expense">0 ₫</div>
+                </div>
+                <div class="stat-box collections">
+                    <div class="stat-title">Đợt thu đang mở</div>
+                    <div id="activeCollectionCount" class="stat-value">0 đợt</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. DANH SÁCH ĐỢT THU VÀ TRẠNG THÁI ĐÓNG CỦA TỪNG THÀNH VIÊN -->
+        <section class="card mt-4">
+            <div class="section-header">
+                <h2>Danh sách đợt thu &amp; Trạng thái đóng quỹ</h2>
+                <div class="filter-group" id="collectionFilters">
+                    <button type="button" class="filter-chip active" data-status="ALL">Tất cả</button>
+                    <button type="button" class="filter-chip" data-status="ACTIVE">Đang thu</button>
+                    <button type="button" class="filter-chip" data-status="COMPLETED">Hoàn thành</button>
+                    <button type="button" class="filter-chip" data-status="CANCELLED">Đã hủy</button>
+                </div>
+            </div>
+
+            <div id="collectionList" class="collection-list">
+                <div class="empty-state">Đang tải danh sách đợt thu...</div>
+            </div>
+        </section>
+
+        <!-- 3. LỊCH SỬ GIAO DỊCH THU / CHI -->
+        <section class="card mt-4">
+            <div class="section-header">
+                <h2>Lịch sử giao dịch Thu / Chi</h2>
+                <div class="filter-group" id="transactionFilters">
+                    <button type="button" class="filter-chip active" data-type="ALL">Tất cả</button>
+                    <button type="button" class="filter-chip" data-type="INCOME">THU (INCOME)</button>
+                    <button type="button" class="filter-chip" data-type="EXPENSE">CHI (EXPENSE)</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Thời gian</th>
+                            <th>Loại</th>
+                            <th>Danh mục</th>
+                            <th>Người nộp / chi</th>
+                            <th>Mô tả &amp; Chứng từ</th>
+                            <th style="text-align: right;">Số tiền (VND)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionTableBody">
+                        <tr>
+                            <td colspan="6" class="empty-state">Chưa có giao dịch nào.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL 1: FORM THU / CHI (FundTransactionCreate) -->
+    <div id="transactionModal" class="modal-overlay" hidden>
+        <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="txModalTitle">
+            <div class="modal-header">
+                <h3 id="txModalTitle">Ghi nhận giao dịch quỹ</h3>
+                <button type="button" class="modal-close" data-close-modal="transactionModal">&times;</button>
+            </div>
+
+            <form id="transactionForm">
+                <input type="hidden" id="txType" value="INCOME">
+
+                <div class="type-toggle">
+                    <button type="button" id="chooseIncomeBtn" class="type-option active-income" data-tx-type="INCOME">
+                        + THU QUỸ (INCOME)
+                    </button>
+                    <button type="button" id="chooseExpenseBtn" class="type-option" data-tx-type="EXPENSE">
+                        − CHI QUỸ (EXPENSE)
+                    </button>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="txAmount">Số tiền (VND) *</label>
+                        <input type="number" id="txAmount" min="1000" step="1000" placeholder="VD: 200000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="txCategory">Danh mục</label>
+                        <input type="text" id="txCategory" list="categorySuggestions" placeholder="VD: Tiền quỹ, Ăn uống...">
+                        <datalist id="categorySuggestions">
+                            <option value="Đóng quỹ định kỳ">
+                            <option value="Ăn uống">
+                            <option value="Thuê sân / Địa điểm">
+                            <option value="Mua đồ dùng chung">
+                            <option value="Di chuyển">
+                            <option value="Khác">
+                        </datalist>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="txPayerId" id="txPayerLabel">Người nộp (payer_id)</label>
+                        <select id="txPayerId"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="txOccurredAt">Thời gian phát sinh</label>
+                        <input type="datetime-local" id="txOccurredAt" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="txProofUrl">Ảnh chứng từ (URL - tùy chọn)</label>
+                    <input type="url" id="txProofUrl" placeholder="https://example.com/hoa-don.jpg">
+                </div>
+
+                <div class="form-group">
+                    <label for="txDescription">Mô tả chi tiết</label>
+                    <textarea id="txDescription" placeholder="Nhập ghi chú giao dịch..."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" data-close-modal="transactionModal">Hủy</button>
+                    <button type="submit" id="txSubmitBtn" class="btn btn-primary">Lưu giao dịch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: FORM TẠO ĐỢT THU MỚI (CollectionCreate) -->
+    <div id="collectionModal" class="modal-overlay" hidden>
+        <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="colModalTitle">
+            <div class="modal-header">
+                <h3 id="colModalTitle">Tạo đợt thu quỹ mới</h3>
+                <button type="button" class="modal-close" data-close-modal="collectionModal">&times;</button>
+            </div>
+
+            <form id="collectionForm">
+                <div class="form-group">
+                    <label for="colName">Tên đợt thu *</label>
+                    <input type="text" id="colName" placeholder="VD: Đóng quỹ tháng 11/2026" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="colAmount">Số tiền mỗi thành viên (VND) *</label>
+                        <input type="number" id="colAmount" min="1000" step="1000" placeholder="VD: 150000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="colDueDate">Hạn nộp</label>
+                        <input type="datetime-local" id="colDueDate">
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" data-close-modal="collectionModal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Tạo đợt thu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <footer class="main-footer">
+        Hệ thống Quản lý Quỹ Nhóm · Nhóm 2
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/layout.js"></script>
+    <script src="../js/pages/fund.js"></script>
+</body>
+
+</html>

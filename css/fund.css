@@ -1,0 +1,603 @@
+/* =========================================================
+   [UI] Tab Quỹ chung (Task T3CCFBA)
+   Đồng bộ phong cách Neo-Brutalism từ css/style.css
+   ========================================================= */
+
+.nav-links a.active {
+    background: var(--primary);
+    padding: 6px 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+}
+
+.fund-container {
+    max-width: 1020px;
+}
+
+/* Header & Tabs bar */
+.group-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.group-title-wrap h1 {
+    font-size: 1.7rem;
+    font-weight: 900;
+    margin-bottom: 4px;
+}
+
+.group-subtitle {
+    color: #52525B;
+    font-size: 0.92rem;
+}
+
+.role-switcher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #FFFFFF;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 6px 10px;
+    box-shadow: 3px 3px 0px var(--border-color);
+}
+
+.role-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #52525B;
+}
+
+.role-btn {
+    padding: 6px 12px;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    font-weight: 800;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.role-btn.active {
+    background: var(--primary);
+    border-color: var(--border-color);
+}
+
+/* Navigation tabs inside Group Detail */
+.group-tabs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 12px;
+}
+
+.tab-pill {
+    padding: 8px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    background: #FFFFFF;
+    font-weight: 800;
+    font-size: 0.92rem;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text-main);
+}
+
+.tab-pill.active {
+    background: var(--primary);
+    box-shadow: 3px 3px 0px var(--border-color);
+}
+
+.tab-pill.disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* Balance Card (Thẻ số dư) */
+.balance-card {
+    background: linear-gradient(135deg, #FFFBEB 0%, #FFFFFF 60%);
+    margin-bottom: 24px;
+}
+
+.balance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.balance-label {
+    font-size: 0.88rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #52525B;
+}
+
+.balance-amount {
+    font-size: 2.3rem;
+    font-weight: 900;
+    margin: 6px 0 4px;
+    color: var(--text-main);
+    line-height: 1.1;
+}
+
+.balance-amount.negative {
+    color: var(--danger);
+}
+
+.balance-formula {
+    font-size: 0.82rem;
+    color: #71717A;
+}
+
+.host-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    box-shadow: 3px 3px 0px var(--border-color);
+}
+
+.btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0px var(--border-color);
+}
+
+.btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0px var(--border-color);
+}
+
+.btn-income {
+    background: #10B981;
+    color: #FFFFFF;
+}
+
+.btn-expense {
+    background: #EF4444;
+    color: #FFFFFF;
+}
+
+.host-notice {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    background: #F4F4F5;
+    border: 2px dashed #A1A1AA;
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #52525B;
+}
+
+/* Balance Stats Grid */
+.balance-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.stat-box {
+    background: #FFFFFF;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.stat-box.income {
+    border-left: 6px solid var(--success);
+}
+
+.stat-box.expense {
+    border-left: 6px solid var(--danger);
+}
+
+.stat-box.collections {
+    border-left: 6px solid #3B82F6;
+}
+
+.stat-title {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #52525B;
+    margin-bottom: 6px;
+}
+
+.stat-value {
+    font-size: 1.35rem;
+    font-weight: 900;
+}
+
+.text-income {
+    color: #059669;
+}
+
+.text-expense {
+    color: #DC2626;
+}
+
+/* Section Headers & Filters */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.section-header h2 {
+    font-size: 1.25rem;
+    font-weight: 900;
+}
+
+.filter-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-chip {
+    padding: 6px 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 999px;
+    background: #FFFFFF;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.filter-chip.active {
+    background: var(--text-main);
+    color: #FFFFFF;
+}
+
+/* Collection Cards (Danh sách đợt thu) */
+.collection-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.collection-item {
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: #FFFFFF;
+    overflow: hidden;
+    box-shadow: 3px 3px 0px var(--border-color);
+}
+
+.collection-head {
+    padding: 16px 20px;
+    background: #FAFAFA;
+    border-bottom: 2px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.collection-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.collection-name {
+    font-size: 1.1rem;
+    font-weight: 900;
+}
+
+.collection-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 0.88rem;
+    color: #52525B;
+}
+
+.collection-meta strong {
+    color: var(--text-main);
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border: 2px solid var(--border-color);
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.status-active {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.status-completed,
+.status-paid {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.status-partial {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.status-unpaid,
+.status-cancelled {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* Collection Progress Bar */
+.collection-progress-wrap {
+    padding: 12px 20px;
+    border-bottom: 1px solid #E4E4E7;
+    background: #FFFFFF;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.86rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.progress-track {
+    width: 100%;
+    height: 12px;
+    background: #E4E4E7;
+    border: 2px solid var(--border-color);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--success);
+    transition: width 0.25s ease;
+}
+
+/* Member Payment Table inside Collection */
+.member-table-wrap {
+    padding: 14px 20px 18px;
+    overflow-x: auto;
+}
+
+.member-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.member-table th,
+.member-table td {
+    border: 1px solid #D4D4D8;
+    padding: 9px 12px;
+    text-align: left;
+}
+
+.member-table th {
+    background: #F4F4F5;
+    font-weight: 800;
+}
+
+.member-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 2px solid var(--border-color);
+    font-weight: 900;
+    font-size: 0.78rem;
+    margin-right: 8px;
+}
+
+.member-name-cell {
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+}
+
+/* Transaction Table */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.tx-type-badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.tx-income {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.tx-expense {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.proof-link {
+    color: #2563EB;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+/* Modal Form Thu / Chi & Tạo Đợt Thu */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(24, 24, 27, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+}
+
+.modal-overlay[hidden] {
+    display: none;
+}
+
+.modal-box {
+    width: 100%;
+    max-width: 540px;
+    max-height: 92vh;
+    overflow-y: auto;
+    background: #FFFFFF;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 24px;
+    box-shadow: 6px 6px 0px var(--border-color);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.modal-header h3 {
+    font-size: 1.2rem;
+    font-weight: 900;
+}
+
+.modal-close {
+    width: 34px;
+    height: 34px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    background: #FFFFFF;
+    font-size: 1.1rem;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.type-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.type-option {
+    padding: 10px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    background: #F4F4F5;
+    font-weight: 800;
+    cursor: pointer;
+    text-align: center;
+}
+
+.type-option.active-income {
+    background: #D1FAE5;
+    color: #065F46;
+    box-shadow: 3px 3px 0px var(--border-color);
+}
+
+.type-option.active-expense {
+    background: #FEE2E2;
+    color: #991B1B;
+    box-shadow: 3px 3px 0px var(--border-color);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.form-group select,
+.form-group textarea,
+.form-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    background: #FFFFFF;
+    margin-top: 2px;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 76px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 28px 16px;
+    color: #71717A;
+    font-weight: 600;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .balance-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .balance-amount {
+        font-size: 1.8rem;
+    }
+}
