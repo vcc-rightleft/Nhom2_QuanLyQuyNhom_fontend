@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQUAD.CASH ΓÇö Quß║ún l├╜ Quß╗╣ Nh├│m (Sprint 2 UI)</title>
+    <title>SQUAD.CASH — Quản lý Quỹ Nhóm (Sprint 2 UI)</title>
     <!-- Tailwind CSS & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,11 +23,11 @@
 <body class="min-h-screen flex flex-col relative">
     <div class="app-renaissance-ambient"></div>
 
-    <!-- HEADER / MENU CHUNG ─É╞»ß╗óC RENDER Tß╗¬ js/layout.js -->
+    <!-- HEADER / MENU CHUNG ĐƯỢC RENDER TỪ ../js/layout.js -->
     <header id="commonAppHeader"
         class="sticky top-0 z-40 bg-white border-b-2 border-ink px-4 sm:px-8 py-3.5 shadow-clean"></header>
 
-    <!-- VIEW 0: TRANG CHß╗ª GIß╗ÜI THIß╗åU -->
+    <!-- VIEW 0: TRANG CHỦ GIỚI THIỆU -->
     <main id="view-landing" class="relative z-10 flex-1 max-w-6xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
         <section class="card-clean overflow-hidden bg-white">
             <div class="os-window-bar">
@@ -40,34 +40,34 @@
                     <span class="font-mono text-xs font-bold text-ink/75 ml-1">squad.cash/os/overview</span>
                 </div>
                 <span
-                    class="font-mono text-[11px] font-bold bg-lime text-ink px-3 py-0.5 rounded border border-ink">Chuß║⌐n
-                    Sß╗æ Nguy├¬n VND</span>
+                    class="font-mono text-[11px] font-bold bg-lime text-ink px-3 py-0.5 rounded border border-ink">Chuẩn
+                    Số Nguyên VND</span>
             </div>
             <div class="p-8 sm:p-12 space-y-6">
                 <h1 class="font-wiro-sans font-bold text-3xl sm:text-5xl text-ink leading-tight">
-                    Tiß╗ün bß║íc ph├ón minh, <br />
-                    <span class="font-wiro-serif font-normal text-4xl sm:text-6xl text-indigo">quß╗╣ nh├│m chuß║⌐n tß╗½ng
-                        ─æß╗ông.</span>
+                    Tiền bạc phân minh, <br />
+                    <span class="font-wiro-serif font-normal text-4xl sm:text-6xl text-indigo">quỹ nhóm chuẩn từng
+                        đồng.</span>
                 </h1>
                 <p class="text-sm sm:text-base text-muted max-w-2xl">
-                    Hß╗ç thß╗æng quß║ún l├╜ quß╗╣ nh├│m t├¡ch hß╗úp x├íc thß╗▒c JWT Token, Axios Interceptor tß╗▒ ─æß╗Öng xß╗¡ l├╜ 401 v├á ph├ón
-                    quyß╗ün Route Guard (User, Host, Admin).
+                    Hệ thống quản lý quỹ nhóm tích hợp xác thực JWT Token, Axios Interceptor tự động xử lý 401 và phân
+                    quyền Route Guard (User, Host, Admin).
                 </p>
                 <div class="flex flex-wrap gap-3 pt-2">
                     <button onclick="goToAuthFromLanding('register')"
                         class="btn-cta-lime px-6 py-3.5 rounded-xl font-display font-bold text-sm uppercase">
-                        ≡ƒÜÇ ─É─âng K├╜ T├ái Khoß║ún
+                        🚀 Đăng Ký Tài Khoản
                     </button>
                     <button onclick="goToAuthFromLanding('login')"
                         class="btn-cta-indigo px-6 py-3.5 rounded-xl font-display font-bold text-sm uppercase">
-                        ≡ƒöÉ ─É─âng Nhß║¡p Ngay
+                        🔐 Đăng Nhập Ngay
                     </button>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- VIEW 1: ─É─éNG NHß║¼P & ─É─éNG K├¥ (C├ô VALIDATE & L╞»U TOKEN) -->
+    <!-- VIEW 1: ĐĂNG NHẬP & ĐĂNG KÝ (CÓ VALIDATE & LƯU TOKEN) -->
     <main id="view-auth" class="relative z-10 hidden flex-1 max-w-5xl w-full mx-auto px-4 sm:px-8 py-8">
         <div id="authWrapper" class="card-clean overflow-hidden grid grid-cols-1 lg:grid-cols-12 bg-white">
             <div class="lg:col-span-12 os-window-bar">
@@ -84,64 +84,64 @@
                     AUTH</span>
             </div>
 
-            <!-- Cß╗Öt Tr├íi -->
+            <!-- Cột Trái -->
             <section id="authLeftCol"
                 class="lg:col-span-5 text-white p-8 flex flex-col justify-between border-b-2 lg:border-b-0 lg:border-r-2 border-ink"
                 style="background-image: linear-gradient(165deg, rgba(22, 18, 36, 0.9), rgba(76, 29, 149, 0.78)), url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/%22The_School_of_Athens%22_by_Raffaello_Sanzio_da_Urbino.jpg/1280px-%22The_School_of_Athens%22_by_Raffaello_Sanzio_da_Urbino.jpg'); background-size: cover;">
                 <div class="space-y-4">
                     <span
-                        class="font-mono text-xs font-bold bg-black/50 px-3 py-1 rounded-full text-lime border border-white/25">Γ£ª
-                        PH├éN QUYß╗ÇN &amp; CHß║╢N TRANG</span>
-                    <h2 class="font-wiro-sans font-bold text-3xl leading-tight">Quß║ún l├╜ quß╗╣ nh├│m <br /><span
-                            class="font-wiro-serif font-normal text-4xl text-lime">chuß║⌐n tß╗½ng ─æß╗ông.</span></h2>
+                        class="font-mono text-xs font-bold bg-black/50 px-3 py-1 rounded-full text-lime border border-white/25">✦
+                        PHÂN QUYỀN &amp; CHẶN TRANG</span>
+                    <h2 class="font-wiro-sans font-bold text-3xl leading-tight">Quản lý quỹ nhóm <br /><span
+                            class="font-wiro-serif font-normal text-4xl text-lime">chuẩn từng đồng.</span></h2>
                     <p class="text-xs text-white/85 leading-relaxed">
-                        Tß╗▒ ─æß╗Öng gß║»n Bearer Token qua Axios Interceptor, tß╗▒ ─æ─âng xuß║Ñt khi gß║╖p lß╗ùi 401 v├á chß║╖n truy cß║¡p
-                        tr├íi ph├⌐p v├áo trang Admin.
+                        Tự động gắn Bearer Token qua Axios Interceptor, tự đăng xuất khi gặp lỗi 401 và chặn truy cập
+                        trái phép vào trang Admin.
                     </p>
                 </div>
                 <div class="bg-white text-ink rounded-2xl p-4 border-2 border-ink shadow-bold mt-6 space-y-2">
                     <div class="flex justify-between font-mono text-xs font-bold">
                         <span class="bg-lime px-2 py-0.5 rounded border border-ink">#DALAT26</span>
-                        <span>Host: Phan ─Éß╗⌐c Anh</span>
+                        <span>Host: Phan Đức Anh</span>
                     </div>
-                    <div class="font-display font-bold text-base">Chuyß║┐n ─Éi ─É├á Lß║ít Qu├╜ 4</div>
-                    <div class="font-mono font-bold text-lg text-indigo">8,500,000 Γé½</div>
+                    <div class="font-display font-bold text-base">Chuyến Đi Đà Lạt Quý 4</div>
+                    <div class="font-mono font-bold text-lg text-indigo">8,500,000 ₫</div>
                 </div>
             </section>
 
-            <!-- Cß╗Öt Phß║úi: Form Login & Register -->
+            <!-- Cột Phải: Form Login & Register -->
             <section id="authRightCol" class="lg:col-span-7 p-8 sm:p-10 bg-white">
                 <div class="grid grid-cols-2 gap-2 bg-canvas p-1.5 rounded-xl border border-ink/15 mb-6">
                     <button id="authTab-login" onclick="switchAuthTab('login')"
                         class="py-2.5 px-3 rounded-lg font-display font-bold text-xs sm:text-sm bg-white text-ink border border-ink shadow-clean">
-                        ─É─âng nhß║¡p
+                        Đăng nhập
                     </button>
                     <button id="authTab-register" onclick="switchAuthTab('register')"
                         class="py-2.5 px-3 rounded-lg font-display font-bold text-xs sm:text-sm text-muted hover:text-ink">
-                        ─É─âng k├╜ t├ái khoß║ún
+                        Đăng ký tài khoản
                     </button>
                 </div>
 
-                <!-- FORM ─É─éNG NHß║¼P -->
+                <!-- FORM ĐĂNG NHẬP -->
                 <form id="authForm-login" onsubmit="handleAuthSubmit(event)" novalidate class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold uppercase text-muted mb-2">Chß╗ìn nhanh vai tr├▓ ─æß╗â test ph├ón
-                            quyß╗ün chß║╖n trang:</label>
+                        <label class="block text-xs font-bold uppercase text-muted mb-2">Chọn nhanh vai trò để test phân
+                            quyền chặn trang:</label>
                         <div class="grid grid-cols-3 gap-2">
                             <button type="button" onclick="fillDemoLogin('user')"
                                 class="p-2.5 rounded-xl border-2 border-ink bg-canvas hover:bg-lime/40 text-left">
                                 <div class="font-display font-bold text-xs">User</div>
-                                <div class="font-mono text-[10px] text-muted">Bß╗ï chß║╖n Admin</div>
+                                <div class="font-mono text-[10px] text-muted">Bị chặn Admin</div>
                             </button>
                             <button type="button" onclick="fillDemoLogin('host')"
                                 class="p-2.5 rounded-xl border-2 border-ink bg-canvas hover:bg-lime/40 text-left">
                                 <div class="font-display font-bold text-xs">Host</div>
-                                <div class="font-mono text-[10px] text-muted">Chß╗º nh├│m quß╗╣</div>
+                                <div class="font-mono text-[10px] text-muted">Chủ nhóm quỹ</div>
                             </button>
                             <button type="button" onclick="fillDemoLogin('admin')"
                                 class="p-2.5 rounded-xl border-2 border-indigo bg-indigo-50 text-left">
                                 <div class="font-display font-bold text-xs text-indigo">Admin</div>
-                                <div class="font-mono text-[10px] text-muted">V├áo ─æ╞░ß╗úc Admin</div>
+                                <div class="font-mono text-[10px] text-muted">Vào được Admin</div>
                             </button>
                         </div>
                     </div>
@@ -151,16 +151,16 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-ink mb-1.5">Email / Sß╗æ ─æiß╗çn thoß║íi</label>
+                        <label class="block text-xs font-bold uppercase text-ink mb-1.5">Email / Số điện thoại</label>
                         <input id="loginEmailInput" type="text" value="ducanh.host@squad.cash"
-                            placeholder="Nhß║¡p email hoß║╖c S─ÉT..."
+                            placeholder="Nhập email hoặc SĐT..."
                             class="input-clean w-full px-4 py-3 text-sm font-medium">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-ink mb-1.5">Mß║¡t khß║⌐u (Tß╗æi thiß╗âu 6 k├╜
-                            tß╗▒)</label>
-                        <input id="loginPasswordInput" type="password" value="12345678" placeholder="Nhß║¡p mß║¡t khß║⌐u..."
+                        <label class="block text-xs font-bold uppercase text-ink mb-1.5">Mật khẩu (Tối thiểu 6 ký
+                            tự)</label>
+                        <input id="loginPasswordInput" type="password" value="12345678" placeholder="Nhập mật khẩu..."
                             class="input-clean w-full px-4 py-3 text-sm font-mono">
                     </div>
 
@@ -168,11 +168,11 @@
 
                     <button type="submit"
                         class="btn-cta-lime w-full py-3.5 rounded-xl font-display font-bold text-sm uppercase tracking-wider">
-                        ─É─âng nhß║¡p &amp; L╞░u Token ΓåÆ
+                        Đăng nhập &amp; Lưu Token →
                     </button>
                 </form>
 
-                <!-- FORM ─É─éNG K├¥ -->
+                <!-- FORM ĐĂNG KÝ -->
                 <form id="authForm-register" onsubmit="handleRegisterSubmit(event)" novalidate class="hidden space-y-4">
                     <div id="registerErrorMsg"
                         class="hidden p-3 rounded-xl bg-rose-50 border-2 border-coral text-coral text-xs font-bold">
@@ -180,13 +180,13 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-ink mb-1.5">T├¬n hiß╗ân thß╗ï</label>
-                            <input id="regDisplayNameInput" type="text" value="Phan ─Éß╗⌐c Anh"
+                            <label class="block text-xs font-bold uppercase text-ink mb-1.5">Tên hiển thị</label>
+                            <input id="regDisplayNameInput" type="text" value="Phan Đức Anh"
                                 class="input-clean w-full px-4 py-2.5 text-sm font-medium">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-ink mb-1.5">Email / Sß╗æ ─æiß╗çn
-                                thoß║íi</label>
+                            <label class="block text-xs font-bold uppercase text-ink mb-1.5">Email / Số điện
+                                thoại</label>
                             <input id="regContactInput" type="text" value="ducanh@squad.cash"
                                 class="input-clean w-full px-4 py-2.5 text-sm font-medium">
                         </div>
@@ -194,13 +194,13 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-ink mb-1.5">Mß║¡t khß║⌐u (&gt;= 8 k├╜
-                                tß╗▒)</label>
+                            <label class="block text-xs font-bold uppercase text-ink mb-1.5">Mật khẩu (&gt;= 8 ký
+                                tự)</label>
                             <input id="regPasswordInput" type="password" value="12345678"
                                 class="input-clean w-full px-4 py-2.5 text-sm font-mono">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-ink mb-1.5">Nhß║¡p lß║íi mß║¡t khß║⌐u</label>
+                            <label class="block text-xs font-bold uppercase text-ink mb-1.5">Nhập lại mật khẩu</label>
                             <input id="regConfirmPasswordInput" type="password" value="12345678"
                                 class="input-clean w-full px-4 py-2.5 text-sm font-mono">
                         </div>
@@ -208,39 +208,39 @@
 
                     <button type="submit"
                         class="btn-cta-indigo w-full py-3.5 rounded-xl font-display font-bold text-sm uppercase tracking-wider">
-                        Ho├án tß║Ñt ─É─âng k├╜
+                        Hoàn tất Đăng ký
                     </button>
                 </form>
             </section>
         </div>
     </main>
 
-    <!-- VIEW 2: TRANG USER (CHß║╢N Nß║╛U CH╞»A ─É─éNG NHß║¼P) -->
+    <!-- VIEW 2: TRANG USER (CHẶN NẾU CHƯA ĐĂNG NHẬP) -->
     <main id="view-user" class="relative z-10 hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-6">
         <section class="card-clean p-6 bg-white flex flex-wrap items-center justify-between gap-4">
             <div>
-                <span class="bg-cyan border-2 border-ink font-mono text-xs font-bold px-3 py-1 rounded-full">VAI TR├Æ:
-                    USER (─É├â ─É─éNG NHß║¼P)</span>
-                <h2 class="font-display font-bold text-2xl mt-2">Kh├┤ng gian Th├ánh vi├¬n Nh├│m Quß╗╣</h2>
+                <span class="bg-cyan border-2 border-ink font-mono text-xs font-bold px-3 py-1 rounded-full">VAI TRÒ:
+                    USER (ĐÃ ĐĂNG NHẬP)</span>
+                <h2 class="font-display font-bold text-2xl mt-2">Không gian Thành viên Nhóm Quỹ</h2>
             </div>
             <div class="card-coral p-4">
-                <span class="text-xs font-bold uppercase text-white/90 block">Tß╗òng c├▓n nß╗ú cß╗ºa t├┤i</span>
-                <div class="font-mono font-bold text-2xl text-lime">650,000 Γé½</div>
+                <span class="text-xs font-bold uppercase text-white/90 block">Tổng còn nợ của tôi</span>
+                <div class="font-mono font-bold text-2xl text-lime">650,000 ₫</div>
             </div>
         </section>
         <div id="userGroupsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
         <section class="card-clean p-6 bg-white space-y-4">
-            <h3 class="font-display font-bold text-lg">Chi tiß║┐t khoß║ún nß╗ú c├í nh├ón</h3>
+            <h3 class="font-display font-bold text-lg">Chi tiết khoản nợ cá nhân</h3>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="border-y border-line bg-canvas font-mono text-xs text-muted uppercase">
-                            <th class="py-3 px-4">M├ú nß╗ú</th>
-                            <th class="py-3 px-4">Loß║íi</th>
-                            <th class="py-3 px-4">M├┤ tß║ú</th>
-                            <th class="py-3 px-4 text-right">Tß╗òng</th>
-                            <th class="py-3 px-4 text-right">─É├ú trß║ú</th>
-                            <th class="py-3 px-4 text-right">C├▓n nß╗ú</th>
+                            <th class="py-3 px-4">Mã nợ</th>
+                            <th class="py-3 px-4">Loại</th>
+                            <th class="py-3 px-4">Mô tả</th>
+                            <th class="py-3 px-4 text-right">Tổng</th>
+                            <th class="py-3 px-4 text-right">Đã trả</th>
+                            <th class="py-3 px-4 text-right">Còn nợ</th>
                         </tr>
                     </thead>
                     <tbody id="userDebtsTableBody" class="divide-y divide-line text-sm"></tbody>
@@ -249,20 +249,20 @@
         </section>
     </main>
 
-    <!-- VIEW 3: TRANG HOST (QUß║óN L├¥ NH├ôM & CHIA ─Éß╗ÇU H├ôA ─É╞áN) -->
+    <!-- VIEW 3: TRANG HOST (QUẢN LÝ NHÓM & CHIA ĐỀU HÓA ĐƠN) -->
     <main id="view-host" class="relative z-10 hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-6">
         <section class="card-clean p-6 bg-white space-y-4">
             <div class="flex items-center justify-between">
-                <span class="bg-lime border-2 border-ink font-mono text-xs font-bold px-3 py-1 rounded-full">VAI TR├Æ:
-                    HOST (CHß╗ª NH├ôM #DALAT26)</span>
-                <span class="font-mono text-xs font-bold text-indigo">L├ám tr├▓n 1.000Γé½, phß║ºn d╞░ dß╗ôn ng╞░ß╗¥i trß║ú
-                    tr╞░ß╗¢c</span>
+                <span class="bg-lime border-2 border-ink font-mono text-xs font-bold px-3 py-1 rounded-full">VAI TRÒ:
+                    HOST (CHỦ NHÓM #DALAT26)</span>
+                <span class="font-mono text-xs font-bold text-indigo">Làm tròn 1.000₫, phần dư dồn người trả
+                    trước</span>
             </div>
-            <h2 class="font-display font-bold text-2xl">Chia ─Éß╗üu H├│a ─É╞ín Nh├│m (T├¡ch hß╗úp API `/api/bills/equal-split`)
+            <h2 class="font-display font-bold text-2xl">Chia Đều Hóa Đơn Nhóm (Tích hợp API `/api/bills/equal-split`)
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                 <div class="space-y-3">
-                    <label class="block text-xs font-bold uppercase">Tß╗òng tiß╗ün h├│a ─æ╞ín (VND)</label>
+                    <label class="block text-xs font-bold uppercase">Tổng tiền hóa đơn (VND)</label>
                     <input id="hostBillTotalInput" type="number" value="100000" step="1000"
                         oninput="renderHostWorkspace()"
                         class="input-clean w-full px-4 py-2.5 font-mono font-bold text-lg">
@@ -272,22 +272,22 @@
         </section>
     </main>
 
-    <!-- VIEW 4: TRANG ADMIN (CHß╗ê ADMIN Mß╗ÜI ─É╞»ß╗óC TRUY Cß║¼P) -->
+    <!-- VIEW 4: TRANG ADMIN (CHỈ ADMIN MỚI ĐƯỢC TRUY CẬP) -->
     <main id="view-admin" class="relative z-10 hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-6">
         <section class="card-clean p-6 bg-white space-y-4">
             <span class="bg-coral text-white border-2 border-ink font-mono text-xs font-bold px-3 py-1 rounded-full">VAI
-                TR├Æ: ADMIN TO├ÇN Hß╗å THß╗ÉNG</span>
-            <h2 class="font-display font-bold text-2xl">Quß║ún trß╗ï T├ái khoß║ún To├án Server (Trang bß║úo vß╗ç ri├¬ng cho Admin)
+                TRÒ: ADMIN TOÀN HỆ THỐNG</span>
+            <h2 class="font-display font-bold text-2xl">Quản trị Tài khoản Toàn Server (Trang bảo vệ riêng cho Admin)
             </h2>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="border-y border-line bg-canvas font-mono text-xs text-muted uppercase">
-                            <th class="py-3 px-4">M├ú User</th>
-                            <th class="py-3 px-4">T├¬n hiß╗ân thß╗ï</th>
-                            <th class="py-3 px-4">Li├¬n hß╗ç</th>
-                            <th class="py-3 px-4">Ng├áy tß║ío</th>
-                            <th class="py-3 px-4 text-center">Trß║íng th├íi</th>
+                            <th class="py-3 px-4">Mã User</th>
+                            <th class="py-3 px-4">Tên hiển thị</th>
+                            <th class="py-3 px-4">Liên hệ</th>
+                            <th class="py-3 px-4">Ngày tạo</th>
+                            <th class="py-3 px-4 text-center">Trạng thái</th>
                         </tr>
                     </thead>
                     <tbody id="admAccountsTableBody" class="divide-y divide-line text-sm"></tbody>
@@ -299,15 +299,12 @@
     <div id="cleanToastContainer"
         class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
 
-    <!-- Nh├║ng ─æ├║ng thß╗⌐ tß╗▒ c├íc file JS trong c├óy th╞░ mß╗Ñc cß╗ºa bß║ín -->
-    <script src="../js/config.js"></script>
-    <script src="../js/utils.js"></script>
-    <script src="../js/api.js"></script>
-    <script src="../js/auth.js"></script>
-    <script src="../js/layout.js"></script>
-    <script src="../js/pages/home.js"></script>
-    <script src="../js/app.js"></script>
+    <script src="../js/config-auth.js"></script>
+    <script src="../js/utils-auth.js"></script>
+    <script src="../js/api-auth.js"></script>
+    <script src="../js/auth-guard.js"></script>
+    <script src="../js/layout-auth.js"></script>
+    <script src="../js/home-auth.js"></script>
+    <script src="../js/app-auth.js"></script>
 </body>
-
 </html>
-

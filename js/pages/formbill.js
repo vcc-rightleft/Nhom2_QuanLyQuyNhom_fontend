@@ -484,3 +484,113 @@ window.addEventListener("DOMContentLoaded", () => {
 
     setInvoiceSplitMode("equal");
 });
+
+const BILL_API_BASE = "http://127.0.0.1:8000";
+const BILL_GROUP_ID = 2;
+const BILL_PAYER_ID = 1;
+const MEMBER_NAME_TO_ID = {
+    "Phan Đức Anh": 1,
+    "Lê Quang Minh": 2,
+    "Nguyễn Phương Thảo": 3,
+    "Trần Khánh Vy": 4,
+    "Nguyễn Bảo Việt": 5,
+    "Đặng Tuấn Kiệt": 6
+};
+
+async function saveHostInvoice() {
+    const checkedMembers = getSelectedMembers();
+    if (checkedMembers.length === 0) {
+        notify("Không thể lưu: Hóa đơn phải có ít nhất 1 thành viên tham gia!", true);
+        return;
+    }
+
+    const title = document.getElementById("merchantName")?.value.trim() || "Hóa đơn nhóm";
+    const participantIds = checkedMembers.map(n => MEMBER_NAME_TO_ID[n]).filter(Boolean);
+    const totalFromMap = Object.values(latestAllocationMap).reduce((s, v) => s + Math.round(Number(v) || 0), 0);
+
+    let endpoint = "/api/bills/equal-split";
+    let payload = {};
+
+    if (currentSplitMode === "equal") {
+        endpoint = "/api/bills/equal-split";
+        payload = {
+            group_id: BILL_GROUP_ID,
+            title: title,
+            total_amount: totalFromMap,
+            paid_by: BILL_PAYER_ID,
+            participant_ids: participantIds,
+            note: "Tạo từ giao diện Chia đều"
+        };
+    } else if (currentSplitMode === "custom") {
+        endpoint = "/api/bills/split-custom";
+        const shares = checkedMembers.map(name => ({
+            user_id: MEMBER_NAME_TO_ID[name],
+            amount: Math.round(Number(latestAllocationMap[name]) || 0)
+        }));
+        const exactTotal = shares.reduce((s, x) => s + x.amount, 0);
+        payload = {
+            group_id: BILL_GROUP_ID,
+            title: title,
+            payer_id: BILL_PAYER_ID,
+            created_by: BILL_PAYER_ID,
+            total_amount: exactTotal,
+            shares: shares
+        };
+    } else {
+        endpoint = "/api/bills/split-by-items";
+        const items = itemizedRows
+            .map(r => ({
+                item_name: r.name,
+                quantity: Math.max(1, Number(r.qty) || 1),
+                unit_price: Number(r.price) || 0,
+                user_ids: (r.consumers || []).map(n => MEMBER_NAME_TO_ID[n]).filter(Boolean)
+            }))
+            .filter(it => it.unit_price > 0 && it.user_ids.length > 0);
+
+        const itemsSum = items.reduce((s, it) => s + it.quantity * it.unit_price, 0);
+        const serviceFee = Math.max(0, totalFromMap - itemsSum);
+
+        payload = {
+            group_id: BILL_GROUP_ID,
+            title: title,
+            payer_id: BILL_PAYER_ID,
+            created_by: BILL_PAYER_ID,
+            fee_split_mode: "EQUAL",
+            service_ship_fee: serviceFee,
+            total_amount: itemsSum + serviceFee,
+            items: items
+        };
+    }
+
+    const token =
+        localStorage.getItem("access_token") ||
+        localStorage.getItem("squadcash_token") ||
+        localStorage.getItem("token") ||
+        "";
+
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    try {
+        const res = await fetch(BILL_API_BASE + endpoint, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            const detail = Array.isArray(data.detail)
+                ? data.detail.map(d => `${(d.loc || []).slice(-1)[0] || ""}: ${d.msg}`).join(" | ")
+                : (data.detail || `HTTP ${res.status}`);
+            notify("Lỗi lưu hóa đơn: " + detail, true);
+            console.error("Bill API error:", res.status, data, payload);
+            return;
+        }
+        const billId = data.id || data.bill_id || "OK";
+        playUiSound("success");
+        notify(`Đã lưu hóa đơn "${title}" (ID #${billId}) vào MySQL thành công!`);
+    } catch (err) {
+        notify("Không kết nối được tới Backend (cổng 8000): " + err.message, true);
+        console.error("Bill fetch error:", err);
+    }
+}
