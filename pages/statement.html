@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SQUAD.CASH — Lịch sử Giao dịch &amp; Sao kê Tháng (T3CD008)</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts đồng bộ mẫu SQUAD.CASH -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
+        rel="stylesheet" />
+
+    <!-- Chart.js & Lucide Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        canvas: '#F6F5F0',
+                        surface: '#FFFFFF',
+                        ink: '#121212',
+                        muted: '#52525B',
+                        line: '#E4E4E7',
+                        indigo: { DEFAULT: '#7C3AED', 50: '#F5F3FF', 600: '#7C3AED', 700: '#6D28D9' },
+                        lime: { DEFAULT: '#D4FF00', soft: '#F4FFC2' },
+                        coral: '#FF5E36',
+                        cyan: '#38BDF8',
+                        amber: '#FACC15',
+                        mint: '#10B981'
+                    },
+                    fontFamily: {
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    boxShadow: {
+                        'clean': '3px 3px 0px #121212',
+                        'bold': '4px 4px 0px #121212',
+                        'bold-sm': '2px 2px 0px #121212',
+                    }
+                }
+            }
+        };
+    </script>
+
+    <link rel="stylesheet" href="../css/statement.css" />
+</head>
+
+<body class="min-h-screen flex flex-col relative">
+    <div class="app-renaissance-ambient"></div>
+
+    <!-- ========================================================================
+         HEADER ĐIỀU HƯỚNG (ẨN KHI IN)
+    ========================================================================= -->
+    <header class="no-print sticky top-0 z-40 bg-white border-b-2 border-ink px-4 sm:px-8 py-3.5 shadow-clean">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <!-- Brand -->
+            <a href="../index.html" class="flex items-center gap-3 no-underline">
+                <div
+                    class="w-10 h-10 rounded-xl bg-lime text-ink border-2 border-ink shadow-bold-sm flex items-center justify-center font-display font-bold text-xl">
+                    $
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-display font-bold text-lg tracking-tight text-ink">SQUAD.CASH</span>
+                        <span
+                            class="font-mono text-[11px] font-bold bg-lime border-[1.5px] border-ink px-2 py-0.5 rounded-md text-ink">
+                            T3CD008
+                        </span>
+                    </div>
+                    <p class="text-xs text-muted font-medium">Lịch sử giao dịch &amp; Sao kê quỹ nhóm</p>
+                </div>
+            </a>
+
+            <!-- Navigation Links -->
+            <nav class="flex items-center bg-canvas p-1.5 rounded-xl border-2 border-ink overflow-x-auto gap-1">
+                <a href="../index.html"
+                    class="px-3 py-1.5 rounded-lg font-display font-bold text-xs text-muted hover:text-ink transition-all">
+                    Quỹ chung
+                </a>
+                <a href="./formbill.html"
+                    class="px-3 py-1.5 rounded-lg font-display font-bold text-xs text-muted hover:text-ink transition-all">
+                    Tạo hóa đơn
+                </a>
+                <a href="./debts.html"
+                    class="px-3 py-1.5 rounded-lg font-display font-bold text-xs text-muted hover:text-ink transition-all">
+                    Công nợ
+                </a>
+                <a href="./statement.html"
+                    class="px-3 py-1.5 rounded-lg font-display font-bold text-xs bg-lime text-ink border-2 border-ink shadow-bold-sm">
+                    Lịch sử &amp; Sao kê
+                </a>
+                <a href="./profile.html"
+                    class="px-3 py-1.5 rounded-lg font-display font-bold text-xs text-muted hover:text-ink transition-all">
+                    Hồ sơ
+                </a>
+                <a href="./auth.html"
+                    class="px-3 py-1.5 rounded-lg font-display font-bold text-xs text-indigo hover:underline transition-all">
+                    Tài khoản
+                </a>
+            </nav>
+
+            <!-- Right Actions -->
+            <div class="flex items-center gap-2.5">
+                <div id="apiStatusBadge"
+                    class="inline-flex items-center gap-2 bg-white px-3 py-2 rounded-xl border-2 border-ink text-xs font-mono font-bold shadow-bold-sm">
+                    <span id="apiPulseDot" class="pulse-dot offline"></span>
+                    <span id="apiStatusText">Đang kiểm tra API...</span>
+                </div>
+                <button type="button" id="btnPrintStatementTop"
+                    class="btn-cta-lime px-4 py-2 rounded-xl font-display font-bold text-xs uppercase flex items-center gap-1.5">
+                    <i data-lucide="printer" class="w-4 h-4"></i>
+                    <span>In sao kê</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========================================================================
+         MAIN WORKSPACE
+    ========================================================================= -->
+    <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
+
+        <!-- ĐẦU TRANG CHỈ HIỂN THỊ KHI IN (window.print) -->
+        <section class="print-only border-b-2 border-ink pb-4 mb-6">
+            <div class="flex items-start justify-between">
+                <div>
+                    <div class="font-display font-bold text-2xl">SQUAD.CASH — HỆ THỐNG QUẢN LÝ QUỸ NHÓM</div>
+                    <div class="text-xs text-muted mt-1">Báo cáo sao kê minh bạch chuẩn số nguyên VND</div>
+                </div>
+                <div class="text-right font-mono text-xs">
+                    <div>Mã nhóm: <strong id="printGroupCode">#GRP-1</strong></div>
+                    <div>Kỳ sao kê: <strong id="printPeriodLabel">Tháng 11/2026</strong></div>
+                    <div>Ngày xuất: <strong id="printExportDate">--/--/----</strong></div>
+                </div>
+            </div>
+            <h1 class="font-display font-bold text-xl uppercase text-center mt-5">
+                BẢNG SAO KÊ THU CHI QUỸ NHÓM THEO THÁNG
+            </h1>
+        </section>
+
+        <!-- BANNER OS WINDOW (GIỐNG MẪU SQUAD.CASH) -->
+        <section class="no-print card-clean overflow-hidden bg-white">
+            <div class="os-window-bar">
+                <div class="flex items-center gap-2.5">
+                    <div class="os-dots">
+                        <span class="os-dot bg-coral"></span>
+                        <span class="os-dot bg-amber"></span>
+                        <span class="os-dot bg-mint"></span>
+                    </div>
+                    <span class="font-mono text-xs font-bold text-ink/75 ml-1">squad.cash/os/history-and-statement</span>
+                </div>
+                <span class="font-mono text-[11px] font-bold bg-lime text-ink px-2.5 py-0.5 rounded-full border border-ink">
+                    FR-USER-004 • SAO KÊ THÁNG
+                </span>
+            </div>
+
+            <div class="workspace-fresco-strip px-6 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span
+                        class="bg-lime text-ink border-2 border-ink font-mono text-xs font-bold px-3 py-1 rounded-full shadow-bold-sm">
+                        SỔ CÁI &amp; SAO KÊ MINH BẠCH
+                    </span>
+                    <span class="font-mono text-xs font-bold bg-black/55 text-white border border-white/30 px-2.5 py-1 rounded-md">
+                        Đơn vị chuẩn: VND (Số nguyên)
+                    </span>
+                </div>
+                <span class="font-wiro-serif text-lg sm:text-xl text-lime">
+                    ✦ Đối soát dòng tiền chuẩn từng đồng
+                </span>
+            </div>
+
+            <div class="p-6 sm:p-8 flex flex-col lg:flex-row lg:items-end justify-between gap-6 bg-white">
+                <div class="space-y-2">
+                    <h1 class="font-wiro-sans font-bold text-2xl sm:text-4xl text-ink leading-tight">
+                        Lịch sử Giao dịch &amp; <span class="font-wiro-serif font-normal text-3xl sm:text-5xl text-indigo">Sao kê Theo Tháng.</span>
+                    </h1>
+                    <p class="text-sm text-muted max-w-2xl">
+                        Lọc nhanh toàn bộ giao dịch thu/chi quỹ, theo dõi biểu đồ biến động dòng tiền theo tháng bằng
+                        <strong>Chart.js</strong> và in bản sao kê chính thức chỉ với một chạm.
+                    </p>
+                </div>
+
+                <!-- Chọn Nhóm & Kỳ Sao Kê Tháng -->
+                <div class="flex flex-wrap items-end gap-3">
+                    <div>
+                        <label for="groupIdInput" class="block font-mono text-[11px] font-bold uppercase text-muted mb-1">
+                            Mã Nhóm (Group ID)
+                        </label>
+                        <input id="groupIdInput" type="number" min="1" value="1"
+                            class="input-clean w-28 px-3 py-2 font-mono font-bold text-sm text-center" />
+                    </div>
+                    <div>
+                        <label for="statementMonthInput" class="block font-mono text-[11px] font-bold uppercase text-muted mb-1">
+                            Kỳ Sao Kê (Tháng)
+                        </label>
+                        <input id="statementMonthInput" type="month" value="2026-11"
+                            class="input-clean px-3.5 py-2 font-mono font-bold text-sm" />
+                    </div>
+                    <button type="button" id="btnReloadData"
+                        class="btn-cta-indigo px-4 py-2.5 rounded-xl font-display font-bold text-xs uppercase flex items-center gap-1.5">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        <span>Tải dữ liệu</span>
+                    </button>
+                    <button type="button" id="btnPrintStatementHero"
+                        class="btn-cta-lime px-4 py-2.5 rounded-xl font-display font-bold text-xs uppercase flex items-center gap-1.5">
+                        <i data-lucide="printer" class="w-4 h-4"></i>
+                        <span>In sao kê (PDF)</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====================================================================
+             4 THẺ KPI TỔNG QUAN KỲ SAO KÊ
+        ===================================================================== -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="card-lime p-5">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase text-ink">Tổng Thu Trong Kỳ</span>
+                    <i data-lucide="arrow-down-left" class="w-5 h-5 text-ink"></i>
+                </div>
+                <div id="kpiTotalIncome" class="font-mono font-bold text-2xl sm:text-3xl text-ink mt-2">+0 ₫</div>
+                <p id="kpiIncomeCount" class="font-mono text-xs text-ink/80 mt-1">0 giao dịch thu</p>
+            </div>
+
+            <div class="card-coral p-5">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase text-white">Tổng Chi Trong Kỳ</span>
+                    <i data-lucide="arrow-up-right" class="w-5 h-5 text-white"></i>
+                </div>
+                <div id="kpiTotalExpense" class="font-mono font-bold text-2xl sm:text-3xl text-white mt-2">-0 ₫</div>
+                <p id="kpiExpenseCount" class="font-mono text-xs text-white/90 mt-1">0 giao dịch chi</p>
+            </div>
+
+            <div class="card-violet p-5">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase text-lime">Chênh Lệch / Số Dư Ròng</span>
+                    <i data-lucide="wallet" class="w-5 h-5 text-lime"></i>
+                </div>
+                <div id="kpiNetBalance" class="font-mono font-bold text-2xl sm:text-3xl text-white mt-2">0 ₫</div>
+                <p id="kpiPeriodNote" class="font-mono text-xs text-white/85 mt-1">Kỳ: Tháng 11/2026</p>
+            </div>
+
+            <div class="card-cyan p-5">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase text-ink">Tổng Số Giao Dịch</span>
+                    <i data-lucide="receipt" class="w-5 h-5 text-ink"></i>
+                </div>
+                <div id="kpiTotalCount" class="font-mono font-bold text-2xl sm:text-3xl text-ink mt-2">0 GD</div>
+                <p id="kpiAvgAmount" class="font-mono text-xs text-ink/80 mt-1">Trung bình: 0 ₫ / GD</p>
+            </div>
+        </section>
+
+        <!-- ====================================================================
+             BIỂU ĐỒ SAO KÊ THU / CHI THEO THÁNG (CHART.JS)
+        ===================================================================== -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Biểu đồ Cột Thu/Chi -->
+            <div class="lg:col-span-8 card-clean p-6 space-y-4 bg-white">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-line pb-3">
+                    <div>
+                        <span class="font-mono text-xs font-bold uppercase text-indigo">Chart.js • Sao kê trực quan</span>
+                        <h2 id="barChartTitle" class="font-display font-bold text-xl text-ink mt-0.5">
+                            Biểu đồ Thu / Chi theo tháng (6 tháng gần nhất)
+                        </h2>
+                    </div>
+                    <div class="no-print flex items-center bg-canvas p-1 rounded-xl border-2 border-ink gap-1">
+                        <button type="button" id="chartModeMonths"
+                            class="px-3 py-1 rounded-lg font-mono text-xs font-bold bg-lime text-ink border border-ink">
+                            Theo 6 tháng
+                        </button>
+                        <button type="button" id="chartModeDays"
+                            class="px-3 py-1 rounded-lg font-mono text-xs font-bold text-muted hover:text-ink">
+                            Theo ngày trong tháng
+                        </button>
+                    </div>
+                </div>
+                <div class="relative h-72 w-full">
+                    <canvas id="incomeExpenseBarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Biểu đồ Tròn Cơ cấu Chi tiêu -->
+            <div class="lg:col-span-4 card-clean p-6 space-y-4 bg-white flex flex-col justify-between">
+                <div class="border-b-2 border-line pb-3">
+                    <span class="font-mono text-xs font-bold uppercase text-coral">Phân bổ danh mục</span>
+                    <h2 class="font-display font-bold text-xl text-ink mt-0.5">Cơ cấu Khoản Chi</h2>
+                </div>
+                <div class="relative h-56 w-full flex items-center justify-center">
+                    <canvas id="expenseCategoryChart"></canvas>
+                </div>
+                <div id="categoryLegendSummary" class="text-xs font-mono text-muted text-center pt-2 border-t border-line">
+                    Đang thống kê theo danh mục chi tiêu...
+                </div>
+            </div>
+        </section>
+
+        <!-- ====================================================================
+             BẢNG LỊCH SỬ GIAO DỊCH CÓ BỘ LỌC
+        ===================================================================== -->
+        <section class="card-clean overflow-hidden bg-white">
+            <div class="os-window-bar no-print">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="filter" class="w-4 h-4 text-ink"></i>
+                    <span class="font-display font-bold text-sm text-ink">Bảng Giao Dịch &amp; Bộ Lọc Chi Tiết</span>
+                </div>
+                <span id="tableRecordCounter"
+                    class="font-mono text-xs font-bold bg-white border border-ink px-2.5 py-0.5 rounded-md">
+                    Hiển thị 0 giao dịch
+                </span>
+            </div>
+
+            <!-- Thanh Bộ Lọc (Ẩn khi in) -->
+            <div class="no-print p-5 bg-canvas border-b-2 border-ink space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                    <!-- Tìm kiếm -->
+                    <div class="lg:col-span-2">
+                        <label for="filterSearch" class="block font-mono text-[11px] font-bold uppercase text-muted mb-1">
+                            Tìm kiếm (Mã GD, nội dung, danh mục)
+                        </label>
+                        <input id="filterSearch" type="text" placeholder="VD: Tiền quỹ, Lẩu bò, TX-..."
+                            class="input-clean w-full px-3.5 py-2 text-xs font-medium" />
+                    </div>
+
+                    <!-- Loại giao dịch -->
+                    <div>
+                        <label for="filterType" class="block font-mono text-[11px] font-bold uppercase text-muted mb-1">
+                            Loại giao dịch
+                        </label>
+                        <select id="filterType" class="input-clean w-full px-3 py-2 text-xs font-bold">
+                            <option value="ALL">Tất cả (Thu &amp; Chi)</option>
+                            <option value="INCOME">Chỉ khoản THU (+)</option>
+                            <option value="EXPENSE">Chỉ khoản CHI (-)</option>
+                        </select>
+                    </div>
+
+                    <!-- Từ ngày -->
+                    <div>
+                        <label for="filterDateFrom" class="block font-mono text-[11px] font-bold uppercase text-muted mb-1">
+                            Từ ngày
+                        </label>
+                        <input id="filterDateFrom" type="date" class="input-clean w-full px-3 py-2 font-mono text-xs" />
+                    </div>
+
+                    <!-- Đến ngày -->
+                    <div>
+                        <label for="filterDateTo" class="block font-mono text-[11px] font-bold uppercase text-muted mb-1">
+                            Đến ngày
+                        </label>
+                        <input id="filterDateTo" type="date" class="input-clean w-full px-3 py-2 font-mono text-xs" />
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <label class="inline-flex items-center gap-2 text-xs font-semibold cursor-pointer">
+                            <input id="filterOnlySelectedMonth" type="checkbox" checked class="accent-indigo w-4 h-4" />
+                            <span>Chỉ lọc trong tháng sao kê đang chọn</span>
+                        </label>
+                        <select id="filterCategory" class="input-clean px-3 py-1.5 text-xs font-semibold">
+                            <option value="ALL">Tất cả danh mục</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button type="button" id="btnResetFilters"
+                            class="btn-outline px-3.5 py-1.5 rounded-xl font-mono text-xs font-bold">
+                            ↺ Xóa bộ lọc
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bảng Giao Dịch -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b-2 border-ink bg-canvas font-mono text-xs text-muted uppercase">
+                            <th class="py-3.5 px-4">Mã GD</th>
+                            <th class="py-3.5 px-4">Ngày phát sinh</th>
+                            <th class="py-3.5 px-4">Loại</th>
+                            <th class="py-3.5 px-4">Danh mục &amp; Nội dung</th>
+                            <th class="py-3.5 px-4">Người thực hiện</th>
+                            <th class="py-3.5 px-4 text-center">Trạng thái</th>
+                            <th class="py-3.5 px-4 text-right">Số tiền (VND)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsTableBody" class="divide-y divide-line text-sm">
+                        <!-- Render bởi js/pages/statement.js -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Chân bảng tổng hợp -->
+            <div class="p-4 sm:px-6 bg-canvas border-t-2 border-ink flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+                <span id="tableFooterSummary" class="font-bold text-ink">
+                    Tổng cộng: 0 giao dịch
+                </span>
+                <div class="flex flex-wrap items-center gap-4">
+                    <span>Thu: <strong id="footerIncome" class="text-emerald-700">+0 ₫</strong></span>
+                    <span>Chi: <strong id="footerExpense" class="text-rose-600">-0 ₫</strong></span>
+                    <span>Ròng: <strong id="footerNet" class="text-indigo">0 ₫</strong></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- KHU VỰC CHỮ KÝ CHỈ HIỆN KHI IN SAO KÊ -->
+        <section class="print-only pt-8">
+            <div class="grid grid-cols-2 gap-8 text-center text-xs">
+                <div class="space-y-14">
+                    <div>
+                        <div class="font-bold uppercase">Người lập sao kê</div>
+                        <div class="text-muted italic">(Ký, ghi rõ họ tên)</div>
+                    </div>
+                    <div class="font-mono">........................................</div>
+                </div>
+                <div class="space-y-14">
+                    <div>
+                        <div class="font-bold uppercase">Trưởng nhóm / Chủ quỹ (Host)</div>
+                        <div class="text-muted italic">(Ký, xác nhận đối soát)</div>
+                    </div>
+                    <div class="font-mono">........................................</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast thông báo -->
+    <div id="toastContainer"
+        class="no-print fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+    <script src="../js/pages/statement.js"></script>
+</body>
+
+</html>
