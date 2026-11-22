@@ -34,6 +34,7 @@ let previewProfile = null;
 
 function getStoredToken() {
     return (
+        sessionStorage.getItem(TOKEN_KEY) ||
         localStorage.getItem(TOKEN_KEY) ||
         localStorage.getItem("access_token") ||
         localStorage.getItem("token") ||
@@ -698,114 +699,14 @@ async function changePassword(event) {
     }
 }
 
-// ==========================================
-// XEM NHANH HỒ SƠ MẪU
-// ==========================================
-
-const DEMO_PROFILES = {
-    "USR-1001": {
-        id: "USR-1001",
-        role: "HOST",
-        full_name: "Phan Đức Anh",
-        email: "ducanh.host@squad.cash",
-        phone: "0909123456",
-        avatar_url: "",
-        bank_name: "Vietcombank",
-        bank_account_no: "1029384756",
-        bank_account_name: "PHAN DUC ANH"
-    },
-
-    "USR-1042": {
-        id: "USR-1042",
-        role: "USER",
-        full_name: "Lê Quang Minh",
-        email: "minh.le@squad.cash",
-        phone: "0988112233",
-        avatar_url: "",
-        bank_name: "MB Bank",
-        bank_account_no: "0988112233",
-        bank_account_name: "LE QUANG MINH"
-    }
-};
-
-function selectProfileAccount(userId) {
-    const profile = DEMO_PROFILES[userId];
-
-    if (!profile) return;
-
-    previewProfile = { ...profile };
-
-    [
-        "profFullName",
-        "profPhone",
-        "profEmailReadonly",
-        "profAvatarUrl",
-        "profBankName",
-        "profBankAccountNo",
-        "profBankAccountName"
-    ].forEach((id) => {
-        const element = $(id);
-        if (element) {
-            element.disabled = true;
-        }
-    });
-
-    setText(
-        "profileHeroName",
-        profile.full_name + " (Bản xem mẫu)"
-    );
-
-    showProfileAlert(
-        "Bạn đang xem dữ liệu mẫu. " +
-        "Nhấn Đồng bộ từ API để quay về hồ sơ thật.",
-        "success"
-    );
-
-    // Chỉ xem bản mẫu; không ghi vào localStorage
-    // và không dùng ID mẫu để xác thực.
-    const fields = {
-        profFullName: profile.full_name,
-        profPhone: profile.phone,
-        profEmailReadonly: profile.email,
-        profAvatarUrl: profile.avatar_url,
-        profBankName: profile.bank_name,
-        profBankAccountNo: profile.bank_account_no,
-        profBankAccountName: profile.bank_account_name
-    };
-
-    Object.entries(fields).forEach(
-        ([id, value]) => setValue(id, value)
-    );
-
-    updateLivePreviewFromForm();
+// Không hỗ trợ chọn hồ sơ mẫu. Chỉ tải thông tin /api/users/me.
+function selectProfileAccount() {
+    showProfileAlert('Hồ sơ chỉ được tải từ tài khoản đang đăng nhập.', 'error');
 }
-
 async function restoreRealProfile() {
-    const ids = [
-        "profFullName",
-        "profPhone",
-        "profAvatarUrl",
-        "profBankName",
-        "profBankAccountNo",
-        "profBankAccountName"
-    ];
-
-    ids.forEach((id) => {
-        if ($(id)) $(id).disabled = false;
-    });
-
-    previewProfile = null;
-
     await fetchProfileFromFastApi();
 }
-
-// ==========================================
-// BẢO VỆ KHÔNG LƯU PROFILE MẪU
-// ==========================================
-
-function isPreviewMode() {
-    return previewProfile !== null;
-}
+function isPreviewMode() { return false; }
 
 // ==========================================
 // KHỞI TẠO

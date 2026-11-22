@@ -5,37 +5,6 @@ import api from "../api.js";
 // SQUAD.CASH - ITEMS MANAGEMENT
 // ==========================================
 
-// Dữ liệu mẫu của giao diện hóa đơn cũ
-const DEFAULT_ITEMS = [
-    {
-        id: "BIL-201",
-        date: "2026-11-03",
-        title: "Lẩu Bò Ba Toa",
-        groupCode: "#DALAT26",
-        payer: "Phan Đức Anh",
-        total: 1920000,
-        splitCount: 6
-    },
-    {
-        id: "BIL-202",
-        date: "2026-11-04",
-        title: "Thuê xe máy 2 ngày",
-        groupCode: "#DALAT26",
-        payer: "Phan Đức Anh",
-        total: 1080000,
-        splitCount: 6
-    },
-    {
-        id: "BIL-203",
-        date: "2026-11-10",
-        title: "Tiền sân & cầu tháng 11",
-        groupCode: "#BADMINTON",
-        payer: "Lê Quang Minh",
-        total: 600000,
-        splitCount: 4
-    }
-];
-
 const $ = (id) => document.getElementById(id);
 
 // ==========================================
@@ -64,6 +33,7 @@ function getStoredToken() {
         "squad_cash_token";
 
     return (
+        sessionStorage.getItem(tokenKey) ||
         localStorage.getItem(tokenKey) ||
         localStorage.getItem("access_token") ||
         localStorage.getItem("token") ||
@@ -130,134 +100,38 @@ function showMessage(message, isError = false) {
 // GIAO DIỆN CỦA NHÁNH DEV
 // ==========================================
 
-function getStoredItems() {
-    let saved = [];
-
-    try {
-        const raw = localStorage.getItem(
-            "squad_cash_bills"
-        );
-
-        const parsed = raw
-            ? JSON.parse(raw)
-            : [];
-
-        if (Array.isArray(parsed)) {
-            saved = parsed;
-        }
-    } catch (error) {
-        console.error(
-            "Không đọc được danh sách hóa đơn:",
-            error
-        );
-    }
-
-    return [
-        ...saved,
-        ...DEFAULT_ITEMS
-    ];
-}
-
-function renderItems() {
+async function renderItems() {
     const tbody = $("items-tbody");
-
-    if (!tbody) {
-        return;
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center">Đang tải hóa đơn...</td></tr>';
+    try {
+        const groups = await api.get("/api/groups/my-groups");
+        if (!Array.isArray(groups)) throw new Error("API nhóm trả dữ liệu không hợp lệ");
+        const pages = await Promise.all(groups.map(async (group) => {
+            const id = Number(group.group_id ?? group.id);
+            if (!Number.isSafeInteger(id) || id <= 0) return [];
+            const result = await api.get(`/api/bills/groups/${id}?page_size=100`);
+            const bills = Array.isArray(result) ? result : result?.items;
+            if (!Array.isArray(bills)) throw new Error("API hóa đơn trả dữ liệu không hợp lệ");
+            return bills.map(bill => ({...bill, groupCode: String(group.group_name || group.name || id)}));
+        }));
+        const list = pages.flat();
+        const groupFilter = $("items-filter-group")?.value || "all";
+        const keyword = ($("items-search")?.value || "").trim().toLowerCase();
+        const filtered = list.filter(x => (groupFilter === "all" || x.groupCode === groupFilter) &&
+            (!keyword || `${x.id} ${x.title} ${x.groupCode}`.toLowerCase().includes(keyword)));
+        if ($("items-count")) $("items-count").textContent = `${filtered.length} khoản chi`;
+        tbody.innerHTML = filtered.length ? filtered.map(b => `<tr class="hover:bg-canvas/60 transition">
+            <td class="p-4 font-mono text-xs">${escapeHtml(b.id)}</td>
+            <td class="p-4 font-bold">${escapeHtml(b.title)}</td>
+            <td class="p-4">${escapeHtml(b.groupCode)}</td>
+            <td class="p-4">${escapeHtml(b.payer_name || '')}</td>
+            <td class="p-4 text-right font-mono">${formatVND(b.total_amount)}</td>
+            <td class="p-4 text-center">${escapeHtml(b.split_type || '—')}</td></tr>`).join("") :
+            '<tr><td colspan="6" class="p-8 text-center">Chưa có khoản chi nào.</td></tr>';
+    } catch (error) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-600">${escapeHtml(extractError(error))}</td></tr>`;
     }
-
-    const groupFilter =
-        $("items-filter-group")?.value || "all";
-
-    const keyword = (
-        $("items-search")?.value || ""
-    ).trim().toLowerCase();
-
-    const list = getStoredItems().filter((item) => {
-        if (
-            groupFilter !== "all" &&
-            String(item.groupCode) !== groupFilter
-        ) {
-            return false;
-        }
-
-        if (keyword) {
-            const searchText = [
-                item.id,
-                item.title,
-                item.payer,
-                item.groupCode
-            ].join(" ").toLowerCase();
-
-            if (!searchText.includes(keyword)) {
-                return false;
-            }
-        }
-
-        return true;
-    });
-
-    if ($("items-count")) {
-        $("items-count").textContent =
-            `${list.length} khoản chi`;
-    }
-
-    if (list.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td
-                    colspan="6"
-                    class="p-8 text-center text-muted font-medium"
-                >
-                    Không có khoản chi nào phù hợp.
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
-    tbody.innerHTML = list.map((item) => `
-        <tr class="hover:bg-canvas/60 transition">
-
-            <td class="p-4">
-                <div class="font-mono font-bold text-xs text-ink">
-                    ${escapeHtml(item.id)}
-                </div>
-
-                <div class="text-xs text-muted">
-                    ${escapeHtml(item.date || "")}
-                </div>
-            </td>
-
-            <td class="p-4 font-display font-bold text-ink">
-                ${escapeHtml(item.title)}
-            </td>
-
-            <td class="p-4">
-                <span
-                    class="font-mono text-xs font-bold bg-lime border border-ink px-2 py-0.5 rounded"
-                >
-                    ${escapeHtml(item.groupCode)}
-                </span>
-            </td>
-
-            <td class="p-4 font-medium text-ink">
-                ${escapeHtml(item.payer)}
-            </td>
-
-            <td
-                class="p-4 text-right font-mono font-bold text-coral"
-            >
-                ${formatVND(item.total)}
-            </td>
-
-            <td
-                class="p-4 text-center font-mono text-xs font-bold"
-            >
-                ${Number(item.splitCount) || 0} người
-            </td>
-
-        </tr>
-    `).join("");
 }
 
 function setupBillList() {

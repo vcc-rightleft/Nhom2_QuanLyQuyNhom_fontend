@@ -10,6 +10,7 @@ const USER_KEY = window.APP_CONFIG?.USER_KEY || 'squad_cash_user';
 // Lấy JWT đã lưu khi đăng nhập
 function getStoredToken() {
     return (
+        sessionStorage.getItem(TOKEN_KEY) ||
         localStorage.getItem(TOKEN_KEY) ||
         localStorage.getItem('access_token') ||
         localStorage.getItem('token') ||
@@ -41,6 +42,7 @@ function clearAuth() {
     ].forEach(key => localStorage.removeItem(key));
 
     localStorage.removeItem(USER_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
 }
 
 // Hàm request dùng chung cho tất cả API

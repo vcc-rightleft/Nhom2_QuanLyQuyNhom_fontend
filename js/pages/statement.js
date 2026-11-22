@@ -8,179 +8,6 @@
 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
-const MOCK_TRANSACTIONS = [
-    {
-        id: "TX-261101",
-        occurred_at: "2026-11-02T09:15:00",
-        type: "INCOME",
-        category: "Đóng quỹ định kỳ",
-        description: "Thu quỹ nhóm tháng 11 (6 thành viên x 500,000đ)",
-        actor: "Phan Đức Anh (Host)",
-        status: "ACTIVE",
-        amount: 3000000,
-    },
-    {
-        id: "TX-261102",
-        occurred_at: "2026-11-04T19:30:00",
-        type: "EXPENSE",
-        category: "Ăn uống",
-        description: "Lẩu Bò Ba Toa - Tiệc khai màn chuyến đi",
-        actor: "Lê Quang Minh",
-        status: "ACTIVE",
-        amount: 1250000,
-    },
-    {
-        id: "TX-261103",
-        occurred_at: "2026-11-08T14:00:00",
-        type: "EXPENSE",
-        category: "Di chuyển",
-        description: "Đặt cọc thuê xe Limousine 9 chỗ khứ hồi",
-        actor: "Phan Đức Anh (Host)",
-        status: "ACTIVE",
-        amount: 1500000,
-    },
-    {
-        id: "TX-261104",
-        occurred_at: "2026-11-11T10:20:00",
-        type: "INCOME",
-        category: "Đóng quỹ bổ sung",
-        description: "Thu bổ sung quỹ đợt 2 (Chuyển khoản VietQR)",
-        actor: "Nguyễn Phương Thảo",
-        status: "ACTIVE",
-        amount: 2400000,
-    },
-    {
-        id: "TX-261105",
-        occurred_at: "2026-11-15T16:45:00",
-        type: "EXPENSE",
-        category: "Lưu trú",
-        description: "Thanh toán tiền phòng Homestay Đà Lạt 2 đêm",
-        actor: "Phan Đức Anh (Host)",
-        status: "ACTIVE",
-        amount: 2100000,
-    },
-    {
-        id: "TX-261106",
-        occurred_at: "2026-11-19T20:10:00",
-        type: "EXPENSE",
-        category: "Ăn uống",
-        description: "Tiệc nướng BBQ Thông Reo & đồ uống",
-        actor: "Trần Khánh Vy",
-        status: "ACTIVE",
-        amount: 850000,
-    },
-    {
-        id: "TX-261107",
-        occurred_at: "2026-11-21T08:40:00",
-        type: "INCOME",
-        category: "Hoàn tiền",
-        description: "Hoàn tiền cọc giữ phòng không phát sinh hư hại",
-        actor: "Phan Đức Anh (Host)",
-        status: "ACTIVE",
-        amount: 500000,
-    },
-    {
-        id: "TX-261001",
-        occurred_at: "2026-10-05T09:00:00",
-        type: "INCOME",
-        category: "Đóng quỹ định kỳ",
-        description: "Thu quỹ nhóm tháng 10",
-        actor: "Phan Đức Anh (Host)",
-        status: "ACTIVE",
-        amount: 4200000,
-    },
-    {
-        id: "TX-261002",
-        occurred_at: "2026-10-18T18:30:00",
-        type: "EXPENSE",
-        category: "Ăn uống",
-        description: "Liên hoan sinh nhật thành viên tháng 10",
-        actor: "Nguyễn Bảo Việt",
-        status: "ACTIVE",
-        amount: 1950000,
-    },
-    {
-        id: "TX-260901",
-        occurred_at: "2026-09-03T10:00:00",
-        type: "INCOME",
-        category: "Đóng quỹ định kỳ",
-        description: "Thu quỹ nhóm tháng 9",
-        actor: "Phan Đức Anh (Host)",
-        status: "ACTIVE",
-        amount: 3600000,
-    },
-    {
-        id: "TX-260902",
-        occurred_at: "2026-09-20T15:15:00",
-        type: "EXPENSE",
-        category: "Sinh hoạt chung",
-        description: "Mua nước uống & dụng cụ sinh hoạt nhóm",
-        actor: "Đặng Tuấn Kiệt",
-        status: "ACTIVE",
-        amount: 1400000,
-    },
-    {
-        id: "TX-260801",
-        occurred_at: "2026-08-06T09:30:00",
-        type: "INCOME",
-        category: "Đóng quỹ định kỳ",
-        description: "Thu quỹ tháng 8",
-        actor: "Phan Đức Anh (Host)",
-        status: "ACTIVE",
-        amount: 3000000,
-    },
-    {
-        id: "TX-260802",
-        occurred_at: "2026-08-22T17:00:00",
-        type: "EXPENSE",
-        category: "Thể thao",
-        description: "Thuê sân cầu lông & mua cầu tháng 8",
-        actor: "Lê Quang Minh",
-        status: "ACTIVE",
-        amount: 1800000,
-    },
-    {
-        id: "TX-260701",
-        occurred_at: "2026-07-04T11:00:00",
-        type: "INCOME",
-        category: "Đóng quỹ định kỳ",
-        description: "Thu quỹ tháng 7",
-        actor: "Phan Đức Anh (Host)",
-        status: "ACTIVE",
-        amount: 2800000,
-    },
-    {
-        id: "TX-260702",
-        occurred_at: "2026-07-19T19:45:00",
-        type: "EXPENSE",
-        category: "Ăn uống",
-        description: "Cà phê họp nhóm tổng kết dự án",
-        actor: "Nguyễn Phương Thảo",
-        status: "ACTIVE",
-        amount: 1100000,
-    },
-    {
-        id: "TX-260601",
-        occurred_at: "2026-06-02T08:30:00",
-        type: "INCOME",
-        category: "Đóng quỹ khởi tạo",
-        description: "Thu quỹ khởi tạo ban đầu",
-        actor: "Phan Đức Anh (Host)",
-        status: "ACTIVE",
-        amount: 3500000,
-    },
-    {
-        id: "TX-260602",
-        occurred_at: "2026-06-16T20:00:00",
-        type: "EXPENSE",
-        category: "Di chuyển",
-        description: "Chi phí xăng xe đi khảo sát địa điểm",
-        actor: "Phan Đức Anh (Host)",
-        status: "ACTIVE",
-        amount: 950000,
-    },
-];
-
 let allTransactions = [];
 let chartViewMode = "months";
 let barChartInstance = null;
@@ -188,6 +15,7 @@ let categoryChartInstance = null;
 
 function getStoredToken() {
     return (
+        sessionStorage.getItem("squad_cash_token") ||
         localStorage.getItem("squad_cash_token") ||
         localStorage.getItem("access_token") ||
         localStorage.getItem("token") ||
@@ -197,13 +25,15 @@ function getStoredToken() {
 
 function getCurrentViewerId() {
     try {
+        const squad = JSON.parse(sessionStorage.getItem("squad.cash.session.v1") || "null");
+        if (squad?.signedIn && Number(squad.accountId) > 0) return Number(squad.accountId);
         const raw = localStorage.getItem("squad_cash_user");
         if (raw) {
             const user = JSON.parse(raw);
             if (user && Number(user.id) > 0) return Number(user.id);
         }
     } catch (_) {}
-    return 1;
+    return null;
 }
 
 function formatVND(amount) {
@@ -290,44 +120,28 @@ function normalizeTransaction(raw, index) {
 }
 
 async function fetchTransactions() {
-    const groupId = Math.max(1, parseInt(document.getElementById("groupIdInput")?.value, 10) || 1);
+    allTransactions = [];
+    const groupId = Number(document.getElementById("groupIdInput")?.value);
     const viewerId = getCurrentViewerId();
     const token = getStoredToken();
-    const headers = {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    };
-
-    const candidateEndpoints = [
-        `${API_BASE_URL}/api/fund-transactions/history/${groupId}?viewer_id=${viewerId}&page=1&page_size=100`,
-        `${API_BASE_URL}/api/groups/${groupId}/fund-transactions`,
-    ];
-
-    for (const url of candidateEndpoints) {
-        try {
-            const res = await fetch(url, { method: "GET", headers });
-            if (!res.ok) continue;
-
-            const payload = await res.json();
-            const rawList = Array.isArray(payload)
-                ? payload
-                : payload.items || payload.transactions || payload.data || [];
-
-            if (Array.isArray(rawList) && rawList.length > 0) {
-                allTransactions = rawList.map(normalizeTransaction);
-                setApiBadge(true, `API Online • Nhóm #${groupId}`);
-                populateCategoryFilter();
-                renderAll();
-                showToast(`Đã tải ${allTransactions.length} giao dịch thật từ Backend (Nhóm #${groupId}).`);
-                return;
-            }
-        } catch (_) {}
+    if (!token || !Number.isSafeInteger(viewerId) || viewerId <= 0 ||
+        !Number.isSafeInteger(groupId) || groupId <= 0) {
+        setApiBadge(false, "Đăng nhập và chọn nhóm để xem sao kê");
+        populateCategoryFilter(); renderAll(); return;
     }
-
-    allTransactions = [...MOCK_TRANSACTIONS];
-    setApiBadge(false, "Chế độ Dữ liệu mẫu");
-    populateCategoryFilter();
-    renderAll();
+    try {
+        const url = `${API_BASE_URL}/api/fund-transactions/history/${groupId}?viewer_id=${viewerId}&page=1&page_size=100`;
+        const res = await fetch(url, {headers:{Authorization:`Bearer ${token}`}});
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const payload = await res.json();
+        const list = Array.isArray(payload) ? payload : (payload.items ?? payload.transactions ?? payload.data);
+        if (!Array.isArray(list)) throw new Error('API sao kê trả dữ liệu không hợp lệ');
+        allTransactions = list.map(normalizeTransaction);
+        setApiBadge(true, `Nhóm #${groupId} • ${list.length} giao dịch`);
+    } catch(error) {
+        setApiBadge(false, `Không thể tải sao kê: ${error.message}`);
+    }
+    populateCategoryFilter(); renderAll();
 }
 
 function populateCategoryFilter() {

@@ -32,13 +32,8 @@
             }
         }
 
-        function fillDemoLogin(role) {
-            const emailInput = document.getElementById('loginEmailInput');
-            document.getElementById('selectedLoginRole').value = role;
-            if (role === 'user') emailInput.value = 'minh.le@squad.cash (Vai trò User)';
-            if (role === 'host') emailInput.value = 'ducanh.host@squad.cash (Vai trò Host)';
-            if (role === 'admin') { notify('Admin chỉ đăng nhập bằng tài khoản được server cấp quyền.'); return; }
-            notify(`Đã chọn tài khoản mẫu cho vai trò ${role.toUpperCase()}.`);
+        function fillDemoLogin() {
+            notify('Không sử dụng tài khoản mẫu. Vui lòng đăng nhập bằng tài khoản thật.');
         }
 
         async function handleAuthSubmit(e) {

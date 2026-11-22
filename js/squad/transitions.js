@@ -32,7 +32,7 @@
         function goToAuthFromLanding(authMode = 'register') {
             const toastLabels = {
                 register: '🚀 Mời bạn điền thông tin để Đăng ký tài khoản mới (Hiệu ứng vòng sáng sẽ mở khi hoàn tất)!',
-                login: '🔐 Chọn nhanh tài khoản mẫu hoặc nhập thông tin để Đăng nhập (Hiệu ứng vòng sáng sẽ mở khi đăng nhập)!',
+                login: '🔐 Nhập email và mật khẩu của tài khoản thật để đăng nhập.',
                 invite: '🔑 Nhập mã mời cố định (#DALAT26) để vào thẳng nhóm quỹ!'
             };
             switchRoleView('auth');
