@@ -1,3 +1,15 @@
+const BILL_API_BASE = "http://127.0.0.1:8000";
+const DEFAULT_BILL_GROUP_ID = 1;
+
+const MEMBER_NAME_TO_ID = {
+    "Phan Đức Anh": 1,
+    "Lê Quang Minh": 2,
+    "Nguyễn Phương Thảo": 3,
+    "Trần Khánh Vy": 4,
+    "Nguyễn Bảo Việt": 5,
+    "Đặng Tuấn Kiệt": 6
+};
+
 let currentSplitMode = "equal";
 let interactiveFxEnabled = true;
 let audioCtx = null;
@@ -36,6 +48,35 @@ let itemizedRows = [
 ];
 
 let latestAllocationMap = {};
+
+function getStoredAuthToken() {
+    return (
+        localStorage.getItem("squad_cash_token") ||
+        localStorage.getItem("access_token") ||
+        localStorage.getItem("token") ||
+        ""
+    );
+}
+
+function getCurrentPayerId() {
+    try {
+        const raw = localStorage.getItem("squad_cash_user");
+        if (raw) {
+            const user = JSON.parse(raw);
+            if (user && Number(user.id) > 0) return Number(user.id);
+        }
+    } catch (_) {}
+    return 1;
+}
+
+function getCurrentGroupId() {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = Number(params.get("group_id"));
+    if (fromUrl > 0) return fromUrl;
+    const fromStorage = Number(localStorage.getItem("current_group_id"));
+    if (fromStorage > 0) return fromStorage;
+    return DEFAULT_BILL_GROUP_ID;
+}
 
 function formatVND(amount) {
     return Math.round(Number(amount) || 0).toLocaleString("en-US") + " ₫";
@@ -77,7 +118,7 @@ function playUiSound(type = "click") {
             osc.start(now);
             osc.stop(now + 0.21);
         }
-    } catch (e) {}
+    } catch (_) {}
 }
 
 function notify(message, forceWarn = false) {
@@ -89,7 +130,13 @@ function notify(message, forceWarn = false) {
         document.body.appendChild(container);
     }
 
-    const isWarn = forceWarn || message.includes("Từ chối") || message.includes("Không thể") || message.includes("Cảnh báo") || message.includes("vui lòng");
+    const isWarn =
+        forceWarn ||
+        message.includes("Từ chối") ||
+        message.includes("Không thể") ||
+        message.includes("Cảnh báo") ||
+        message.includes("Lỗi") ||
+        message.includes("vui lòng");
     playUiSound(isWarn ? "error" : "success");
 
     const item = document.createElement("div");
@@ -105,10 +152,7 @@ function notify(message, forceWarn = false) {
         <div class="srs-toast-progress ${isWarn ? "warn" : ""}"></div>
     `;
 
-    item.querySelector(".srs-toast-close").addEventListener("click", () => {
-        item.remove();
-    });
-
+    item.querySelector(".srs-toast-close").addEventListener("click", () => item.remove());
     container.appendChild(item);
     setTimeout(() => {
         if (item.parentElement) item.remove();
@@ -123,13 +167,9 @@ function setInvoiceSplitMode(nextMode) {
     currentSplitMode = nextMode;
     playUiSound("click");
 
-    const eqBtn = document.getElementById("equalMode");
-    const itBtn = document.getElementById("itemMode");
-    const cuBtn = document.getElementById("customMode");
-
-    eqBtn?.classList.toggle("active", currentSplitMode === "equal");
-    itBtn?.classList.toggle("active", currentSplitMode === "item");
-    cuBtn?.classList.toggle("active", currentSplitMode === "custom");
+    document.getElementById("equalMode")?.classList.toggle("active", currentSplitMode === "equal");
+    document.getElementById("itemMode")?.classList.toggle("active", currentSplitMode === "item");
+    document.getElementById("customMode")?.classList.toggle("active", currentSplitMode === "custom");
 
     const itemBox = document.getElementById("itemizedBox");
     const customBox = document.getElementById("customBox");
@@ -137,11 +177,8 @@ function setInvoiceSplitMode(nextMode) {
     if (itemBox) itemBox.style.display = currentSplitMode === "item" ? "block" : "none";
     if (customBox) customBox.style.display = currentSplitMode === "custom" ? "block" : "none";
 
-    if (currentSplitMode === "item") {
-        renderItemizedRows();
-    } else if (currentSplitMode === "custom") {
-        renderCustomRows();
-    }
+    if (currentSplitMode === "item") renderItemizedRows();
+    else if (currentSplitMode === "custom") renderCustomRows();
 
     recalculateHostInvoicePreview();
 }
@@ -385,24 +422,137 @@ function recalculateHostInvoicePreview() {
     `).join("");
 }
 
-function saveHostInvoice() {
+function handleBaseAmountManualInput() {
+    if (currentSplitMode !== "equal") {
+        currentSplitMode = "equal";
+        document.getElementById("equalMode")?.classList.add("active");
+        document.getElementById("itemMode")?.classList.remove("active");
+        document.getElementById("customMode")?.classList.remove("active");
+
+        const itemBox = document.getElementById("itemizedBox");
+        const customBox = document.getElementById("customBox");
+        if (itemBox) itemBox.style.display = "none";
+        if (customBox) customBox.style.display = "none";
+    }
+    recalculateHostInvoicePreview();
+}
+
+async function saveHostInvoice() {
     const checkedMembers = getSelectedMembers();
     if (checkedMembers.length === 0) {
         notify("Không thể lưu: Hóa đơn phải có ít nhất 1 thành viên tham gia!", true);
         return;
     }
 
-    const merchant = document.getElementById("merchantName")?.value.trim() || "Hóa đơn nhóm";
-    const newInvId = "INV-" + Math.floor(210 + Math.random() * 700);
-    const totalText = document.getElementById("previewTotal")?.textContent || "0 ₫";
+    const title = document.getElementById("merchantName")?.value.trim() || "Hóa đơn nhóm";
+    const groupId = getCurrentGroupId();
+    const payerId = getCurrentPayerId();
+    const participantIds = checkedMembers.map(n => MEMBER_NAME_TO_ID[n]).filter(Boolean);
+    const totalFromMap = Object.values(latestAllocationMap).reduce((s, v) => s + Math.round(Number(v) || 0), 0);
 
-    notify(`Đã lưu hóa đơn "${merchant}" (#${newInvId} - Tổng ${totalText}) và tạo ${checkedMembers.length} khoản phải trả tại mục Công nợ!`);
+    if (totalFromMap <= 0) {
+        notify("Không thể lưu: Tổng tiền hóa đơn phải lớn hơn 0 ₫!", true);
+        return;
+    }
+
+    let endpoint = "/api/bills/equal-split";
+    let payload = {};
+
+    if (currentSplitMode === "equal") {
+        endpoint = "/api/bills/equal-split";
+        payload = {
+            group_id: groupId,
+            title,
+            total_amount: totalFromMap,
+            paid_by: payerId,
+            participant_ids: participantIds,
+            note: "Tạo từ giao diện Chia đều"
+        };
+    } else if (currentSplitMode === "custom") {
+        endpoint = "/api/bills/split-custom";
+        const shares = checkedMembers.map(name => ({
+            user_id: MEMBER_NAME_TO_ID[name],
+            amount: Math.round(Number(latestAllocationMap[name]) || 0)
+        }));
+        const exactTotal = shares.reduce((s, x) => s + x.amount, 0);
+        payload = {
+            group_id: groupId,
+            title,
+            payer_id: payerId,
+            created_by: payerId,
+            total_amount: exactTotal,
+            shares
+        };
+    } else {
+        endpoint = "/api/bills/split-by-items";
+        const items = itemizedRows
+            .map(r => ({
+                item_name: r.name,
+                quantity: Math.max(1, Number(r.qty) || 1),
+                unit_price: Number(r.price) || 0,
+                user_ids: (r.consumers || []).map(n => MEMBER_NAME_TO_ID[n]).filter(Boolean)
+            }))
+            .filter(it => it.unit_price > 0 && it.user_ids.length > 0);
+
+        if (items.length === 0) {
+            notify("Không thể lưu: Vui lòng thêm ít nhất 1 món có đơn giá > 0!", true);
+            return;
+        }
+
+        const itemsSum = items.reduce((s, it) => s + it.quantity * it.unit_price, 0);
+        const rawFee = Math.max(0, parseInt(document.getElementById("serviceFee")?.value, 10) || 0);
+        const rawDiscount = Math.max(0, parseInt(document.getElementById("discount")?.value, 10) || 0);
+        const serviceFee = Math.max(0, rawFee - rawDiscount);
+
+        payload = {
+            group_id: groupId,
+            title,
+            payer_id: payerId,
+            created_by: payerId,
+            fee_split_mode: "EQUAL",
+            service_ship_fee: serviceFee,
+            total_amount: itemsSum + serviceFee,
+            items
+        };
+    }
+
+    const token = getStoredAuthToken();
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    const confirmBtn = document.getElementById("confirm");
+    if (confirmBtn) confirmBtn.disabled = true;
+
+    try {
+        const res = await fetch(BILL_API_BASE + endpoint, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            const detail = Array.isArray(data.detail)
+                ? data.detail.map(d => `${(d.loc || []).slice(-1)[0] || ""}: ${d.msg}`).join(" | ")
+                : (data.detail || `HTTP ${res.status}`);
+            notify("Lỗi lưu hóa đơn: " + detail, true);
+            console.error("Bill API error:", res.status, data, payload);
+            return;
+        }
+        const billId = data.id || data.bill_id || "OK";
+        playUiSound("success");
+        notify(`Đã lưu hóa đơn "${title}" (ID #${billId}) vào MySQL thành công!`);
+    } catch (err) {
+        notify("Không kết nối được tới Backend (cổng 8000): " + err.message, true);
+        console.error("Bill fetch error:", err);
+    } finally {
+        if (confirmBtn) confirmBtn.disabled = false;
+    }
 }
 
 function switchRoleNav(btn) {
     document.querySelectorAll(".role-nav button").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-    notify(`Đăng nhập thành công! Đã mở không gian ${btn.textContent.trim()}.`);
+    notify(`Đang mở không gian ${btn.textContent.trim()}.`);
 }
 
 function switchSectionTab(btn) {
@@ -445,27 +595,6 @@ function focusInvoiceForm() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-    setInvoiceSplitMode("equal");
-});
-
-function handleBaseAmountManualInput() {
-    // Nếu đang ở chế độ Chia theo món hoặc Tự chọn mà người dùng chủ động sửa ô Tổng tiền chính,
-    // tự động chuyển sang chế độ "Chia đều" để nhận đúng con số mới nhập
-    if (currentSplitMode !== "equal") {
-        currentSplitMode = "equal";
-        document.getElementById("equalMode")?.classList.add("active");
-        document.getElementById("itemMode")?.classList.remove("active");
-        document.getElementById("customMode")?.classList.remove("active");
-
-        const itemBox = document.getElementById("itemizedBox");
-        const customBox = document.getElementById("customBox");
-        if (itemBox) itemBox.style.display = "none";
-        if (customBox) customBox.style.display = "none";
-    }
-    recalculateHostInvoicePreview();
-}
-
-window.addEventListener("DOMContentLoaded", () => {
     const baseInput = document.getElementById("baseAmount");
     const feeInput = document.getElementById("serviceFee");
     const discountInput = document.getElementById("discount");
@@ -484,113 +613,3 @@ window.addEventListener("DOMContentLoaded", () => {
 
     setInvoiceSplitMode("equal");
 });
-
-const BILL_API_BASE = "http://127.0.0.1:8000";
-const BILL_GROUP_ID = 2;
-const BILL_PAYER_ID = 1;
-const MEMBER_NAME_TO_ID = {
-    "Phan Đức Anh": 1,
-    "Lê Quang Minh": 2,
-    "Nguyễn Phương Thảo": 3,
-    "Trần Khánh Vy": 4,
-    "Nguyễn Bảo Việt": 5,
-    "Đặng Tuấn Kiệt": 6
-};
-
-async function saveHostInvoice() {
-    const checkedMembers = getSelectedMembers();
-    if (checkedMembers.length === 0) {
-        notify("Không thể lưu: Hóa đơn phải có ít nhất 1 thành viên tham gia!", true);
-        return;
-    }
-
-    const title = document.getElementById("merchantName")?.value.trim() || "Hóa đơn nhóm";
-    const participantIds = checkedMembers.map(n => MEMBER_NAME_TO_ID[n]).filter(Boolean);
-    const totalFromMap = Object.values(latestAllocationMap).reduce((s, v) => s + Math.round(Number(v) || 0), 0);
-
-    let endpoint = "/api/bills/equal-split";
-    let payload = {};
-
-    if (currentSplitMode === "equal") {
-        endpoint = "/api/bills/equal-split";
-        payload = {
-            group_id: BILL_GROUP_ID,
-            title: title,
-            total_amount: totalFromMap,
-            paid_by: BILL_PAYER_ID,
-            participant_ids: participantIds,
-            note: "Tạo từ giao diện Chia đều"
-        };
-    } else if (currentSplitMode === "custom") {
-        endpoint = "/api/bills/split-custom";
-        const shares = checkedMembers.map(name => ({
-            user_id: MEMBER_NAME_TO_ID[name],
-            amount: Math.round(Number(latestAllocationMap[name]) || 0)
-        }));
-        const exactTotal = shares.reduce((s, x) => s + x.amount, 0);
-        payload = {
-            group_id: BILL_GROUP_ID,
-            title: title,
-            payer_id: BILL_PAYER_ID,
-            created_by: BILL_PAYER_ID,
-            total_amount: exactTotal,
-            shares: shares
-        };
-    } else {
-        endpoint = "/api/bills/split-by-items";
-        const items = itemizedRows
-            .map(r => ({
-                item_name: r.name,
-                quantity: Math.max(1, Number(r.qty) || 1),
-                unit_price: Number(r.price) || 0,
-                user_ids: (r.consumers || []).map(n => MEMBER_NAME_TO_ID[n]).filter(Boolean)
-            }))
-            .filter(it => it.unit_price > 0 && it.user_ids.length > 0);
-
-        const itemsSum = items.reduce((s, it) => s + it.quantity * it.unit_price, 0);
-        const serviceFee = Math.max(0, totalFromMap - itemsSum);
-
-        payload = {
-            group_id: BILL_GROUP_ID,
-            title: title,
-            payer_id: BILL_PAYER_ID,
-            created_by: BILL_PAYER_ID,
-            fee_split_mode: "EQUAL",
-            service_ship_fee: serviceFee,
-            total_amount: itemsSum + serviceFee,
-            items: items
-        };
-    }
-
-    const token =
-        localStorage.getItem("access_token") ||
-        localStorage.getItem("squadcash_token") ||
-        localStorage.getItem("token") ||
-        "";
-
-    const headers = { "Content-Type": "application/json" };
-    if (token) headers["Authorization"] = `Bearer ${token}`;
-
-    try {
-        const res = await fetch(BILL_API_BASE + endpoint, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(payload)
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) {
-            const detail = Array.isArray(data.detail)
-                ? data.detail.map(d => `${(d.loc || []).slice(-1)[0] || ""}: ${d.msg}`).join(" | ")
-                : (data.detail || `HTTP ${res.status}`);
-            notify("Lỗi lưu hóa đơn: " + detail, true);
-            console.error("Bill API error:", res.status, data, payload);
-            return;
-        }
-        const billId = data.id || data.bill_id || "OK";
-        playUiSound("success");
-        notify(`Đã lưu hóa đơn "${title}" (ID #${billId}) vào MySQL thành công!`);
-    } catch (err) {
-        notify("Không kết nối được tới Backend (cổng 8000): " + err.message, true);
-        console.error("Bill fetch error:", err);
-    }
-}

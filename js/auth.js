@@ -8,11 +8,18 @@ function getCurrentUser() {
 }
 
 function getAccessToken() {
-    return localStorage.getItem(APP_CONFIG.TOKEN_KEY);
+    return (
+        localStorage.getItem(APP_CONFIG.TOKEN_KEY) ||
+        localStorage.getItem("access_token") ||
+        localStorage.getItem("token")
+    );
 }
 
 function saveAuthSession(token, userObj) {
-    localStorage.setItem(APP_CONFIG.TOKEN_KEY, token);
+    if (token) {
+        localStorage.setItem(APP_CONFIG.TOKEN_KEY, token);
+        localStorage.setItem("access_token", token);
+    }
     localStorage.setItem(APP_CONFIG.USER_KEY, JSON.stringify(userObj));
     if (typeof renderHeaderLayout === "function") renderHeaderLayout();
 }
@@ -20,9 +27,18 @@ function saveAuthSession(token, userObj) {
 function logoutUser() {
     localStorage.removeItem(APP_CONFIG.TOKEN_KEY);
     localStorage.removeItem(APP_CONFIG.USER_KEY);
-    notify("Đã đăng xuất và xóa Token khỏi trình duyệt.");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("token");
+    if (typeof notify === "function") {
+        notify("Đã đăng xuất và xóa Token khỏi trình duyệt.");
+    }
     if (typeof renderHeaderLayout === "function") renderHeaderLayout();
     if (typeof switchRoleView === "function") switchRoleView("auth");
+}
+
+function normalizeUserRole(rawRole, fallback = "user") {
+    const r = String(rawRole || fallback).toLowerCase();
+    return r === "member" ? "user" : r;
 }
 
 // CHẶN TRANG (ROUTE GUARD): Chặn trang cần đăng nhập & Trang Admin chỉ cho Admin
@@ -33,23 +49,24 @@ function checkRouteAccess(targetView) {
     const token = getAccessToken();
     const user = getCurrentUser();
 
-    // 1. Chặn trang nếu chưa đăng nhập
     if (!token || !user) {
-        notify("🔒 Chặn trang: Bạn cần đăng nhập trước khi truy cập trang này!", true);
+        if (typeof notify === "function") {
+            notify("🔒 Chặn trang: Bạn cần đăng nhập trước khi truy cập trang này!", true);
+        }
         switchRoleView("auth");
         return false;
     }
 
-    // 2. Chặn trang Admin nếu tài khoản không có quyền Admin
-    if (targetView === "admin" && user.role !== "admin") {
-        notify(`⛔ Chặn phân quyền: Trang Admin chỉ dành cho Admin! (Vai trò hiện tại của bạn: ${user.role.toUpperCase()})`, true);
+    if (targetView === "admin" && normalizeUserRole(user.role) !== "admin") {
+        if (typeof notify === "function") {
+            notify(`⛔ Chặn phân quyền: Trang Admin chỉ dành cho Admin! (Vai trò hiện tại của bạn: ${String(user.role).toUpperCase()})`, true);
+        }
         return false;
     }
 
     return true;
 }
 
-// Chuyển tab trong khung Auth (Login / Register / Invite)
 function switchAuthTab(tab) {
     ["login", "register", "invite"].forEach(t => {
         document.getElementById(`authForm-${t}`)?.classList.add("hidden");
@@ -64,17 +81,27 @@ function switchAuthTab(tab) {
 function fillDemoLogin(role) {
     const emailInput = document.getElementById("loginEmailInput");
     const passInput = document.getElementById("loginPasswordInput");
-    document.getElementById("selectedLoginRole").value = role;
+    const roleInput = document.getElementById("selectedLoginRole");
+    if (roleInput) roleInput.value = role;
 
-    if (role === "user") emailInput.value = "minh.le@squad.cash";
-    if (role === "host") emailInput.value = "ducanh.host@squad.cash";
-    if (role === "admin") emailInput.value = "root.admin@squad.cash";
+    if (role === "user" && emailInput) emailInput.value = "minh.le@squad.cash";
+    if (role === "host" && emailInput) emailInput.value = "ducanh.host@squad.cash";
+    if (role === "admin" && emailInput) emailInput.value = "root.admin@squad.cash";
     if (passInput) passInput.value = "12345678";
 
-    notify(`Đã điền nhanh tài khoản mẫu cho vai trò ${role.toUpperCase()}.`);
+    if (typeof notify === "function") {
+        notify(`Đã điền nhanh tài khoản mẫu cho vai trò ${role.toUpperCase()}.`);
+    }
 }
 
-// Xử lý Submit Đăng nhập có Validate + Gọi API / Lưu Token
+function extractApiError(err, fallbackMsg) {
+    const detail = err.response?.data?.detail;
+    if (Array.isArray(detail)) {
+        return detail.map(d => `${d.loc?.slice(-1)[0] || ""}: ${d.msg}`).join(" | ");
+    }
+    return detail || err.message || fallbackMsg;
+}
+
 async function handleAuthSubmit(e) {
     e.preventDefault();
     const emailEl = document.getElementById("loginEmailInput");
@@ -85,8 +112,7 @@ async function handleAuthSubmit(e) {
     const email = emailEl.value.trim();
     const password = passEl.value;
 
-    // Validate dữ liệu đầu vào
-    if (!validateEmailOrPhone(email)) {
+    if (typeof validateEmailOrPhone === "function" && !validateEmailOrPhone(email)) {
         errBox.textContent = "Vui lòng nhập Email hoặc Số điện thoại hợp lệ!";
         errBox.classList.remove("hidden");
         emailEl.classList.add("input-error", "neo-shake");
@@ -105,33 +131,35 @@ async function handleAuthSubmit(e) {
     emailEl.classList.remove("input-error");
     passEl.classList.remove("input-error");
 
-    // Thử gọi API /auth/login thật, nếu server tắt thì cấp JWT mẫu theo đúng role để demo
-    let accessToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.demo_${role}_${Date.now()}`;
-    let userData = {
-        id: role === "admin" ? 1 : (role === "host" ? 2 : 3),
-        name: role === "admin" ? "System Root Admin" : (role === "host" ? "Phan Đức Anh" : "Lê Quang Minh"),
-        email: email,
-        role: role
-    };
+    try {
+        const res = await window.apiClient.post("/auth/login", { email, password });
+        const data = res.data || {};
+        const accessToken = data.access_token || "";
+        const rawUser = data.user || {
+            id: data.user_id || 0,
+            name: data.full_name || email,
+            email: email,
+            role: data.role || role
+        };
+        const userData = {
+            ...rawUser,
+            name: rawUser.full_name || rawUser.name || email,
+            role: normalizeUserRole(rawUser.role, role)
+        };
 
-    if (apiClient) {
-        try {
-            const res = await apiClient.post("/auth/login", { email, password });
-            if (res.data && res.data.access_token) {
-                accessToken = res.data.access_token;
-                userData = res.data.user || { ...userData, role: res.data.role || role };
-            }
-        } catch (err) {
-            // Chạy tiếp với token mẫu khi test UI độc lập
+        saveAuthSession(accessToken, userData);
+        if (typeof notify === "function") {
+            notify(`Đăng nhập thành công! (Vai trò: ${userData.role.toUpperCase()})`);
         }
+        switchRoleView(userData.role);
+    } catch (err) {
+        const msg = extractApiError(err, "Không kết nối được tới Backend!");
+        errBox.textContent = "Lỗi đăng nhập: " + msg;
+        errBox.classList.remove("hidden");
+        console.error("Login error:", err.response?.data || err);
     }
-
-    saveAuthSession(accessToken, userData);
-    notify(`Đăng nhập thành công! Đã lưu JWT Token (Vai trò: ${userData.role.toUpperCase()}).`);
-    switchRoleView(userData.role);
 }
 
-// Xử lý Submit Đăng ký có Validate đầy đủ
 async function handleRegisterSubmit(e) {
     e.preventDefault();
     const nameEl = document.getElementById("regDisplayNameInput");
@@ -151,7 +179,7 @@ async function handleRegisterSubmit(e) {
         nameEl.classList.add("input-error", "neo-shake");
         return;
     }
-    if (!validateEmailOrPhone(email)) {
+    if (typeof validateEmailOrPhone === "function" && !validateEmailOrPhone(email)) {
         errBox.textContent = "Email hoặc Số điện thoại không đúng định dạng!";
         errBox.classList.remove("hidden");
         contactEl.classList.add("input-error", "neo-shake");
@@ -172,17 +200,32 @@ async function handleRegisterSubmit(e) {
 
     errBox.classList.add("hidden");
 
-    if (apiClient) {
-        try {
-            await apiClient.post("/auth/register", { full_name, email, password });
-        } catch (err) {
-            // Cho phép lưu session demo nếu chỉ chạy Frontend
-        }
-    }
+    try {
+        const regRes = await window.apiClient.post("/auth/register", { full_name, email, password });
+        let accessToken = "";
+        let userData = regRes.data || { name: full_name, email: email, role: "user" };
 
-    const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.reg_user_${Date.now()}`;
-    const newUser = { id: 10, name: full_name, email: email, role: "user" };
-    saveAuthSession(token, newUser);
-    notify(`Đăng ký thành công tài khoản "${full_name}"! Đã tự động lưu Token.`);
-    switchRoleView("user");
+        try {
+            const loginRes = await window.apiClient.post("/auth/login", { email, password });
+            accessToken = loginRes.data?.access_token || "";
+            if (loginRes.data?.user) userData = loginRes.data.user;
+        } catch (_) {}
+
+        saveAuthSession(accessToken, {
+            id: userData.id || userData.user_id || 0,
+            name: userData.full_name || userData.name || full_name,
+            email: userData.email || email,
+            role: normalizeUserRole(userData.role, "user")
+        });
+
+        if (typeof notify === "function") {
+            notify(`Đăng ký thành công tài khoản "${full_name}"!`);
+        }
+        switchRoleView("user");
+    } catch (err) {
+        const msg = extractApiError(err, "Không kết nối được tới Backend!");
+        errBox.textContent = "Lỗi đăng ký: " + msg;
+        errBox.classList.remove("hidden");
+        console.error("Register error:", err.response?.data || err);
+    }
 }

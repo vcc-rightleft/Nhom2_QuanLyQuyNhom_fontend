@@ -10,31 +10,86 @@
     <link rel="stylesheet" href="../css/style.css">
 </head>
 
-<body class="min-h-screen flex flex-col relative p-6">
+<body data-root="../" class="min-h-screen flex flex-col relative p-6 bg-[#F6F5F0]">
     <div class="max-w-5xl w-full mx-auto space-y-6">
-        <div class="card-clean p-6 bg-white flex items-center justify-between">
+        <!-- Header -->
+        <div class="card-clean p-6 bg-white flex flex-wrap items-center justify-between gap-4 border-2 border-black rounded-2xl">
             <div>
-                <span class="font-mono text-xs font-bold bg-lime px-2.5 py-1 rounded border border-ink">PROTECTED
-                    PAGE</span>
-                <h1 class="font-display font-bold text-2xl mt-2">Trang Quản lý Items (Yêu cầu Đăng nhập)</h1>
+                <span class="font-mono text-xs font-bold bg-[#D4FF00] px-2.5 py-1 rounded border border-black">
+                    PROTECTED PAGE • CRUD ITEMS
+                </span>
+                <h1 class="font-bold text-2xl mt-2 text-slate-900">Trang Quản lý Items (Yêu cầu Đăng nhập)</h1>
             </div>
-            <a href="../index.html" class="btn-outline px-4 py-2 rounded-xl font-bold text-xs">← Quay về Trang chính</a>
+            <div class="flex items-center gap-2">
+                <a href="../index.html" class="px-4 py-2 rounded-xl border-2 border-black bg-white font-bold text-xs hover:bg-slate-100">
+                    ← Quỹ chung
+                </a>
+                <a href="./statement.html" class="px-4 py-2 rounded-xl border-2 border-black bg-[#D4FF00] font-bold text-xs">
+                    Lịch sử &amp; Sao kê
+                </a>
+            </div>
         </div>
+
+        <!-- Form thêm Item -->
+        <section class="p-6 bg-white border-2 border-black rounded-2xl space-y-4">
+            <h2 class="font-bold text-lg text-slate-900">Thêm mục mới</h2>
+            <form id="item-form" class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+                <div>
+                    <label for="name" class="block text-xs font-bold uppercase mb-1">Tên mục *</label>
+                    <input id="name" type="text" required placeholder="VD: Tiền nước nhóm"
+                        class="w-full px-3 py-2 border-2 border-black rounded-xl text-sm" />
+                </div>
+                <div>
+                    <label for="price" class="block text-xs font-bold uppercase mb-1">Giá tiền (VND) *</label>
+                    <input id="price" type="number" min="0" step="1000" required placeholder="50000"
+                        class="w-full px-3 py-2 border-2 border-black rounded-xl text-sm font-mono" />
+                </div>
+                <div>
+                    <label for="description" class="block text-xs font-bold uppercase mb-1">Mô tả</label>
+                    <input id="description" type="text" placeholder="Ghi chú ngắn..."
+                        class="w-full px-3 py-2 border-2 border-black rounded-xl text-sm" />
+                </div>
+                <div>
+                    <button type="submit"
+                        class="w-full px-4 py-2.5 rounded-xl border-2 border-black bg-[#7C3AED] text-white font-bold text-sm hover:opacity-95">
+                        + Thêm mới
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Bảng danh sách Items -->
+        <section class="p-6 bg-white border-2 border-black rounded-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h2 class="font-bold text-lg text-slate-900">Danh sách Items</h2>
+                <button type="button" id="btn-reload-items"
+                    class="px-3 py-1.5 rounded-lg border-2 border-black bg-slate-100 font-bold text-xs">
+                    ↻ Làm mới
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="border-y-2 border-black bg-slate-100 font-mono text-xs uppercase">
+                            <th class="py-3 px-3">ID</th>
+                            <th class="py-3 px-3">Tên mục</th>
+                            <th class="py-3 px-3 text-right">Số tiền</th>
+                            <th class="py-3 px-3">Mô tả</th>
+                            <th class="py-3 px-3 text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="item-list" class="divide-y divide-slate-200">
+                        <tr>
+                            <td colspan="5" class="py-6 text-center text-slate-500">Đang tải dữ liệu...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
 
-    <script src="../js/config.js"></script>
-    <script src="../js/utils.js"></script>
-    <script src="../js/api.js"></script>
-    <script src="../js/auth.js"></script>
-    <script>
-        // Tự động chặn trang nếu chưa có Token đăng nhập
-        window.addEventListener("DOMContentLoaded", () => {
-            if (!getAccessToken()) {
-                alert("Bạn cần đăng nhập để truy cập trang này!");
-                window.location.href = "../index.html";
-            }
-        });
-    </script>
+    <script type="module" src="../js/api.js"></script>
+    <script type="module" src="../js/pages/items.js"></script>
 </body>
 
 </html>

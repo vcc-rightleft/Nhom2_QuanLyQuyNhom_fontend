@@ -32,5 +32,5 @@ function validateEmailOrPhone(value) {
     const val = (value || "").trim();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^(0|\+84)[0-9]{8,10}$/;
-    return emailRegex.test(val) || phoneRegex.test(val) || val.length >= 4;
+    return emailRegex.test(val) || phoneRegex.test(val);
 }

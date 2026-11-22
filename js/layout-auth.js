@@ -1,9 +1,18 @@
+function simulate401Unauthorized() {
+    if (typeof notify === "function") {
+        notify("401 Unauthorized: Phiên đăng nhập hết hạn — Tự động đăng xuất và chuyển về trang Đăng nhập!", true);
+    }
+    if (typeof logoutUser === "function") {
+        logoutUser();
+    }
+}
+
 function renderHeaderLayout() {
     const headerContainer = document.getElementById("commonAppHeader");
     if (!headerContainer) return;
 
-    const user = getCurrentUser();
-    const token = getAccessToken();
+    const user = typeof getCurrentUser === "function" ? getCurrentUser() : null;
+    const token = typeof getAccessToken === "function" ? getAccessToken() : "";
 
     headerContainer.innerHTML = `
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
@@ -45,8 +54,14 @@ function renderHeaderLayout() {
                     class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all text-muted hover:text-ink">
                     <span>4. Trang Admin 🛡️</span>
                 </button>
-                <a href="pages/items.html" class="px-3 py-2 rounded-lg font-mono font-bold text-xs text-indigo hover:underline">
-                    Items Page ↗
+                <a href="../index.html" class="px-2.5 py-2 rounded-lg font-mono font-bold text-xs text-ink hover:underline">
+                    Quỹ chung ↗
+                </a>
+                <a href="./profile.html" class="px-2.5 py-2 rounded-lg font-mono font-bold text-xs text-indigo hover:underline">
+                    Hồ sơ ↗
+                </a>
+                <a href="./statement.html" class="px-2.5 py-2 rounded-lg font-mono font-bold text-xs text-indigo hover:underline">
+                    Sao kê ↗
                 </a>
             </nav>
 
@@ -59,7 +74,7 @@ function renderHeaderLayout() {
 
                 ${user && token ? `
                     <div class="inline-flex items-center gap-2 bg-indigo-50 px-3 py-1.5 rounded-xl border-2 border-ink text-xs font-mono">
-                        <span class="font-bold text-indigo">${user.name} (${user.role.toUpperCase()})</span>
+                        <span class="font-bold text-indigo">${user.name || user.full_name || user.email} (${String(user.role || "user").toUpperCase()})</span>
                         <button onclick="simulate401Unauthorized()" class="bg-amber text-ink px-2 py-0.5 rounded border border-ink font-bold text-[10px]" title="Test Axios Interceptor tự động đăng xuất khi gặp lỗi 401">
                             Test 401
                         </button>
