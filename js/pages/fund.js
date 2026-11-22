@@ -3,6 +3,7 @@ import {
   getCollectionCampaigns,
   createFundIncome,
   createFundExpense,
+  getStoredUserRole,
 } from "../fundApi.js";
 import { DEFAULT_GROUP_ID } from "../config.js";
 
@@ -23,14 +24,14 @@ function escapeHtml(value) {
 }
 
 function isHostUser() {
-  const role = (localStorage.getItem("user_role") || "MEMBER").toUpperCase();
+  const role = getStoredUserRole();
   return role === "HOST" || role === "ADMIN";
 }
 
 function renderCampaignsHtml(campaignsData) {
   const campaigns = Array.isArray(campaignsData)
     ? campaignsData
-    : campaignsData?.items || campaignsData?.campaigns || [];
+    : campaignsData?.items || campaignsData?.campaigns || campaignsData?.collections || [];
 
   if (!campaigns.length) {
     return `<p class="fund-empty">Chưa có đợt thu quỹ nào trong nhóm.</p>`;
@@ -39,7 +40,11 @@ function renderCampaignsHtml(campaignsData) {
   return campaigns
     .map((campaign) => {
       const members =
-        campaign.members || campaign.debts || campaign.contributions || [];
+        campaign.member_statuses ||
+        campaign.members ||
+        campaign.debts ||
+        campaign.contributions ||
+        [];
       const paidCount = members.filter(
         (m) =>
           String(m.status || "").toUpperCase() === "PAID" || m.is_paid === true
@@ -50,7 +55,7 @@ function renderCampaignsHtml(campaignsData) {
         campaign.amount_per_member ?? campaign.amount ?? 0
       );
       const dueDate = campaign.due_date
-        ? `<span class="fund-campaign-meta">Hạn đóng: ${escapeHtml(campaign.due_date)}</span>`
+        ? `<span class="fund-campaign-meta">Hạn đóng: ${escapeHtml(String(campaign.due_date).slice(0, 10))}</span>`
         : "";
 
       const membersHtml = members.length
@@ -62,6 +67,7 @@ function renderCampaignsHtml(campaignsData) {
               const memberName = escapeHtml(
                 member.full_name ||
                   member.member_name ||
+                  member.display_name ||
                   member.username ||
                   `Thành viên #${member.user_id || member.id || "?"}`
               );
@@ -105,7 +111,7 @@ export async function renderFundTab(container, groupId = DEFAULT_GROUP_ID) {
     <section class="fund-tab">
       <div class="fund-balance-card">
         <div class="fund-balance-info">
-          <span class="fund-label">Số dư quỹ chung hiện tại</span>
+          <span class="fund-label">Số dư quỹ chung hiện tại (Nhóm #${escapeHtml(groupId)})</span>
           <h2 id="fund-balance-value" class="fund-amount">Đang tải...</h2>
           <div class="fund-stats">
             <span class="fund-stat">Tổng thu: <strong id="fund-total-income">--</strong></span>
@@ -138,7 +144,7 @@ export async function renderFundTab(container, groupId = DEFAULT_GROUP_ID) {
             <input type="hidden" id="fund-tx-type" value="INCOME" />
 
             <div class="fund-field">
-              <label for="fund-title" id="fund-title-label">Tên đợt thu / Khoản thu *</label>
+              <label for="fund-title" id="fund-title-label">Tên đợt thu / Danh mục *</label>
               <input id="fund-title" type="text" required placeholder="VD: Quỹ tháng 11 / Tiền sân cầu lông" />
             </div>
 
@@ -165,7 +171,7 @@ export async function renderFundTab(container, groupId = DEFAULT_GROUP_ID) {
 
       <div class="fund-campaigns-section">
         <div class="fund-section-header">
-          <h3>Danh sách đợt thu & trạng thái đóng của từng thành viên</h3>
+          <h3>Danh sách đợt thu &amp; trạng thái đóng của từng thành viên</h3>
           <button id="btn-reload-fund" type="button" class="fund-btn fund-btn-light">Làm mới</button>
         </div>
         <div id="fund-campaigns-list" class="fund-campaigns-list">
@@ -189,12 +195,18 @@ export async function renderFundTab(container, groupId = DEFAULT_GROUP_ID) {
         getCollectionCampaigns(groupId),
       ]);
 
+      // Backend /fund-overview trả về summary.balance là object { balance, total_income, total_expense }
+      const balObj =
+        summary && typeof summary.balance === "object" && summary.balance !== null
+          ? summary.balance
+          : summary || {};
+
       balanceEl.textContent = formatVND(
-        summary.balance ?? summary.current_balance ?? 0
+        balObj.balance ?? balObj.current_balance ?? 0
       );
-      incomeEl.textContent = formatVND(summary.total_income ?? 0);
-      expenseEl.textContent = formatVND(summary.total_expense ?? 0);
-      listEl.innerHTML = renderCampaignsHtml(campaigns);
+      incomeEl.textContent = formatVND(balObj.total_income ?? 0);
+      expenseEl.textContent = formatVND(balObj.total_expense ?? 0);
+      listEl.innerHTML = renderCampaignsHtml(campaigns || summary?.collections);
     } catch (error) {
       balanceEl.textContent = "Lỗi kết nối";
       incomeEl.textContent = "--";
@@ -223,7 +235,7 @@ export async function renderFundTab(container, groupId = DEFAULT_GROUP_ID) {
         amountLabel.textContent = "Số tiền mỗi người / Số tiền thu (VNĐ) *";
       } else {
         formTitle.textContent = "Ghi nhận khoản chi từ quỹ";
-        titleLabel.textContent = "Nội dung chi *";
+        titleLabel.textContent = "Nội dung / Danh mục chi *";
         amountLabel.textContent = "Số tiền chi (VNĐ) *";
       }
       msgEl.textContent = "";
@@ -254,10 +266,29 @@ export async function renderFundTab(container, groupId = DEFAULT_GROUP_ID) {
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       const type = txTypeInput.value;
+      const title = container.querySelector("#fund-title").value.trim();
+      const amount = Number(container.querySelector("#fund-amount").value);
+      const description = container
+        .querySelector("#fund-description")
+        .value.trim();
+
+      if (!title) {
+        msgEl.textContent = "Vui lòng nhập tên khoản thu/chi.";
+        msgEl.className = "fund-message error";
+        return;
+      }
+
+      if (!Number.isFinite(amount) || amount <= 0) {
+        msgEl.textContent = "Số tiền phải lớn hơn 0 VNĐ.";
+        msgEl.className = "fund-message error";
+        return;
+      }
+
       const payload = {
-        title: container.querySelector("#fund-title").value.trim(),
-        amount: Number(container.querySelector("#fund-amount").value),
-        description: container.querySelector("#fund-description").value.trim(),
+        type,
+        category: title,
+        amount,
+        description: description || title,
       };
 
       submitBtn.disabled = true;

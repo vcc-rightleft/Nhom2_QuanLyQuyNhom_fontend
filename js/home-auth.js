@@ -5,8 +5,8 @@ window.userJoinedGroups = [
 ];
 
 window.groupDebts = [
-    { id: 'DBT-901', memberName: 'Lê Quang Minh', typeLabel: 'Đóng quỹ', desc: 'Đóng quỹ Đà Lạt đợt 2', date: '25/10/2026', total: 1000000, paid: 600000 },
-    { id: 'DBT-902', memberName: 'Lê Quang Minh', typeLabel: 'Hóa đơn', desc: 'Hóa đơn लẩu Bò Ba Toa (#INV-202)', date: '01/11/2026', total: 250000, paid: 0 }
+    { id: 'DBT-901', userId: 'USR-1042', memberName: 'Lê Quang Minh', typeLabel: 'Đóng quỹ', desc: 'Đóng quỹ Đà Lạt đợt 2', date: '25/10/2026', total: 1000000, paid: 600000 },
+    { id: 'DBT-902', userId: 'USR-1042', memberName: 'Lê Quang Minh', typeLabel: 'Hóa đơn', desc: 'Hóa đơn Lẩu Bò Ba Toa (#INV-202)', date: '01/11/2026', total: 250000, paid: 0 }
 ];
 
 window.adminAccounts = [
@@ -19,7 +19,7 @@ function renderUserWorkspace() {
     const grid = document.getElementById("userGroupsGrid");
     if (grid) {
         const accents = ["bg-lime", "bg-cyan", "bg-amber"];
-        grid.innerHTML = userJoinedGroups.map((g, idx) => `
+        grid.innerHTML = window.userJoinedGroups.map((g, idx) => `
             <div class="card-clean overflow-hidden flex flex-col justify-between bg-white">
                 <div class="${accents[idx % accents.length]} px-5 py-2.5 border-b-2 border-ink flex items-center justify-between">
                     <span class="font-mono text-xs font-bold text-ink">#${g.id} • Mã: #${g.inviteCode}</span>
@@ -39,8 +39,8 @@ function renderUserWorkspace() {
 
     const debtBody = document.getElementById("userDebtsTableBody");
     if (debtBody) {
-        debtBody.innerHTML = groupDebts.map(d => {
-            const rem = d.total - d.paid;
+        debtBody.innerHTML = window.groupDebts.map(d => {
+            const rem = Math.max(0, d.total - d.paid);
             return `
                 <tr>
                     <td class="py-3 px-4 font-mono text-xs font-bold">${d.id}</td>
@@ -58,7 +58,7 @@ function renderUserWorkspace() {
 function renderHostWorkspace() {
     const previewEl = document.getElementById("hostEqualSplitPreview");
     if (!previewEl) return;
-    const total = parseInt(document.getElementById("hostBillTotalInput")?.value) || 100000;
+    const total = parseInt(document.getElementById("hostBillTotalInput")?.value, 10) || 100000;
     const n = 3;
     const base = Math.floor(total / n / 1000) * 1000;
     const rem = total - base * n;
@@ -81,7 +81,7 @@ function renderHostWorkspace() {
 function renderAdminWorkspace() {
     const tbody = document.getElementById("admAccountsTableBody");
     if (!tbody) return;
-    tbody.innerHTML = adminAccounts.map(u => `
+    tbody.innerHTML = window.adminAccounts.map(u => `
         <tr>
             <td class="py-3 px-4 font-mono text-xs font-bold">${u.id}</td>
             <td class="py-3 px-4 font-bold">${u.name}</td>

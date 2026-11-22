@@ -1,68 +1,138 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQUAD.CASH — Clean Western Bold Group Fund Platform (SRS Complete)</title>
+
+    <title>SQUAD.CASH — Quản Lý Quỹ Nhóm</title>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Space Grotesk, Plus Jakarta Sans, JetBrains Mono -->
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-    <!-- Canvas Confetti for Micro-interactions -->
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <!-- Tailwind Configuration -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        canvas: '#F6F5F0',
-                        surface: '#FFFFFF',
-                        ink: '#121212',
-                        muted: '#52525B',
-                        line: '#E4E4E7',
+                        canvas: "#F6F5F0",
+                        surface: "#FFFFFF",
+                        ink: "#121212",
+                        muted: "#52525B",
+                        line: "#E4E4E7",
+
                         indigo: {
-                            DEFAULT: '#7C3AED',
-                            50: '#F5F3FF',
-                            100: '#EDE9FE',
-                            600: '#7C3AED',
-                            700: '#6D28D9'
+                            DEFAULT: "#7C3AED",
+                            50: "#F5F3FF",
+                            100: "#EDE9FE",
+                            600: "#7C3AED",
+                            700: "#6D28D9"
                         },
+
                         lime: {
-                            DEFAULT: '#D4FF00',
-                            soft: '#F4FFC2'
+                            DEFAULT: "#D4FF00",
+                            soft: "#F4FFC2"
                         },
-                        coral: '#FF5E36',
-                        cyan: '#38BDF8',
-                        amber: '#FACC15',
-                        mint: '#10B981'
+
+                        coral: "#FF5E36",
+                        cyan: "#38BDF8",
+                        amber: "#FACC15",
+                        mint: "#10B981"
                     },
+
                     fontFamily: {
-                        display: ['"Space Grotesk"', 'sans-serif'],
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
+                        display: ['"Space Grotesk"', "sans-serif"],
+                        sans: ['"Plus Jakarta Sans"', "sans-serif"],
+                        mono: ['"JetBrains Mono"', "monospace"]
                     },
+
                     boxShadow: {
-                        'clean': '3px 3px 0px #121212',
-                        'bold': '4px 4px 0px #121212',
-                        'bold-sm': '2px 2px 0px #121212',
+                        clean: "3px 3px 0px #121212",
+                        bold: "4px 4px 0px #121212",
+                        "bold-sm": "2px 2px 0px #121212"
                     }
                 }
             }
-        }
+        };
     </script>
 
-        <link rel="stylesheet" href="./css/squad-foundation.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="./css/squad-foundation.css">
     <link rel="stylesheet" href="./css/squad-components.css">
     <link rel="stylesheet" href="./css/squad-motion.css">
-
 </head>
-<body class="min-h-screen flex flex-col relative">
-<div id="squad-loading" style="position:fixed;inset:0;z-index:100;background:#F2ECE1;display:flex;align-items:center;justify-content:center;font-family:sans-serif;font-weight:bold">Đang tải giao diện SQUAD.CASH...</div>
-<script src="./js/squad-loader.js" defer></script>
+
+<body data-root="./">
+
+    <!-- HEADER -->
+    <header style="
+            padding: 12px 20px;
+            background: #1e293b;
+            color: #fff;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        ">
+        <strong style="margin-right: 12px;">
+            Quản Lý Quỹ Nhóm
+        </strong>
+
+        <button class="nav-tab active" data-tab="fund" style="padding: 6px 12px; cursor: pointer;">
+            Quỹ chung
+        </button>
+
+        <button class="nav-tab" data-tab="home" style="padding: 6px 12px; cursor: pointer;">
+            Kiểm tra Backend
+        </button>
+
+        <a href="./pages/auth.html" style="color: #fde047; font-weight: bold; text-decoration: none;">
+            Đăng nhập / Đăng ký
+        </a>
+
+        <a href="./pages/profile.html" style="color: #86efac; text-decoration: none;">
+            Hồ sơ cá nhân
+        </a>
+
+        <a href="./pages/formbill.html" style="color: #93c5fd; text-decoration: none;">
+            Tạo hóa đơn
+        </a>
+
+        <a href="./pages/debts.html" style="color: #93c5fd; text-decoration: none;">
+            Công nợ của tôi
+        </a>
+
+        <a href="./frontend/index.html" style="color: #93c5fd; text-decoration: none;">
+            Quản lý Nhóm
+        </a>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main id="app" style="
+            padding: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        "></main>
+
+    <!-- JAVASCRIPT -->
+    <script type="module" src="./js/api.js"></script>
+    <script type="module" src="./js/layout.js"></script>
+
 </body>
+
 </html>

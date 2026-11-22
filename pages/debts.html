@@ -1,2 +1,517 @@
-<!doctype html>
-<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SQUAD.CASH — Chuyển đến giao diện mới</title><script>location.replace("../index.html?view=user&tab=debts");</script></head><body><p>Đang mở giao diện mới SQUAD.CASH… <a href="../index.html?view=user&tab=debts">Bấm vào đây nếu không tự chuyển</a>.</p></body></html>
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Công nợ của tôi | SQUAD.CASH</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/squad-foundation.css">
+    <link rel="stylesheet" href="../css/squad-components.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        canvas: "#F6F5F0",
+                        surface: "#FFFFFF",
+                        ink: "#121212",
+                        muted: "#52525B",
+                        line: "#E4E4E7",
+                        lime: "#D4FF00",
+                        coral: "#FF5E36",
+                        mint: "#10B981",
+                        cyan: "#38BDF8",
+                        amber: "#FACC15",
+                        indigo: "#7C3AED"
+                    },
+                    fontFamily: {
+                        display: ["Space Grotesk", "sans-serif"],
+                        sans: ["Plus Jakarta Sans", "sans-serif"],
+                        mono: ["JetBrains Mono", "monospace"]
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        body {
+            background: #f6f5f0;
+            color: #121212;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            margin: 0;
+        }
+
+        .card-clean {
+            background: #fff;
+            border: 2px solid #121212;
+            border-radius: 16px;
+            box-shadow: 3px 3px 0 #121212;
+        }
+
+        .card-subtle {
+            border: 2px solid #121212;
+            border-radius: 12px;
+        }
+
+        .os-window-bar {
+            padding: 14px 18px;
+            background: #f6f5f0;
+            border-bottom: 2px solid #121212;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-cta-indigo {
+            background: #7c3aed;
+            color: white;
+            border: 2px solid #121212;
+            box-shadow: 2px 2px 0 #121212;
+            cursor: pointer;
+        }
+
+        .btn-cta-indigo:hover {
+            background: #6d28d9;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(15, 23, 42, .7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #fff;
+            width: 100%;
+            max-width: 550px;
+            max-height: 92vh;
+            overflow-y: auto;
+            border: 2px solid #121212;
+            border-radius: 18px;
+            box-shadow: 5px 5px 0 #121212;
+            padding: 24px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 11px 12px;
+            border: 2px solid #d4d4d8;
+            border-radius: 10px;
+            background: white;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: #7c3aed;
+        }
+
+        .upload-area {
+            padding: 20px;
+            border: 2px dashed #a1a1aa;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #7c3aed;
+            background: #f5f3ff;
+        }
+
+        .summary-value {
+            font-size: clamp(22px, 3vw, 30px);
+            font-weight: 700;
+            font-family: "JetBrains Mono", monospace;
+            overflow-wrap: anywhere;
+        }
+
+        #proof-preview {
+            max-height: 200px;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .toast-stack {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body data-root="../">
+
+    <!-- HEADER -->
+    <header class="bg-ink text-white border-b-4 border-lime">
+        <div class="max-w-6xl mx-auto px-5 py-4 flex flex-wrap justify-between items-center gap-4">
+
+            <a href="../index.html" class="font-display text-2xl font-bold text-lime">
+                SQUAD.CASH
+            </a>
+
+            <nav class="flex flex-wrap gap-4 text-sm font-semibold">
+                <a href="../index.html" class="hover:text-lime">
+                    Trang chủ
+                </a>
+
+                <a href="formbill.html" class="hover:text-lime">
+                    Tạo hóa đơn
+                </a>
+
+                <a href="items.html" class="hover:text-lime">
+                    Khoản chi
+                </a>
+
+                <a href="profile.html" class="hover:text-lime">
+                    Hồ sơ
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-5 py-8">
+
+        <!-- PAGE TITLE -->
+        <section class="mb-8">
+            <div class="flex items-center gap-3 mb-3">
+                <span class="bg-lime border-2 border-ink rounded-lg px-3 py-1 font-mono font-bold text-xs">
+                    MY DEBTS
+                </span>
+            </div>
+
+            <h1 class="font-display text-3xl md:text-4xl font-bold">
+                Công nợ của tôi
+            </h1>
+
+            <p class="text-muted mt-2">
+                Theo dõi các khoản cần trả, khoản được nhận
+                và trạng thái thanh toán trong nhóm.
+            </p>
+        </section>
+
+        <!-- SUMMARY CARDS -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+
+            <!-- TIỀN TÔI NỢ -->
+            <div class="card-clean p-5">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="font-bold text-sm text-muted">
+                        Tổng tiền tôi nợ
+                    </span>
+                    <i data-lucide="arrow-up-right" class="text-coral"></i>
+                </div>
+
+                <div id="total-i-owe" class="summary-value text-coral">
+                    0 ₫
+                </div>
+
+                <p id="count-i-owe" class="text-xs text-muted mt-3">
+                    0 khoản chưa hoàn tất
+                </p>
+            </div>
+
+            <!-- TIỀN NGƯỜI KHÁC NỢ -->
+            <div class="card-clean p-5">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="font-bold text-sm text-muted">
+                        Người khác nợ tôi
+                    </span>
+                    <i data-lucide="arrow-down-left" class="text-mint"></i>
+                </div>
+
+                <div id="total-owed-to-me" class="summary-value text-mint">
+                    0 ₫
+                </div>
+
+                <p id="count-owed-to-me" class="text-xs text-muted mt-3">
+                    0 khoản đang chờ thu
+                </p>
+            </div>
+
+            <!-- CHÊNH LỆCH -->
+            <div class="card-clean p-5">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="font-bold text-sm text-muted">
+                        Chênh lệch công nợ
+                    </span>
+                    <i data-lucide="scale" class="text-indigo"></i>
+                </div>
+
+                <div id="net-balance" class="summary-value">
+                    +0 ₫
+                </div>
+
+                <p class="text-xs text-muted mt-3">
+                    Tổng phải thu trừ tổng phải trả
+                </p>
+            </div>
+
+        </section>
+
+        <!-- FILTERS -->
+        <section class="card-clean p-5 mb-7">
+
+            <div class="flex items-center gap-2 mb-4">
+                <i data-lucide="filter" class="w-5 h-5"></i>
+                <h2 class="font-display font-bold text-lg">
+                    Bộ lọc công nợ
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                <div>
+                    <label for="filter-group" class="block text-xs font-bold mb-2">
+                        Nhóm
+                    </label>
+
+                    <select id="filter-group" class="form-control">
+                        <option value="all">Tất cả nhóm</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filter-type" class="block text-xs font-bold mb-2">
+                        Loại công nợ
+                    </label>
+
+                    <select id="filter-type" class="form-control">
+                        <option value="all">Tất cả</option>
+                        <option value="owe">Tôi phải trả</option>
+                        <option value="owed">Người khác nợ tôi</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filter-status" class="block text-xs font-bold mb-2">
+                        Trạng thái
+                    </label>
+
+                    <select id="filter-status" class="form-control">
+                        <option value="all">Tất cả</option>
+                        <option value="unpaid">Chưa thanh toán</option>
+                        <option value="pending">Chờ duyệt</option>
+                        <option value="paid">Đã thanh toán</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filter-search" class="block text-xs font-bold mb-2">
+                        Tìm kiếm
+                    </label>
+
+                    <input id="filter-search" type="search" class="form-control" placeholder="Tên khoản, nhóm...">
+                </div>
+
+            </div>
+        </section>
+
+        <!-- DEBT LIST -->
+        <section>
+            <div class="flex flex-wrap justify-between items-center gap-3 mb-5">
+                <h2 class="font-display text-2xl font-bold">
+                    Danh sách công nợ
+                </h2>
+
+                <a href="../index.html?view=user&tab=debts" class="text-sm font-bold text-indigo hover:underline">
+                    Mở trong giao diện chính
+                </a>
+            </div>
+
+            <div id="debt-groups-container" class="space-y-5" aria-live="polite">
+                <div class="card-clean p-8 text-center">
+                    Đang tải dữ liệu công nợ...
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- PAYMENT MODAL -->
+    <div id="pay-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-debt-title">
+        <div class="modal-box">
+
+            <div class="flex justify-between items-start gap-3 mb-5">
+                <div>
+                    <p class="text-xs font-bold text-muted uppercase">
+                        Xác nhận chuyển khoản
+                    </p>
+
+                    <h2 id="modal-debt-title" class="font-display text-xl font-bold mt-1">
+                        Khoản công nợ
+                    </h2>
+                </div>
+
+                <button id="close-modal-btn" type="button" class="p-2 rounded-lg hover:bg-gray-100" aria-label="Đóng">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <form id="payment-proof-form">
+
+                <input type="hidden" id="modal-debt-id">
+
+                <div class="bg-canvas border-2 border-ink rounded-xl p-4 mb-5">
+
+                    <p class="text-xs font-bold text-muted">
+                        SỐ TIỀN CẦN THANH TOÁN
+                    </p>
+
+                    <p id="modal-debt-amount" class="text-2xl font-mono font-bold text-coral mt-2">
+                        0 ₫
+                    </p>
+
+                </div>
+
+                <!-- BANK INFORMATION -->
+                <div class="space-y-3 mb-5">
+
+                    <div>
+                        <p class="text-xs text-muted">Người nhận</p>
+                        <strong id="modal-receiver-name">-</strong>
+                    </div>
+
+                    <div>
+                        <p class="text-xs text-muted">Ngân hàng</p>
+                        <strong id="modal-bank-name">-</strong>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-xs text-muted">Số tài khoản</p>
+                            <strong id="modal-account-number">-</strong>
+                        </div>
+
+                        <button id="btn-copy-stk" type="button"
+                            class="border-2 border-ink rounded-lg px-3 py-2 text-xs font-bold">
+                            Sao chép
+                        </button>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-xs text-muted">
+                                Nội dung chuyển khoản
+                            </p>
+
+                            <strong id="modal-transfer-note">-</strong>
+                        </div>
+
+                        <button id="btn-copy-note" type="button"
+                            class="border-2 border-ink rounded-lg px-3 py-2 text-xs font-bold">
+                            Sao chép
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- VIETQR -->
+                <div class="text-center mb-5">
+                    <img id="modal-vietqr-img" alt="Mã VietQR chuyển khoản" class="mx-auto w-48 h-48 object-contain">
+
+                    <p class="text-xs text-muted mt-2">
+                        Kiểm tra tên người nhận và số tài khoản
+                        trước khi chuyển tiền.
+                    </p>
+                </div>
+
+                <!-- PROOF IMAGE -->
+                <div class="mb-5">
+                    <label class="block text-sm font-bold mb-2">
+                        Ảnh minh chứng chuyển khoản
+                    </label>
+
+                    <div id="upload-dropzone" class="upload-area">
+                        <i data-lucide="image-up" class="mx-auto mb-2 text-muted"></i>
+
+                        <p class="text-sm font-semibold">
+                            Nhấn để chọn ảnh
+                        </p>
+
+                        <p class="text-xs text-muted mt-1">
+                            JPG, PNG, WEBP — tối đa 5 MB
+                        </p>
+                    </div>
+
+                    <input type="file" id="proof-image-input" accept="image/jpeg,image/png,image/webp" class="hidden">
+
+                    <img id="proof-preview" alt="Ảnh minh chứng đã chọn" class="hidden mx-auto mt-3 rounded-lg">
+                </div>
+
+                <!-- NOTE -->
+                <div class="mb-5">
+                    <label for="payment-note" class="block text-sm font-bold mb-2">
+                        Ghi chú
+                    </label>
+
+                    <textarea id="payment-note" class="form-control" rows="3"
+                        placeholder="Ghi chú cho chủ nhóm..."></textarea>
+                </div>
+
+                <!-- ACTION BUTTONS -->
+                <div class="flex flex-wrap justify-end gap-3">
+
+                    <button id="cancel-modal-btn" type="button"
+                        class="border-2 border-ink rounded-xl px-4 py-3 font-bold text-sm">
+                        Hủy
+                    </button>
+
+                    <button id="submit-proof-btn" type="submit"
+                        class="btn-cta-indigo rounded-xl px-5 py-3 font-bold text-sm">
+                        Gửi xác nhận đã trả
+                    </button>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="cleanToastContainer" class="toast-stack" aria-live="polite"></div>
+
+    <!-- JAVASCRIPT -->
+    <script type="module" src="../js/pages/debts.js"></script>
+
+</body>
+
+</html>
