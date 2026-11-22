@@ -1,0 +1,332 @@
+/* Unified Wiro Renaissance Alabaster & Polka-Dot Architectural Canvas Behind All Views */
+        body {
+            background-color: #F2ECE1;
+            background-image:
+                radial-gradient(circle at 50% 0%, rgba(255, 248, 231, 0.88) 0%, rgba(242, 236, 225, 0.45) 48%, transparent 80%),
+                radial-gradient(rgba(18, 18, 18, 0.85) 1.25px, transparent 1.25px);
+            background-size: 100% 100%, 22px 22px;
+            background-attachment: fixed;
+            color: #121212;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Ambient Renaissance Fresco Sky Header Aura Behind Main App Workspaces */
+        .app-renaissance-ambient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 360px;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(180deg, rgba(242, 236, 225, 0.25) 0%, rgba(242, 236, 225, 0.78) 65%, #F2ECE1 100%),
+                url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg/1920px-Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg');
+            background-size: cover;
+            background-position: center 22%;
+            opacity: 0.34;
+            filter: saturate(0.9) contrast(1.05);
+        }
+
+        /* Unified Wiro OS Window Titlebar used across both Opening & Main App Cards */
+        .os-window-bar {
+            background: #EFE7D6;
+            border-bottom: 2px solid #121212;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .os-dots {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .os-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 999px;
+            border: 1.5px solid #121212;
+            display: inline-block;
+        }
+
+        /* Classical Fresco Header Strip inside Main Workspace Banners */
+        .workspace-fresco-strip {
+            position: relative;
+            background-image:
+                linear-gradient(90deg, rgba(18, 18, 18, 0.84) 0%, rgba(18, 18, 18, 0.45) 55%, rgba(18, 18, 18, 0.80) 100%),
+                url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/%22The_School_of_Athens%22_by_Raffaello_Sanzio_da_Urbino.jpg/1280px-%22The_School_of_Athens%22_by_Raffaello_Sanzio_da_Urbino.jpg');
+            background-size: cover;
+            background-position: center 32%;
+            border-bottom: 2px solid #121212;
+            color: #FFFFFF;
+        }
+
+        /* Vibrant Neo-Brutalist Clean Card */
+        .card-clean {
+            background-color: #FFFFFF;
+            border: 2px solid #121212;
+            border-radius: 16px;
+            box-shadow: 4px 4px 0px #121212;
+        }
+
+        .card-subtle {
+            background-color: #FAFAFA;
+            border: 2px solid #121212;
+            border-radius: 14px;
+            box-shadow: 2px 2px 0px #121212;
+        }
+
+        /* Vibrant Color Cards for KPIs & Highlights */
+        .card-lime {
+            background-color: #D4FF00;
+            border: 2px solid #121212;
+            border-radius: 16px;
+            box-shadow: 3px 3px 0px #121212;
+        }
+        .card-violet {
+            background-color: #7C3AED;
+            color: #FFFFFF;
+            border: 2px solid #121212;
+            border-radius: 16px;
+            box-shadow: 3px 3px 0px #121212;
+        }
+        .card-coral {
+            background-color: #FF5E36;
+            color: #FFFFFF;
+            border: 2px solid #121212;
+            border-radius: 16px;
+            box-shadow: 3px 3px 0px #121212;
+        }
+        .card-cyan {
+            background-color: #38BDF8;
+            color: #121212;
+            border: 2px solid #121212;
+            border-radius: 16px;
+            box-shadow: 3px 3px 0px #121212;
+        }
+        .card-amber {
+            background-color: #FACC15;
+            color: #121212;
+            border: 2px solid #121212;
+            border-radius: 16px;
+            box-shadow: 3px 3px 0px #121212;
+        }
+
+        /* Primary Bold CTA Button */
+        .btn-cta-lime {
+            background-color: #D4FF00;
+            color: #121212;
+            border: 2px solid #121212;
+            box-shadow: 3px 3px 0px #121212;
+            transition: all 0.15s ease;
+        }
+        .btn-cta-lime:hover:not(:disabled) {
+            transform: translate(-1px, -1px);
+            box-shadow: 4px 4px 0px #121212;
+            background-color: #dcf936;
+        }
+        .btn-cta-lime:active:not(:disabled) {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px #121212;
+        }
+
+        .btn-cta-indigo {
+            background-color: #7C3AED;
+            color: #FFFFFF;
+            border: 2px solid #121212;
+            box-shadow: 3px 3px 0px #121212;
+            transition: all 0.15s ease;
+        }
+        .btn-cta-indigo:hover:not(:disabled) {
+            transform: translate(-1px, -1px);
+            box-shadow: 4px 4px 0px #121212;
+            background-color: #6D28D9;
+        }
+        .btn-cta-indigo:active:not(:disabled) {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px #121212;
+        }
+
+        .btn-outline {
+            background-color: #FFFFFF;
+            color: #121212;
+            border: 2px solid #121212;
+            box-shadow: 2px 2px 0px #121212;
+            transition: all 0.15s ease;
+        }
+        .btn-outline:hover:not(:disabled) {
+            background-color: #F4FFC2;
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px #121212;
+        }
+
+        /* Clean Input */
+        .input-clean {
+            background-color: #FFFFFF;
+            border: 2px solid #121212;
+            border-radius: 12px;
+            transition: all 0.15s ease;
+        }
+        .input-clean:focus {
+            outline: none;
+            border-color: #7C3AED;
+            box-shadow: 3px 3px 0px #7C3AED;
+        }
+
+        /* SRS FR-Code Badge Toggle */
+        .fr-badge {
+            display: inline-flex;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background-color: #FACC15;
+            color: #121212;
+            border: 1.5px solid #121212;
+        }
+        body.hide-fr-badges .fr-badge {
+            display: none !important;
+        }
+
+        /* Mobile Preview Mode for Auth */
+        .auth-mobile-frame {
+            max-width: 420px !important;
+            margin: 0 auto !important;
+        }
+
+        /* =========================================================================
+           FOCUSED ELEMENT-ONLY MICRO-INTERACTIONS (LARGE CONTAINERS STAY STATIC)
+        ========================================================================= */
+        /* 1. Smooth Transitions on All Cards (Allows 3D Tilt & Staggered Spring Reveal) */
+        .card-clean {
+            transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+                        box-shadow 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+                        border-color 0.2s ease;
+        }
+
+        /* 2. Only Small Interactive Cards & Sub-items Move When Hovered/Clicked */
+        .interactive-item,
+        #userGroupsGrid > .card-clean,
+        #userInvoicesList > .card-subtle,
+        #invoiceAllocationPreviewList > div,
+        #retentionCandidatesList > .card-subtle,
+        .card-lime, .card-violet, .card-coral, .card-cyan, .card-amber {
+            transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+                        box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+                        border-color 0.18s ease,
+                        background-color 0.18s ease !important;
+        }
+
+        .interactive-item:hover,
+        #userGroupsGrid > .card-clean:hover,
+        #userInvoicesList > .card-subtle:hover,
+        #retentionCandidatesList > .card-subtle:hover,
+        .card-lime:hover, .card-violet:hover, .card-coral:hover, .card-cyan:hover, .card-amber:hover {
+            transform: translate(-2px, -2px) !important;
+            box-shadow: 5px 5px 0px #121212 !important;
+        }
+
+        #invoiceAllocationPreviewList > div:hover {
+            transform: translateX(4px);
+            border-color: #121212;
+            background-color: #F4FFC2;
+        }
+
+        /* Active Focused Form Section Highlight (Static position, crisp border glow) */
+        .card-subtle:focus-within {
+            border-color: #7C3AED;
+            box-shadow: 3px 3px 0px #7C3AED;
+        }
+
+        /* 3. Tactile Buttons & Inputs (Move only on direct interaction) */
+        button {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1),
+                        box-shadow 0.15s cubic-bezier(0.22, 1, 0.36, 1),
+                        background-color 0.15s ease !important;
+        }
+        .input-clean:focus {
+            transform: translate(-1px, -1px);
+            outline: none;
+            border-color: #7C3AED;
+            box-shadow: 3px 3px 0px #7C3AED;
+        }
+
+        .neo-ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: neoRippleAnim 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            background-color: rgba(18, 18, 18, 0.2);
+            pointer-events: none;
+            z-index: 10;
+        }
+        .btn-cta-indigo .neo-ripple, .bg-ink .neo-ripple, .bg-rose-600 .neo-ripple {
+            background-color: rgba(212, 255, 0, 0.45);
+        }
+        @keyframes neoRippleAnim {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* 4. View Switch: Clean Opacity Fade Only (Zero Whole-Page Sliding) */
+        .view-enter {
+            animation: viewFadeIn 0.22s ease-out forwards;
+        }
+        @keyframes viewFadeIn {
+            0% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        /* 5. Modal & Toast Pop-in */
+        .modal-pop {
+            animation: modalBounceIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes modalBounceIn {
+            0% { opacity: 0; transform: scale(0.94) translateY(8px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* 6. Error / Validation Shake (Only on the target box) */
+        .neo-shake {
+            animation: neoShakeAnim 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
+        @keyframes neoShakeAnim {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-5px, 0, 0); }
+            40%, 60% { transform: translate3d(5px, 0, 0); }
+        }
+
+        /* 7. Table Row Interactive Highlight */
+        tbody tr {
+            transition: background-color 0.14s ease;
+        }
+        tbody tr:hover {
+            background-color: rgba(212, 255, 0, 0.2) !important;
+        }
+
+        /* 8. Value Flash Highlight when Numbers Recalculate */
+        .value-flash {
+            animation: flashHighlight 0.45s ease;
+        }
+        @keyframes flashHighlight {
+            0% { background-color: #D4FF00; color: #121212; transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
+
+        /* Online Pulse Indicator */
+        .pulse-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            display: inline-block;
+            background-color: #10B981;
+            box-shadow: 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: neoPulse 1.8s infinite;
+        }

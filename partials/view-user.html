@@ -1,0 +1,224 @@
+<main id="view-user" class="relative z-10 hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
+        
+        <!-- URGENT HOST REMINDER BANNER (Shown when Host has sent a debt ping) -->
+        <div id="userUrgentReminderBanner" class="hidden card-coral p-5 sm:p-6 border-2 border-ink flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-amber text-ink border-2 border-ink flex items-center justify-center shrink-0 shadow-bold-sm">
+                    <span class="bell-ringing text-2xl">🔔</span>
+                </div>
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="bg-ink text-lime font-mono text-[11px] font-bold px-2.5 py-0.5 rounded uppercase">
+                            ⚡ HOST VỪA NHẮC NỢ BẠN
+                        </span>
+                        <span id="bannerReminderCount" class="font-mono text-xs font-bold text-white/90">Chưa có nhắc nợ</span>
+                    </div>
+                    <h3 id="bannerReminderTitle" class="font-display font-bold text-lg sm:text-xl text-white mt-1">
+                        Bạn có khoản nợ cần thanh toán sớm!
+                    </h3>
+                    <p id="bannerReminderSub" class="text-xs text-white/90 mt-0.5">
+                        Bấm "Mở Thông Báo Lớn" hoặc "Quét VietQR Trả Ngay" để hoàn tất nghĩa vụ quỹ nhóm.
+                    </p>
+                </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5 shrink-0 w-full md:w-auto justify-end">
+                <button type="button" onclick="openUrgentReminderModal()" class="btn-cta-lime px-4 py-2.5 rounded-xl font-display font-bold text-xs uppercase">
+                    Xem Thông Báo Lớn
+                </button>
+            </div>
+        </div>
+
+        <!-- User Role Header Banner (Unified Wiro Renaissance OS Window) -->
+        <section class="card-clean overflow-hidden bg-white">
+            <div class="os-window-bar">
+                <div class="flex items-center gap-2.5">
+                    <div class="os-dots">
+                        <span class="os-dot bg-coral"></span>
+                        <span class="os-dot bg-amber"></span>
+                        <span class="os-dot bg-mint"></span>
+                    </div>
+                    <span class="font-mono text-xs font-bold text-ink/75 ml-1">squad.cash/os/user-workspace/usr-1042</span>
+                </div>
+                <span class="font-mono text-[11px] font-bold bg-cyan text-ink px-2.5 py-0.5 rounded-full border border-ink">
+                    FR-USER-001 → 004
+                </span>
+            </div>
+
+            <div class="workspace-fresco-strip px-6 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="bg-cyan text-ink border-2 border-ink font-mono text-xs font-bold px-3 py-1 rounded-full shadow-bold-sm">
+                        VAI TRÒ: USER (THÀNH VIÊN NHÓM)
+                    </span>
+                    <span id="userBannerDisplayName" class="font-mono text-xs font-bold bg-black/55 text-lime border border-white/30 px-2.5 py-1 rounded-md">
+                        Thành viên mới
+                    </span>
+                    <button type="button" onclick="openUserProfileModal()"
+                        class="bg-white hover:bg-lime text-ink border-2 border-ink font-mono text-xs font-bold px-3 py-1 rounded-full shadow-bold-sm inline-flex items-center gap-1.5">
+                        <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                        <span>Sửa thông tin</span>
+                    </button>
+                </div>
+                <span class="font-wiro-serif text-lg sm:text-xl text-white/90">
+                    ✦ Sổ Cái Minh Bạch Cá Nhân • Renaissance OS
+                </span>
+            </div>
+
+            <div class="p-6 sm:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white">
+                <div class="space-y-2">
+                    <h1 class="font-wiro-sans font-bold text-2xl sm:text-4xl text-ink leading-tight">
+                        Không gian Theo dõi <span class="font-wiro-serif font-normal text-3xl sm:text-5xl text-indigo">Tài chính Cá nhân.</span>
+                    </h1>
+                    <p class="text-sm text-muted max-w-2xl">
+                        Theo nguyên tắc phân quyền SRS: Bạn xem các nhóm mình tham gia, nghĩa vụ công nợ của bản thân, hóa đơn liên quan và sổ quỹ minh bạch.
+                    </p>
+                </div>
+
+                <!-- Total Personal Debt KPI (Coral Vibrant Card) -->
+                <div class="card-coral p-5 min-w-[270px]">
+                    <span class="text-xs font-bold uppercase text-white/90 block">Công nợ của tôi (Nhóm đang xem)</span>
+                    <div id="userTotalDebtKpi" class="font-mono font-bold text-2xl sm:text-3xl text-lime mt-1">
+                        0 ₫
+                    </div>
+                    <span class="font-mono text-[11px] text-white/90 block mt-1">⚡ Chỉ gạch nợ khi Host đã đối soát</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- FR-USER-001: MY JOINED GROUPS -->
+        <section class="space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <h2 class="font-display font-bold text-xl text-ink">Nhóm của tôi đang tham gia</h2>
+                    <span class="fr-badge">FR-USER-001</span>
+                </div>
+                <form id="userJoinGroupForm" onsubmit="joinGroupFromUser(event)" class="flex flex-wrap items-center gap-2" autocomplete="off">
+                    <label for="userJoinCodeInput" class="sr-only">Mã mời nhóm</label>
+                    <input id="userJoinCodeInput" type="text" maxlength="10" required placeholder="Mã nhóm (8 ký tự)" aria-label="Nhập mã mời nhóm" class="input-clean px-3.5 py-2 rounded-xl font-mono font-bold text-xs uppercase tracking-wider max-w-[188px]" />
+                    <button type="submit" class="btn-outline px-4 py-2 rounded-xl font-display font-bold text-xs flex items-center gap-1.5">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Tham gia nhóm</span>
+                    </button>
+                </form>
+            </div>
+
+            <div id="userGroupsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- USER SUB-NAVIGATION FOR SELECTED GROUP (FR-USER-002, 003, 004) -->
+        <section class="card-clean p-6 sm:p-8 space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-line">
+                <div>
+                    <span class="font-mono text-xs font-bold text-indigo uppercase">Đang xem chi tiết nhóm</span>
+                    <h3 id="userSelectedGroupName" class="font-display font-bold text-2xl text-ink mt-0.5">
+                        Chưa chọn nhóm
+                    </h3>
+                </div>
+
+                <!-- 3 Clean Sub-tabs -->
+                <div class="flex flex-wrap gap-2 bg-canvas p-1.5 rounded-xl border border-ink/15">
+                    <button id="uSubBtn-debts" onclick="switchUserSubTab('debts')" class="px-4 py-2 rounded-lg font-display font-bold text-xs bg-white text-ink border border-ink shadow-clean flex items-center gap-1.5">
+                        <span>Công nợ của tôi</span>
+                        <span class="fr-badge">FR-USER-002</span>
+                    </button>
+                    <button id="uSubBtn-invoices" onclick="switchUserSubTab('invoices')" class="px-4 py-2 rounded-lg font-display font-bold text-xs text-muted hover:text-ink flex items-center gap-1.5">
+                        <span>Lịch sử hóa đơn</span>
+                        <span class="fr-badge">FR-USER-003</span>
+                    </button>
+                    <button id="uSubBtn-ledger" onclick="switchUserSubTab('ledger')" class="px-4 py-2 rounded-lg font-display font-bold text-xs text-muted hover:text-ink flex items-center gap-1.5">
+                        <span>Sổ quỹ &amp; Dòng tiền</span>
+                        <span class="fr-badge">FR-USER-004</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SUB-TAB 1: FR-USER-002 (CHI TIẾT KHOẢN NỢ CÁ NHÂN) -->
+            <div id="uSubContent-debts" class="space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <p class="text-sm text-muted">
+                        Chỉ hiển thị các khoản phải trả của riêng bạn  gồm: Đóng quỹ, Hóa đơn và Khoản điều chỉnh.
+                    </p>
+                    <span class="font-mono text-xs bg-amber-50 text-amber-800 border border-amber-300 px-3 py-1 rounded-lg">
+                        Lưu ý SRS 2.3: Trạng thái chỉ đổi khi Host đã đối soát thực tế.
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-y border-line bg-canvas font-mono text-xs text-muted uppercase">
+                                <th class="py-3.5 px-4">Mã khoản nợ</th>
+                                <th class="py-3.5 px-4">Phân loại</th>
+                                <th class="py-3.5 px-4">Mô tả &amp; Ngày phát sinh</th>
+                                <th class="py-3.5 px-4 text-right">Tổng phải trả</th>
+                                <th class="py-3.5 px-4 text-right">Đã thanh toán</th>
+                                <th class="py-3.5 px-4 text-right">Còn nợ</th>
+                                <th class="py-3.5 px-4 text-center">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userDebtsTableBody" class="divide-y divide-line text-sm">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SUB-TAB 2: FR-USER-003 (LỊCH SỬ HÓA ĐƠN ĐÃ THAM GIA) -->
+            <div id="uSubContent-invoices" class="hidden space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <p class="text-sm text-muted">Danh sách các hóa đơn mà bạn được gán tham gia trong nhóm. Bấm vào từng hóa đơn để xem chi tiết món và cách chia.</p>
+                    <select onchange="renderUserInvoices(this.value)" class="input-clean px-3.5 py-2 text-xs font-semibold">
+                        <option value="all">Tất cả hình thức chia</option>
+                        <option value="equal">Chia đều (Equal Split)</option>
+                        <option value="itemized">Chia theo món (Itemized Split)</option>
+                    </select>
+                </div>
+
+                <div id="userInvoicesList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- SUB-TAB 3: FR-USER-004 (XEM DÒNG TIỀN THU/CHI & SỐ DƯ QUỸ) -->
+            <div id="uSubContent-ledger" class="hidden space-y-5">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="card-lime p-5">
+                        <span class="text-xs font-bold text-ink uppercase">Tổng Thu Quỹ</span>
+                        <div id="userLedgerIn" class="font-mono font-bold text-2xl text-ink mt-1">+12,000,000 ₫</div>
+                    </div>
+                    <div class="card-coral p-5">
+                        <span class="text-xs font-bold text-white uppercase">Tổng Chi Quỹ</span>
+                        <div id="userLedgerOut" class="font-mono font-bold text-2xl text-white mt-1">-3,500,000 ₫</div>
+                    </div>
+                    <div class="card-violet p-5">
+                        <span class="text-xs font-bold text-lime uppercase">Số Dư Quỹ Hiện Tại</span>
+                        <div id="userLedgerBalance" class="font-mono font-bold text-2xl text-white mt-1">0 ₫</div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-y border-line bg-canvas font-mono text-xs text-muted uppercase">
+                                <th class="py-3 px-4">Mã GD</th>
+                                <th class="py-3 px-4">Loại</th>
+                                <th class="py-3 px-4">Nội dung giao dịch</th>
+                                <th class="py-3 px-4">Phương thức</th>
+                                <th class="py-3 px-4">Người ghi nhận &amp; Thời gian</th>
+                                <th class="py-3 px-4 text-right">Số tiền (VND)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userLedgerTableBody" class="divide-y divide-line text-sm">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ============================================================================
+         VIEW 3: HOST ROLE WORKSPACE (FR-HOST-001 TO FR-HOST-006)
+         Quyền hạn: Tạo nhóm, tạo/thu hồi mã mời, tạo hóa đơn (chia đều/theo món), ghi thu/chi sổ quỹ, đối soát & xác nhận thanh toán
+    ============================================================================= -->

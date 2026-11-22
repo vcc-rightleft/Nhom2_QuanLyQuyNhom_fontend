@@ -1,0 +1,307 @@
+.pulse-dot.offline {
+            background-color: #FACC15;
+            animation: none;
+        }
+        @keyframes neoPulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Toast Progress Bar */
+        .toast-progress {
+            height: 4px;
+            background-color: #D4FF00;
+            width: 100%;
+            animation: toastProgressShrink 4.2s linear forwards;
+        }
+        @keyframes toastProgressShrink {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        /* Clean Segmented Progress Bar for Debt Settlement Ratio */
+        .progress-neo-track {
+            width: 100%;
+            height: 10px;
+            background-color: #F6F5F0;
+            border: 1.5px solid #121212;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .progress-neo-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #7C3AED 0%, #10B981 100%);
+            transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Quick Money Chip Buttons (+50k, +100k, +500k) */
+        .money-chip {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 8px;
+            background-color: #F6F5F0;
+            border: 1.5px solid #121212;
+            color: #121212;
+            box-shadow: 2px 2px 0px #121212;
+            transition: all 0.14s ease;
+            cursor: pointer;
+        }
+        .money-chip:hover {
+            background-color: #D4FF00;
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px #121212;
+        }
+        .money-chip:active {
+            transform: translate(1px, 1px);
+            box-shadow: 0px 0px 0px #121212;
+        }
+
+        /* Command Palette (Ctrl + K) Spotlight Overlay */
+        .cmd-item {
+            transition: all 0.12s ease;
+            border: 1.5px solid transparent;
+        }
+        .cmd-item:hover {
+            background-color: #F4FFC2;
+            border-color: #121212;
+            transform: translateX(3px);
+        }
+
+        /* Urgent Debt Reminder Alert Styling */
+        @keyframes urgentSirenPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 94, 54, 0.7), 6px 6px 0px #121212; }
+            50% { box-shadow: 0 0 0 14px rgba(255, 94, 54, 0), 6px 6px 0px #121212; }
+        }
+        .urgent-alert-card {
+            animation: modalBounceIn 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+                       urgentSirenPulse 2s infinite;
+        }
+        @keyframes bellRing {
+            0%, 100% { transform: rotate(0); }
+            15% { transform: rotate(16deg); }
+            30% { transform: rotate(-14deg); }
+            45% { transform: rotate(12deg); }
+            60% { transform: rotate(-10deg); }
+            75% { transform: rotate(6deg); }
+        }
+        .bell-ringing {
+            display: inline-block;
+            animation: bellRing 1.2s ease-in-out infinite;
+        }
+
+
+        /* =========================================================================
+           LUMINOUS ORGANIC PORTAL / IRIS BURN REVEAL (TIKTOK VIDEO EFFECT)
+        ========================================================================= */
+        #portalRevealOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 80;
+            pointer-events: auto;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #portalRevealOverlay.hidden {
+            display: none !important;
+        }
+        #portalCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 82;
+            pointer-events: none;
+        }
+
+
+        /* Onboarding Content Deck Revealed Inside the Expanding Glowing Portal */
+        .portal-onboarding-stage {
+            position: relative;
+            z-index: 81;
+            max-width: 820px;
+            width: 92%;
+            opacity: 0;
+            transform: scale(0.92);
+            transition: opacity 0.45s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+            pointer-events: none;
+        }
+        .portal-onboarding-stage.stage-active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        /* Neo-Brutalist Verified Stamp Slam Animation */
+        @keyframes neoStampSlam {
+            0% { opacity: 0; transform: scale(2.6) rotate(-16deg); }
+            70% { opacity: 1; transform: scale(0.92) rotate(-4deg); }
+            100% { opacity: 1; transform: scale(1) rotate(-6deg); }
+        }
+        .neo-verified-badge {
+            background-color: #D4FF00;
+            color: #121212;
+            border: 2.5px solid #121212;
+            box-shadow: 3px 3px 0px #121212;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            transform: rotate(-6deg);
+            animation: neoStampSlam 0.52s cubic-bezier(0.22, 1, 0.36, 1) 0.35s backwards;
+            user-select: none;
+        }
+
+        /* =========================================================================
+           WIRO.AGENCY MULTI-PLANE RENAISSANCE PAINTING ZOOM (ĐI SÂU VÀO TRONG TRANH)
+           Zero wireframe tunnel lines — Pure nested Renaissance frescoes zooming in!
+        ========================================================================= */
+        .font-wiro-serif {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-style: italic;
+            font-weight: 600;
+        }
+        .font-wiro-roman {
+            font-family: 'Cinzel', Georgia, serif;
+        }
+        .font-wiro-sans {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            letter-spacing: -0.03em;
+        }
+
+        #cinematicIntroSplash {
+            position: fixed;
+            inset: 0;
+            z-index: 90;
+            background-color: #e6dac6;
+            color: #161514;
+            overflow-y: auto;
+            overflow-x: hidden;
+            user-select: none;
+            transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        #cinematicIntroSplash.hidden {
+            display: none !important;
+        }
+        #cinematicIntroSplash.splash-zoom-exit {
+            opacity: 0;
+            transform: scale(1.16);
+            pointer-events: none;
+        }
+
+        /* Sleek Scrollbar */
+        #cinematicIntroSplash::-webkit-scrollbar {
+            width: 7px;
+        }
+        #cinematicIntroSplash::-webkit-scrollbar-track {
+            background: #e6dac6;
+        }
+        #cinematicIntroSplash::-webkit-scrollbar-thumb {
+            background: #161514;
+            border-radius: 999px;
+        }
+
+        /* 620vh Scroll Track to Drive the Deep Zoom Into the Painting */
+        .scrolly-z-track {
+            position: relative;
+            width: 100%;
+            height: 620vh;
+        }
+
+        /* Sticky 100vh Painting Canvas Viewport */
+        .scrolly-z-viewport {
+            position: sticky;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            perspective: 1100px;
+            perspective-origin: 50% 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: radial-gradient(circle at 50% 45%, #f8f1e2 0%, #e5d6be 55%, #cbb594 100%);
+        }
+
+        /* =========================================================================
+           MULTI-PLANE RENAISSANCE FRESCO LAYERS (ZOOMING DEEP INTO THE PAINTING)
+        ========================================================================= */
+        .fresco-zoom-stage {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fresco-plane {
+            position: absolute;
+            inset: -6%;
+            background-size: cover;
+            background-position: center;
+            will-change: transform, opacity;
+            pointer-events: none;
+        }
+
+        /* Plane 1 (Outer Painting): Michelangelo's Creation of Adam & Golden Fresco Sky */
+        #frescoPlane1 {
+            background-image:
+                radial-gradient(circle at 50% 48%, rgba(255, 248, 232, 0.15) 0%, rgba(230, 218, 198, 0.55) 75%, rgba(198, 178, 148, 0.85) 100%),
+                url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg/1920px-Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg');
+            background-position: center 22%;
+            filter: saturate(0.95) contrast(1.04);
+        }
+
+        /* Plane 2 (Middle Painting): Raphael's School of Athens Grand Fresco Archway */
+        #frescoPlane2 {
+            background-image:
+                radial-gradient(circle at 50% 50%, rgba(255, 250, 240, 0.08) 0%, rgba(230, 218, 198, 0.65) 82%),
+                url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/%22The_School_of_Athens%22_by_Raffaello_Sanzio_da_Urbino.jpg/1920px-%22The_School_of_Athens%22_by_Raffaello_Sanzio_da_Urbino.jpg');
+            background-position: center 38%;
+            /* Soft feathered vignette mask so it blends seamlessly into the outer painting */
+            -webkit-mask-image: radial-gradient(ellipse 68% 68% at 50% 50%, #000 52%, transparent 96%);
+            mask-image: radial-gradient(ellipse 68% 68% at 50% 50%, #000 52%, transparent 96%);
+            filter: saturate(0.96) contrast(1.05);
+        }
+
+        /* Plane 3 (Deep Inner Sanctuary Painting): Raphael's Parnassus / Classical Fresco */
+        #frescoPlane3 {
+            background-image:
+                radial-gradient(circle at 50% 45%, rgba(255, 252, 242, 0.18) 0%, rgba(230, 218, 198, 0.72) 85%),
+                url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/%22The_School_of_Athens%22_by_Raffaello_Sanzio_da_Urbino.jpg/1920px-%22The_School_of_Athens%22_by_Raffaello_Sanzio_da_Urbino.jpg');
+            background-position: center 26%;
+            -webkit-mask-image: radial-gradient(ellipse 62% 62% at 50% 50%, #000 48%, transparent 92%);
+            mask-image: radial-gradient(ellipse 62% 62% at 50% 50%, #000 48%, transparent 92%);
+            filter: sepia(0.12) saturate(1.05) brightness(1.04);
+        }
+
+        /* Painterly Volumetric Clouds & Sunbeams Canvas (Parts outward as you zoom in) */
+        #wiroPaintingCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Authentic Oil-Canvas Craquelure & Museum Linen Weave Overlay */
+        .wiro-oil-crackle-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+            background-image:
+                radial-gradient(circle at 50% 48%, transparent 50%, rgba(68, 48, 28, 0.28) 100%),
+                repeating-linear-gradient(0deg, rgba(45, 32, 18, 0.022) 0px, rgba(45, 32, 18, 0.022) 1px, transparent 1px, transparent 4px),
+                repeating-linear-gradient(90deg, rgba(45, 32, 18, 0.018) 0px, rgba(45, 32, 18, 0.018) 1px, transparent 1px, transparent 4px);
+        }

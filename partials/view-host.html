@@ -1,0 +1,482 @@
+<main id="view-host" class="relative z-10 hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
+        
+        <!-- Host Top Header (Unified Wiro Renaissance OS Window) -->
+        <section class="card-clean overflow-hidden bg-white">
+            <div class="os-window-bar">
+                <div class="flex items-center gap-2.5">
+                    <div class="os-dots">
+                        <span class="os-dot bg-coral"></span>
+                        <span class="os-dot bg-amber"></span>
+                        <span class="os-dot bg-mint"></span>
+                    </div>
+                    <span class="font-mono text-xs font-bold text-ink/75 ml-1">squad.cash/os/host-command</span>
+                </div>
+                <span class="font-mono text-[11px] font-bold bg-lime text-ink px-2.5 py-0.5 rounded-full border border-ink">
+                    <span id="squadSelectedGroupBadge">Chưa chọn nhóm</span>
+                </span>
+            </div>
+
+            <div class="workspace-fresco-strip px-6 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="bg-lime text-ink border-2 border-ink font-mono text-xs font-bold px-3 py-1 rounded-full shadow-bold-sm">
+                        VAI TRÒ: HOST (NGƯỜI QUẢN LÝ NHÓM)
+                    </span>
+                    <span class="fr-badge">FR-HOST-001 → 006</span>
+                    <span id="hostHeaderCurrentHostText" class="font-mono text-xs font-bold bg-black/55 text-white border border-white/30 px-2.5 py-1 rounded-md">Host: Chưa có nhóm</span>
+                </div>
+                <span class="font-wiro-serif text-lg sm:text-xl text-lime">
+                    ✦ Kiến Trúc Phân Bổ &amp; Đối Soát Công Nợ
+                </span>
+            </div>
+
+            <div class="p-6 sm:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white">
+                <div class="space-y-2">
+                    <h1 class="font-wiro-sans font-bold text-2xl sm:text-4xl text-ink leading-tight">
+                        Quản trị Nhóm Quỹ: <span id="hostGroupNameTitle" class="font-wiro-serif font-normal text-3xl sm:text-5xl text-indigo">Chưa chọn nhóm</span>
+                    </h1>
+                    <p class="text-sm text-muted max-w-2xl">
+                        Nguyên tắc SRS: Host chỉ có quyền quản trị trong phạm vi nhóm mình phụ trách (không mặc nhiên là Admin toàn hệ thống).
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3">
+                    <label class="text-xs font-bold">Nhóm đang xem
+                      <select id="squadGroupSelector" onchange="selectSquadGroup(Number(this.value)).catch(err=>notify('Không tải được nhóm: '+err.message))" class="input-clean p-2 block max-w-48" aria-label="Chọn nhóm để xem"></select>
+                    </label>
+                    <button onclick="openModal('modalHostCreateGroup')" class="btn-outline px-4 py-3 rounded-xl font-display font-bold text-xs uppercase flex items-center gap-2">
+                        <i data-lucide="folder-plus" class="w-4 h-4"></i>
+                        <span>+ Tạo Nhóm Mới (FR-HOST-001)</span>
+                    </button>
+                    <button onclick="switchHostTab('invoice')" class="btn-cta-lime px-5 py-3 rounded-xl font-display font-bold text-xs uppercase flex items-center gap-2">
+                        <i data-lucide="receipt" class="w-4 h-4"></i>
+                        <span>+ Tạo Hóa Đơn &amp; Chia Tiền</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Host 4 Functional Tabs -->
+        <div class="flex flex-wrap gap-2 bg-white p-2 rounded-2xl border-2 border-ink shadow-clean">
+            <button id="hTabBtn-members" onclick="switchHostTab('members')" class="px-4 py-2.5 rounded-xl font-display font-bold text-xs sm:text-sm bg-indigo text-white border-2 border-ink shadow-bold-sm flex items-center gap-2">
+                <i data-lucide="users" class="w-4 h-4"></i>
+                <span>1. Thành viên &amp; Mã nhóm</span>
+                <span class="fr-badge">FR-HOST-002</span>
+            </button>
+            <button id="hTabBtn-invoice" onclick="switchHostTab('invoice')" class="px-4 py-2.5 rounded-xl font-display font-bold text-xs sm:text-sm text-ink hover:bg-lime/40 flex items-center gap-2">
+                <i data-lucide="calculator" class="w-4 h-4"></i>
+                <span>2. Tạo Hóa Đơn (Chia đều / Theo món)</span>
+                <span class="fr-badge">FR-HOST-003</span>
+            </button>
+            <button id="hTabBtn-fund" onclick="switchHostTab('fund')" class="px-4 py-2.5 rounded-xl font-display font-bold text-xs sm:text-sm text-ink hover:bg-lime/40 flex items-center gap-2">
+                <i data-lucide="wallet" class="w-4 h-4"></i>
+                <span>3. Sổ Quỹ Chung (Thu/Chi)</span>
+                <span class="fr-badge">FR-HOST-004</span>
+            </button>
+            <button id="hTabBtn-debts" onclick="switchHostTab('debts')" class="px-4 py-2.5 rounded-xl font-display font-bold text-xs sm:text-sm text-ink hover:bg-lime/40 flex items-center gap-2">
+                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                <span>4. Công Nợ &amp; Đối Soát Thanh Toán</span>
+                <span class="fr-badge">FR-HOST-005 &amp; 006</span>
+            </button>
+        </div>
+
+        <!-- ==================== HOST TAB 1: MEMBERS & SINGLE GROUP INVITE CODE (FR-HOST-002) ==================== -->
+        <section id="hTabContent-members" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left 5 Cols: Single Fixed Invite Code Card for this Group -->
+            <div class="lg:col-span-5 card-clean p-6 sm:p-7 flex flex-col justify-between space-y-6 bg-white">
+                <div class="space-y-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-display font-bold text-xl text-ink">Mã Mời Duy Nhất Của Nhóm</h3>
+                            <p class="text-xs text-muted mt-0.5">Mỗi nhóm quỹ chỉ sử dụng 1 mã định danh cố định để mời thành viên tham gia.</p>
+                        </div>
+                        <span class="fr-badge">FR-HOST-002</span>
+                    </div>
+
+                    <!-- Highlighted Single Group Code Sticker -->
+                    <div class="card-lime p-6 text-center space-y-3 relative overflow-hidden">
+                        <span class="inline-block font-mono text-[11px] font-bold uppercase tracking-wider bg-ink text-lime px-3 py-1 rounded-full">
+                            MÃ NHÓM • CHƯA TẠO
+                        </span>
+                        <div id="hostSingleGroupCode" class="font-mono font-bold text-4xl sm:text-5xl tracking-widest text-ink py-2 select-all">
+                            Chưa có nhóm
+                        </div>
+                        <p class="text-xs font-semibold text-ink/80">
+                            Gửi mã này cho bạn bè để họ nhập vào ô "Mã mời" khi đăng nhập.
+                        </p>
+                    </div>
+
+                    <!-- Copy Code / Copy Link Buttons -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <button type="button" onclick="copySingleGroupCode()" class="btn-cta-indigo py-3 px-4 rounded-xl font-display font-bold text-xs uppercase flex items-center justify-center gap-2">
+                            <i data-lucide="copy" class="w-4 h-4"></i>
+                            <span>Sao chép Mã</span>
+                        </button>
+                        <button type="button" onclick="copySingleGroupLink()" class="btn-outline py-3 px-4 rounded-xl font-display font-bold text-xs uppercase flex items-center justify-center gap-2">
+                            <i data-lucide="link" class="w-4 h-4"></i>
+                            <span>Copy Link Mời</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Security Reset Single Code Option -->
+                <div class="pt-4 border-t-2 border-line flex items-center justify-between gap-3">
+                    <div class="text-xs text-muted">
+                        Lộ mã nhóm ra ngoài? Bạn có thể đổi sang mã mới (mã cũ sẽ tự hủy).
+                    </div>
+                    <button type="button" onclick="regenerateSingleGroupCode()" class="btn-outline px-3 py-2 rounded-xl font-mono text-xs font-bold text-coral shrink-0">
+                        ↻ Đổi mã khác
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right 7 Cols: Direct Member Invite & Member List -->
+            <div class="lg:col-span-7 card-clean p-6 sm:p-7 space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h3 id="hostMemberCountTitle" class="font-display font-bold text-xl text-ink">Danh sách Thành viên trong nhóm (0)</h3>
+                        <p class="text-xs text-muted mt-0.5">Chống thêm trùng thành viên. Có thể nhượng quyền <strong>Host (Chủ quỹ)</strong> cho thành viên khác.</p>
+                    </div>
+                    <span class="font-mono text-xs font-bold bg-amber/40 border border-ink px-2.5 py-1 rounded-lg">
+                        👑 Bấm "Chuyển Host" cạnh thành viên để bàn giao quyền
+                    </span>
+                </div>
+
+                <!-- Direct Invite Bar -->
+                <form onsubmit="handleDirectInviteMember(event)" class="flex flex-col sm:flex-row gap-3">
+                    <input id="directMemberEmail" type="text" required placeholder="Nhập Email hoặc SĐT người cần mời trực tiếp..." 
+                        class="input-clean flex-1 px-4 py-2.5 text-sm">
+                    <button type="submit" class="btn-cta-lime px-5 py-2.5 rounded-xl font-display font-bold text-xs uppercase shrink-0">
+                        Gửi Lời Mời
+                    </button>
+                </form>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-y border-line bg-canvas font-mono text-xs text-muted uppercase">
+                                <th class="py-3 px-4">Thành viên</th>
+                                <th class="py-3 px-4">Vai trò nhóm</th>
+                                <th class="py-3 px-4">Ngày tham gia</th>
+                                <th class="py-3 px-4">Trạng thái</th>
+                                <th class="py-3 px-4 text-right">Thao tác Host</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hostMembersTableBody" class="divide-y divide-line text-sm">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== HOST TAB 2: CREATE INVOICE & SPLIT (FR-HOST-003) ==================== -->
+        <section id="hTabContent-invoice" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left 7 Cols: Invoice Creation Form (Equal or Itemized) -->
+            <div class="lg:col-span-7 card-clean p-6 sm:p-8 space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-display font-bold text-xl text-ink">Tạo Hóa Đơn &amp; Phân Bổ Chi Phí</h3>
+                        <p class="text-xs text-muted mt-0.5">Hỗ trợ Chia đều hoặc Chia theo món kèm phí dịch vụ, tip, giảm giá và làm tròn chuẩn VND.</p>
+                    </div>
+                    <span class="fr-badge">FR-HOST-003</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-ink mb-1.5">Tên quán / Đơn vị phát sinh</label>
+                        <input id="invMerchantName" type="text" placeholder="Tên nhà hàng / hóa đơn" oninput="recalculateHostInvoicePreview()"
+                            class="input-clean w-full px-4 py-2.5 text-sm font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-ink mb-1.5">Ngày phát sinh</label>
+                        <input id="invDate" type="date"  class="input-clean w-full px-4 py-2.5 text-sm font-mono">
+                    </div>
+                </div>
+
+                <!-- Split Method Selector -->
+                <div>
+                    <label class="block text-xs font-bold uppercase text-ink mb-2">Chọn hình thức chia hóa đơn</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button type="button" id="splitModeBtn-equal" onclick="setInvoiceSplitMode('equal')" 
+                            class="p-3.5 rounded-xl border-[1.5px] border-ink bg-lime/40 font-display font-bold text-sm text-left flex items-center justify-between">
+                            <span>1. Chia đều (Equal Split)</span>
+                            <i data-lucide="equal" class="w-4 h-4"></i>
+                        </button>
+                        <button type="button" id="splitModeBtn-itemized" onclick="setInvoiceSplitMode('itemized')" 
+                            class="p-3.5 rounded-xl border-[1.5px] border-line bg-white font-display font-bold text-sm text-left flex items-center justify-between text-muted">
+                            <span>2. Chia theo món (Itemized Split)</span>
+                            <i data-lucide="list-ordered" class="w-4 h-4"></i>
+                        </button>
+                        <button type="button" id="splitModeBtn-custom" onclick="setInvoiceSplitMode('custom')"
+                            class="p-3.5 rounded-xl border-[1.5px] border-line bg-white font-display font-bold text-sm text-left flex items-center justify-between text-muted">
+                            <span>3. Chia tùy chỉnh (Custom Split)</span>
+                            <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- MODE A: EQUAL SPLIT INPUTS -->
+                <div id="invoiceEqualSection" class="card-subtle p-5 space-y-4">
+                    <div>
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                            <label class="block text-xs font-bold uppercase text-ink">Tổng tiền món chính (VND - Số nguyên)</label>
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <span class="text-[11px] text-muted font-semibold">Cộng nhanh:</span>
+                                <button type="button" onclick="quickAddAmount('invEqualBaseAmount', 50000, true)" class="money-chip">+50k</button>
+                                <button type="button" onclick="quickAddAmount('invEqualBaseAmount', 100000, true)" class="money-chip">+100k</button>
+                                <button type="button" onclick="quickAddAmount('invEqualBaseAmount', 500000, true)" class="money-chip">+500k</button>
+                                <button type="button" onclick="quickSetAmount('invEqualBaseAmount', 0, true)" class="money-chip !bg-white text-muted">Reset</button>
+                            </div>
+                        </div>
+                        <input id="invEqualBaseAmount" type="number" placeholder="0" min="1000" step="1000" oninput="recalculateHostInvoicePreview()"
+                            class="input-clean w-full px-4 py-2.5 font-mono font-bold text-lg">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-ink mb-2">Chọn thành viên tham gia hóa đơn</label>
+                        <div id="equalMembersCheckboxes" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODE B: ITEMIZED SPLIT INPUTS -->
+                <div id="invoiceItemizedSection" class="hidden card-subtle p-5 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase text-ink">Danh sách từng món &amp; người dùng</span>
+                        <button type="button" onclick="addInvoiceItemRow()" class="btn-outline px-3 py-1.5 rounded-lg font-mono text-xs font-bold">
+                            + Thêm món
+                        </button>
+                    </div>
+                    <div id="invoiceItemsContainer" class="space-y-3">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- MODE C: CUSTOM SPLIT INPUTS -->
+                <div id="invoiceCustomSection" class="hidden card-subtle p-5 space-y-4">
+                    <label class="block text-xs font-bold uppercase text-ink">Tổng tiền món chính (VND)</label>
+                    <input id="invCustomBaseAmount" type="number" min="0" step="1" value="0" oninput="recalculateHostInvoicePreview()"
+                        class="input-clean w-full px-4 py-2.5 font-mono font-bold text-lg">
+                    <p class="text-xs text-muted">Nhập số tiền mỗi thành viên phải chịu (đã gồm phí và giảm giá). Tổng các phần chia phải bằng tổng hóa đơn.</p>
+                    <div id="invoiceCustomMembers" class="space-y-2"></div>
+                    <p id="invoiceCustomDifference" class="text-xs font-semibold"></p>
+                </div>
+
+                <!-- Adjustments: Service Fee / Tip / Discount -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-ink mb-1.5">Phí dịch vụ / Tip cộng thêm (VND)</label>
+                        <input id="invFeeTip" type="number" placeholder="0" min="0" step="1000" oninput="recalculateHostInvoicePreview()"
+                            class="input-clean w-full px-4 py-2.5 font-mono text-sm font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-ink mb-1.5">Giảm giá / Voucher trừ đi (VND)</label>
+                        <input id="invDiscount" type="number" value="0" min="0" step="1000" oninput="recalculateHostInvoicePreview()"
+                            class="input-clean w-full px-4 py-2.5 font-mono text-sm font-bold">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right 5 Cols: Real-time Allocation Preview & Confirm Save -->
+            <div class="lg:col-span-5 card-clean p-6 sm:p-8 flex flex-col justify-between space-y-6">
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between border-b border-line pb-4">
+                        <div>
+                            <span class="font-mono text-xs font-bold text-indigo uppercase">Bản Xem Trước Phân Bổ</span>
+                            <h4 class="font-display font-bold text-xl text-ink mt-0.5">Chi tiết phần tiền từng người</h4>
+                        </div>
+                        <span class="font-mono text-xs bg-canvas px-2.5 py-1 rounded border border-ink/20">Đơn vị: VND</span>
+                    </div>
+
+                    <!-- Breakdown Summary -->
+                    <div class="card-subtle p-4 space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-muted">Tổng tiền món:</span>
+                            <span id="previewSubtotal" class="font-mono font-bold">1,800,000 ₫</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted">Phụ phí / Tip (+):</span>
+                            <span id="previewFee" class="font-mono font-bold text-amber-700">+120,000 ₫</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted">Giảm giá (-):</span>
+                            <span id="previewDiscount" class="font-mono font-bold text-emerald-700">-0 ₫</span>
+                        </div>
+                        <div class="flex justify-between pt-2 border-t border-line text-sm font-bold">
+                            <span>Tổng cộng cần chia:</span>
+                            <span id="previewGrandTotal" class="font-mono text-indigo">1,920,000 ₫</span>
+                        </div>
+                    </div>
+
+                    <!-- Per-Member Allocation List -->
+                    <div id="invoiceAllocationPreviewList" class="space-y-2.5 max-h-[280px] overflow-y-auto pr-1">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="space-y-3 pt-4 border-t border-line">
+                    <p class="text-xs text-muted">
+                        Khi bấm lưu, hệ thống sẽ tạo bản ghi Hóa đơn kèm các <strong>Khoản phải trả (Khoản nợ)</strong> tương ứng cho từng thành viên.
+                    </p>
+                    <button type="button" onclick="saveHostInvoice()" class="btn-cta-lime w-full py-3.5 rounded-xl font-display font-bold text-sm uppercase tracking-wider">
+                        Xác nhận Lưu Hóa Đơn &amp; Tạo Khoản Phải Trả
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== HOST TAB 3: GROUP FUND LEDGER (FR-HOST-004) ==================== -->
+        <section id="hTabContent-fund" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left 5 Cols: Record Fund In / Out Form -->
+            <div class="lg:col-span-5 card-clean p-6 sm:p-8 space-y-5">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-display font-bold text-xl text-ink">Ghi nhận Thu / Chi Sổ Quỹ</h3>
+                        <p class="text-xs text-muted mt-0.5">Không cho phép sửa trực tiếp số dư mà không qua giao dịch có lưu dấu vết.</p>
+                    </div>
+                    <span class="fr-badge">FR-HOST-004</span>
+                </div>
+
+                <form onsubmit="handleRecordFundTx(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-ink mb-1.5">Loại giao dịch quỹ</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="txType" value="in" checked class="peer sr-only">
+                                <div class="p-3 rounded-xl border-[1.5px] border-line peer-checked:border-ink peer-checked:bg-emerald-50 font-display font-bold text-xs text-center">
+                                    ＋ Ghi nhận THU (Tăng quỹ)
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="txType" value="out" class="peer sr-only">
+                                <div class="p-3 rounded-xl border-[1.5px] border-line peer-checked:border-ink peer-checked:bg-rose-50 font-display font-bold text-xs text-center">
+                                    － Ghi nhận CHI (Giảm quỹ)
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-ink mb-1">Số tiền (VND)</label>
+                            <input id="fundTxAmount" type="number" required placeholder="0" min="1000" step="1000" 
+                                class="input-clean w-full px-3.5 py-2.5 font-mono font-bold text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-ink mb-1">Phương thức</label>
+                            <select id="fundTxMethod" class="input-clean w-full px-3.5 py-2.5 text-sm font-medium">
+                                <option value="Chuyển khoản">Chuyển khoản</option>
+                                <option value="Tiền mặt">Tiền mặt</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-ink mb-1">Nội dung &amp; Mã chứng từ tham chiếu</label>
+                        <input id="fundTxDesc" type="text" required placeholder="VD: Thu quỹ đợt 2 hoặc Chi đặt cọc Villa Đà Lạt" 
+                            class="input-clean w-full px-3.5 py-2.5 text-sm">
+                    </div>
+
+                    <button type="submit" class="btn-cta-indigo w-full py-3.5 rounded-xl font-display font-bold text-xs uppercase tracking-wider">
+                        Ghi Sổ Quỹ &amp; Cập Nhật Số Dư
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right 7 Cols: Balance & Ledger History -->
+            <div class="lg:col-span-7 card-clean p-6 sm:p-8 space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-line">
+                    <div>
+                        <span class="text-xs font-bold uppercase text-muted">Số dư quỹ chung hiện tại</span>
+                        <div id="hostFundBalanceDisplay" class="font-mono font-bold text-3xl text-indigo mt-0.5">0 ₫</div>
+                    </div>
+                    <span class="font-mono text-xs bg-canvas px-3 py-1.5 rounded-lg border border-ink/15">
+                        Audit Log: Đã bật lưu vết Host &amp; Timestamp
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-y border-line bg-canvas font-mono text-xs text-muted uppercase">
+                                <th class="py-3 px-4">Mã GD</th>
+                                <th class="py-3 px-4">Loại</th>
+                                <th class="py-3 px-4">Nội dung &amp; Phương thức</th>
+                                <th class="py-3 px-4">Thời gian &amp; Người tạo</th>
+                                <th class="py-3 px-4 text-right">Số tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hostFundLedgerBody" class="divide-y divide-line text-sm">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== HOST TAB 4: DEBTS & PAYMENT RECONCILIATION (FR-HOST-005 & 006) ==================== -->
+        <section id="hTabContent-debts" class="hidden card-clean p-6 sm:p-8 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-display font-bold text-xl text-ink">Theo dõi Công nợ &amp; Xác nhận Thành viên Thanh toán</h3>
+                        <span class="fr-badge">FR-HOST-005</span>
+                        <span class="fr-badge">FR-HOST-006</span>
+                    </div>
+                    <p class="text-xs text-muted mt-1">
+                        Phân biệt rõ nợ đóng quỹ, nợ hóa đơn và khoản đang tranh chấp. Hỗ trợ ghi nhận <strong>Thanh toán một phần</strong> hoặc <strong>Trả đủ</strong> sau khi đối soát.
+                    </p>
+                    <!-- Clean Visual Progress Tracker for Group Debt Settlement -->
+                    <div class="mt-3 max-w-md space-y-1">
+                        <div class="flex justify-between text-xs font-mono font-bold">
+                            <span class="text-ink">Tiến độ thu hồi công nợ nhóm:</span>
+                            <span id="hostDebtProgressLabel" class="text-indigo">0% Đã thu</span>
+                        </div>
+                        <div class="progress-neo-track">
+                            <div id="hostDebtProgressBar" class="progress-neo-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Debt Filter Bar (FR-HOST-006) -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <select id="hostDebtFilter" onchange="renderHostDebtsTable()" class="input-clean px-3.5 py-2 text-xs font-bold">
+                        <option value="all">Tất cả khoản phải thu</option>
+                        <option value="fund">Chưa đóng quỹ</option>
+                        <option value="invoice">Chưa trả hóa đơn</option>
+                        <option value="disputed">Đang tranh chấp (Nhãn riêng)</option>
+                        <option value="paid">Đã thanh toán đủ</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-y border-line bg-canvas font-mono text-xs text-muted uppercase">
+                            <th class="py-3.5 px-4">Mã nợ</th>
+                            <th class="py-3.5 px-4">Thành viên</th>
+                            <th class="py-3.5 px-4">Loại &amp; Nội dung</th>
+                            <th class="py-3.5 px-4 text-right">Phải trả</th>
+                            <th class="py-3.5 px-4 text-right">Đã trả</th>
+                            <th class="py-3.5 px-4 text-right">Còn nợ</th>
+                            <th class="py-3.5 px-4 text-center">Trạng thái</th>
+                            <th class="py-3.5 px-4 text-right">Thao tác Host</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hostDebtsTableBody" class="divide-y divide-line text-sm">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============================================================================
+         VIEW 4: ADMIN ROLE WORKSPACE (FR-ADM-001 TO FR-ADM-007)
+         Quyền hạn: Quản trị toàn server, khóa/mở khóa tài khoản, xem/xóa nhóm thủ công, giám sát tác vụ tự động rà soát nhóm quá hạn 5 năm
+    ============================================================================= -->

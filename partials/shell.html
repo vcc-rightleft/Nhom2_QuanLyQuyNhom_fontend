@@ -1,0 +1,472 @@
+<!-- Ambient Renaissance Fresco Sky Aura for 100% Visual Continuity with Opening Screen -->
+    <div class="app-renaissance-ambient"></div>
+    <!-- Continuous Living Renaissance Cloud, Sunbeam & Interactive Particle Canvas for All Post-Opening Views -->
+    <canvas id="appAmbientCanvas" class="fixed inset-0 w-full h-full pointer-events-none z-[1]"></canvas>
+
+    <!-- ============================================================================
+         TOP ROLE & SRS NAVIGATION BAR (CLEAN & STRUCTURED FOR FIGMA)
+    ============================================================================= -->
+    <header class="sticky top-0 z-40 bg-white border-b-2 border-ink px-4 sm:px-8 py-3.5 shadow-clean">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Brand Identity -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-lime text-ink border-2 border-ink shadow-bold-sm flex items-center justify-center font-display font-bold text-xl">
+                    $
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-display font-bold text-lg tracking-tight text-ink">SQUAD.CASH</span>
+                        <span class="font-mono text-[11px] font-bold bg-lime border-[1.5px] border-ink px-2 py-0.5 rounded-md text-ink">
+                            RENAISSANCE OS v2.5
+                        </span>
+                    </div>
+                    <p class="text-xs text-muted font-medium">Wiro Renaissance Art × Western Bold FinTech OS</p>
+                </div>
+            </div>
+
+            <!-- 5 Role Switcher Tabs (Landing Intro / Auth / User / Host / Admin) -->
+            <nav class="flex items-center bg-canvas p-1.5 rounded-xl border-2 border-ink overflow-x-auto gap-1">
+                <button id="roleBtn-landing" onclick="switchRoleView('landing')" 
+                    class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-2 transition-all bg-lime text-ink border-2 border-ink shadow-bold-sm">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span>0. Trang Giới Thiệu</span>
+                </button>
+                <button id="roleBtn-auth" onclick="switchRoleView('auth')" 
+                    class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-2 transition-all text-muted hover:text-ink">
+                    <i data-lucide="log-in" class="w-4 h-4"></i>
+                    <span>1. Đăng nhập / Đăng ký</span>
+                </button>
+                <button id="roleBtn-user" onclick="switchRoleView('user')" 
+                    class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-2 transition-all text-muted hover:text-ink">
+                    <i data-lucide="user" class="w-4 h-4"></i>
+                    <span>2. Vai trò User</span>
+                </button>
+                <button id="roleBtn-host" onclick="switchRoleView('host')" 
+                    class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-2 transition-all text-muted hover:text-ink">
+                    <i data-lucide="crown" class="w-4 h-4"></i>
+                    <span>3. Vai trò Host</span>
+                </button>
+                <button id="roleBtn-admin" onclick="switchRoleView('admin')" 
+                    class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-2 transition-all text-muted hover:text-ink">
+                    <i data-lucide="shield" class="w-4 h-4"></i>
+                    <span>4. Vai trò Admin</span>
+                </button>
+            </nav>
+
+            <button type="button" id="squadLogoutBtn" onclick="logoutSquad()" class="hidden px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm items-center gap-2 bg-coral text-white border-2 border-ink shadow-bold-sm">
+                <i data-lucide="log-out" class="w-4 h-4 inline-block align-middle"></i>
+                <span>Đăng xuất</span>
+            </button>
+
+            <!-- Right Controls: Live FastAPI Bridge, Sound FX Toggle & SRS Badge Toggle -->
+            <div class="flex flex-wrap items-center gap-2.5">
+                <button type="button" data-squad-auth-only onclick="openUserProfileModal()" title="Chỉnh sửa thông tin cá nhân & Đổi mật khẩu"
+                    class="inline-flex items-center gap-1.5 bg-indigo text-white hover:bg-indigo-700 px-3 py-2 rounded-xl border-2 border-ink text-xs font-mono font-bold shadow-bold-sm">
+                    <i data-lucide="user-cog" class="w-3.5 h-3.5"></i>
+                    <span id="headerProfileName">Hồ sơ</span>
+                </button>
+                <button type="button" onclick="openWesternOnboarding('Tân Thành Viên')" title="Xem lại hiệu ứng mở màn hướng dẫn người mới"
+                    class="inline-flex items-center gap-1.5 bg-lime hover:bg-lime/80 px-3 py-2 rounded-xl border-2 border-ink text-xs font-mono font-bold shadow-bold-sm">
+                    <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                    <span class="hidden sm:inline">Màn Tân Thủ</span>
+                </button>
+                <button type="button" onclick="openModal('modalCmdPalette'); setTimeout(() => document.getElementById('cmdSearchInput').focus(), 80);" title="Tìm nhanh hoặc chuyển màn hình (Ctrl + K)"
+                    class="inline-flex items-center gap-2 bg-canvas hover:bg-lime/40 px-3 py-2 rounded-xl border-2 border-ink text-xs font-mono font-bold shadow-bold-sm">
+                    <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                    <span class="hidden sm:inline">Thao tác nhanh</span>
+                    <kbd class="bg-white border border-ink px-1.5 py-0.5 rounded text-[10px]">Ctrl+K</kbd>
+                </button>
+                <button type="button" onclick="pingFastApiBackend()" id="apiStatusPill" title="Bấm để kiểm tra kết nối FastAPI http://127.0.0.1:8000"
+                    class="inline-flex items-center gap-2 bg-white hover:bg-lime/30 px-3 py-2 rounded-xl border-2 border-ink text-xs font-mono font-bold shadow-bold-sm">
+                    <span id="apiPulseDot" class="pulse-dot"></span>
+                    <span id="apiStatusLabel">API: 127.0.0.1:8000</span>
+                </button>
+                <button type="button" id="soundToggleBtn" onclick="toggleSoundFx()" title="Bật/Tắt âm thanh & pháo hoa tương tác"
+                    class="inline-flex items-center gap-1.5 bg-cyan/40 hover:bg-cyan px-3 py-2 rounded-xl border-2 border-ink text-xs font-mono font-bold shadow-bold-sm">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                    <span id="soundToggleLabel">FX: BẬT</span>
+                </button>
+                <label class="inline-flex items-center gap-2 cursor-pointer bg-amber/40 px-3 py-2 rounded-xl border-2 border-ink text-xs font-bold select-none shadow-bold-sm">
+                    <input type="checkbox" checked onchange="toggleFrBadges(this.checked)" class="accent-indigo w-4 h-4 rounded">
+                    <span class="font-mono text-ink">Nhãn SRS (FR-Code)</span>
+                </label>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============================================================================
+         WIRO-STYLE MULTI-PLANE RENAISSANCE PAINTING ZOOM (CUỘN ĐỂ ĐI SÂU VÀO TRONG TRANH)
+    ============================================================================= -->
+    <div id="cinematicIntroSplash">
+        <div class="scrolly-z-track" id="scrollyZTrack">
+            <div class="scrolly-z-viewport">
+
+                <!-- LAYER 1: Multi-Plane Renaissance Fresco Paintings that Zoom In as you scroll -->
+                <div class="fresco-zoom-stage" id="frescoZoomStage">
+                    <div id="frescoPlane3" class="fresco-plane"></div>
+                    <div id="frescoPlane2" class="fresco-plane"></div>
+                    <div id="frescoPlane1" class="fresco-plane"></div>
+                </div>
+
+                <!-- LAYER 2: Painterly Volumetric Clouds & Golden Sunbeams Canvas (Parts outward on zoom) -->
+                <canvas id="wiroPaintingCanvas"></canvas>
+
+                <!-- LAYER 3: Authentic Oil-Canvas Craquelure & Linen Weave Texture -->
+                <div class="wiro-oil-crackle-overlay"></div>
+
+                <!-- LAYER 4: Top Floating Wiro Pill Navigation -->
+                <div class="relative z-40">
+                    <div class="scrolly-progress-track">
+                        <div id="scrollyProgressFill" class="scrolly-progress-fill"></div>
+                    </div>
+
+                    <div class="max-w-6xl mx-auto px-4 pt-3.5">
+                        <div class="wiro-floating-nav flex flex-wrap items-center justify-between gap-2">
+                            <!-- Brand Logo -->
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-full bg-[#161514] text-[#D4FF00] font-display font-bold text-sm flex items-center justify-center">
+                                    $
+                                </div>
+                                <span class="font-display font-bold text-sm tracking-tight text-[#161514]">SQUAD.CASH</span>
+                                <span class="hidden sm:inline-block font-mono text-[10px] font-semibold bg-[#efe6d5] border border-black/10 px-2.5 py-0.5 rounded-full text-black/75">
+                                    RENAISSANCE OS
+                                </span>
+                            </div>
+
+                            <!-- 5 Painting Depth Chapters -->
+                            <div class="flex items-center gap-1 overflow-x-auto py-0.5">
+                                <button type="button" id="chapPill-0" onclick="scrollToStoryChapter(0)" class="chapter-step-pill active">
+                                    01. Bích Họa OS
+                                </button>
+                                <button type="button" id="chapPill-1" onclick="scrollToStoryChapter(1)" class="chapter-step-pill">
+                                    02. Câu Chuyện
+                                </button>
+                                <button type="button" id="chapPill-2" onclick="scrollToStoryChapter(2)" class="chapter-step-pill">
+                                    03. Mã Nhóm &amp; Chia Bill
+                                </button>
+                                <button type="button" id="chapPill-3" onclick="scrollToStoryChapter(3)" class="chapter-step-pill">
+                                    04. VietQR &amp; 3 Vai Trò
+                                </button>
+                                <button type="button" id="chapPill-4" onclick="scrollToStoryChapter(4)" class="chapter-step-pill">
+                                    05. Đăng Ký →
+                                </button>
+                            </div>
+
+                            <!-- Right Actions -->
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="triggerStoryFinalTransition('login')" class="text-xs font-semibold text-black/75 hover:text-black px-2.5 py-1.5">
+                                    Đăng nhập
+                                </button>
+                                <button type="button" onclick="triggerStoryFinalTransition('register')" class="btn-wiro-dark px-4 py-2 text-xs flex items-center gap-1.5">
+                                    <span>Vào Đăng Ký</span>
+                                    <span>↗</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LAYER 5: 3D Z-AXIS PAINTING SCENES EMERGING FROM THE HEART OF THE FRESCO -->
+                <div class="z-world-stage" id="zWorldStage">
+
+                    <!-- ==================== SCENE 01 (Z = 0px): WIRO RENAISSANCE PAINTING HERO ==================== -->
+                    <div id="zGate-0" class="z-story-gate gate-interactive">
+                        <div class="text-center space-y-5 max-w-4xl mx-auto px-2">
+                            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/88 border border-black/10 shadow-xs text-xs font-semibold text-black/80">
+                                <span class="text-amber-700">✦</span>
+                                <span>Nghệ Thuật Sổ Cái Phục Hưng • Lăn chuột để đi sâu vào trong bức tranh</span>
+                            </div>
+
+                            <div class="space-y-1 max-w-3xl mx-auto">
+                                <h1 class="font-wiro-sans font-bold text-4xl sm:text-6xl lg:text-[70px] text-[#161514] leading-[1.01] drop-shadow-[0_2px_16px_rgba(255,255,255,0.85)]">
+                                    Operating System <br/>
+                                    <span class="font-wiro-serif font-normal text-5xl sm:text-7xl lg:text-[80px] text-[#5b21b6]">
+                                        for All Group Funds.
+                                    </span>
+                                </h1>
+                                <p class="text-xs sm:text-base text-black/80 max-w-xl mx-auto pt-1 leading-relaxed font-medium">
+                                    Hệ điều hành quản lý quỹ nhóm, chia hóa đơn ăn uống – du lịch và đối soát thanh toán tự động qua <strong>VietQR</strong>.
+                                </p>
+                            </div>
+
+                            <!-- Interactive Wiro OS Window Resting on the Painted Renaissance Clouds -->
+                            <div class="wiro-os-window max-w-3xl mx-auto text-left">
+                                <div class="wiro-os-titlebar">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+                                        <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                                        <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                                        <span class="font-mono text-[11px] font-semibold text-black/60 ml-2">squad.cash/os/chuyen-di-da-lat-q4</span>
+                                    </div>
+                                    <span class="font-mono text-[11px] font-bold bg-[#D4FF00] text-[#161514] px-2.5 py-0.5 rounded-full border border-black/15">
+                                        MÃ NHÓM: #DALAT26
+                                    </span>
+                                </div>
+
+                                <!-- Classical Painting Banner inside the OS Window -->
+                                <div class="relative h-28 sm:h-32 w-full overflow-hidden border-b border-black/10"
+                                     style="background-image: linear-gradient(90deg, rgba(20,16,12,0.72) 0%, rgba(20,16,12,0.25) 60%, rgba(20,16,12,0.68) 100%), url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/%22The_School_of_Athens%22_by_Raffaello_Sanzio_da_Urbino.jpg/1280px-%22The_School_of_Athens%22_by_Raffaello_Sanzio_da_Urbino.jpg'); background-size: cover; background-position: center 32%;">
+                                    <div class="absolute inset-0 p-4 sm:p-5 flex flex-col justify-between text-white">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-mono text-[10px] uppercase tracking-widest bg-white/20 backdrop-blur-md px-2.5 py-0.5 rounded-full">
+                                                ✦ CHUYẾN ĐI ĐÀ LẠT QUÝ 4 • #GRP-101
+                                            </span>
+                                            <span class="font-mono text-xs text-[#D4FF00] font-bold">Host: Phan Đức Anh</span>
+                                        </div>
+                                        <div class="flex items-end justify-between gap-4">
+                                            <div>
+                                                <div class="font-wiro-serif text-xl sm:text-2xl text-white">Sổ Cái Cân Bằng Tuyệt Đối</div>
+                                                <div class="text-[11px] text-white/80">6 Thành viên xác thực • Đã đối soát 100% chứng từ</div>
+                                            </div>
+                                            <div class="text-right">
+                                                <div class="font-mono text-[10px] uppercase text-white/75">SỐ DƯ QUỸ HIỆN TẠI</div>
+                                                <div class="font-mono font-bold text-xl sm:text-2xl text-[#D4FF00]">8,500,000 ₫</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white/90">
+                                    <div class="p-3 rounded-xl bg-[#f8f5ee] border border-black/8">
+                                        <span class="font-mono text-[10px] font-bold uppercase text-black/50">01 • MÃ MỜI (FR-HOST-002)</span>
+                                        <div class="font-mono font-bold text-base text-[#161514] mt-0.5">#DALAT26</div>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-[#f8f5ee] border border-black/8">
+                                        <span class="font-mono text-[10px] font-bold uppercase text-black/50">02 • CHIA BILL (FR-HOST-003)</span>
+                                        <div class="font-mono font-bold text-base text-[#5b21b6] mt-0.5">320,000 ₫ / người</div>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-[#161514] text-white">
+                                        <span class="font-mono text-[10px] font-bold uppercase text-[#D4FF00]">03 • VIETQR 1-TOUCH</span>
+                                        <div class="font-mono font-bold text-base text-white mt-0.5">Quét QR &amp; Đối Soát</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== SCENE 02 (Z = -1250px): THE PROBLEM VS THE RENAISSANCE OS ==================== -->
+                    <div id="zGate-1" class="z-story-gate">
+                        <div class="wiro-fresco-banner-card p-6 sm:p-10">
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                                <div class="lg:col-span-6 space-y-4">
+                                    <span class="inline-block font-mono text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-rose-100 text-rose-800 border border-rose-300">
+                                        CHƯƠNG I • ĐI SÂU VÀO BỨC TRANH THỰC TẾ
+                                    </span>
+                                    <h2 class="font-wiro-sans font-bold text-3xl sm:text-5xl text-[#161514] leading-[1.06]">
+                                        Đi chơi thì vui, <br/>
+                                        <span class="font-wiro-serif font-normal text-4xl sm:text-6xl text-rose-700">
+                                            tính tiền nhóm thì rối?
+                                        </span>
+                                    </h2>
+                                    <p class="text-sm sm:text-base text-black/75 leading-relaxed">
+                                        Chuyến đi Đà Lạt 6 người: người ứng tiền cọc Villa, người trả hóa đơn Lẩu Bò, người trả tiền thuê xe. Khi về nhà mở file Excel cộng trừ đủ kiểu vẫn lệch tiền, mà <strong>ngại nhất là nhắn tin đòi nợ từng người bạn trên nhóm chat!</strong>
+                                    </p>
+                                </div>
+
+                                <div class="lg:col-span-6 space-y-3.5">
+                                    <div class="wiro-bento-card !p-4 bg-rose-50/90 border-rose-200 flex items-start gap-3.5">
+                                        <span class="w-8 h-8 rounded-full bg-rose-600 text-white flex items-center justify-center font-bold text-xs shrink-0">✕</span>
+                                        <div class="space-y-1 text-xs sm:text-sm">
+                                            <div class="font-bold text-[#161514]">Nỗi ám ảnh sổ sách thủ công</div>
+                                            <div class="text-black/70">"Hôm qua ai ứng 1 triệu 920k tiền lẩu vậy? Minh không ăn phần bò nhúng thêm thì chia lại thế nào?"</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="wiro-bento-card !p-4 bg-emerald-50/95 border-emerald-300 flex items-start gap-3.5">
+                                        <span class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0">✓</span>
+                                        <div class="space-y-1 text-xs sm:text-sm">
+                                            <div class="font-bold text-[#161514]">Sự trật tự của SQUAD.CASH Operating System</div>
+                                            <div class="text-black/75">Mọi hóa đơn, dòng tiền thu/chi quỹ và nghĩa vụ công nợ của từng thành viên được tính tự động chuẩn từng đồng VND, kèm mã VietQR cá nhân hóa.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== SCENE 03 (Z = -2500px): BENTO PAINTING SHOWCASE — INVITE CODE & SMART SPLIT ==================== -->
+                    <div id="zGate-2" class="z-story-gate">
+                        <div class="wiro-fresco-banner-card p-6 sm:p-9 space-y-6">
+                            <div class="flex flex-wrap items-end justify-between gap-4 border-b border-black/10 pb-4">
+                                <div>
+                                    <span class="font-mono text-xs font-bold uppercase tracking-wider text-[#5b21b6]">
+                                        CHƯƠNG II • KIẾN TRÚC PHÂN BỔ (FR-HOST-002 &amp; FR-HOST-003)
+                                    </span>
+                                    <h2 class="font-wiro-sans font-bold text-2xl sm:text-4xl text-[#161514] mt-1">
+                                        Kết nối bằng 1 Mã duy nhất. <span class="font-wiro-serif font-normal text-3xl sm:text-5xl text-[#5b21b6]">Chia bill theo Tỷ Lệ Vàng.</span>
+                                    </h2>
+                                </div>
+                                <span class="font-mono text-xs font-bold bg-[#161514] text-[#D4FF00] px-3 py-1 rounded-full">0₫ SAI LỆCH</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Painting Bento Card 1 -->
+                                <div class="wiro-bento-card space-y-3">
+                                    <div class="wiro-painting-inset"
+                                         style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg/1280px-Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg');">
+                                        <div class="relative z-10 h-full p-3.5 flex flex-col justify-between text-white">
+                                            <span class="self-start font-mono text-[10px] font-bold bg-[#D4FF00] text-[#161514] px-2.5 py-0.5 rounded-full">
+                                                FR-HOST-001 &amp; FR-HOST-002
+                                            </span>
+                                            <div class="font-wiro-serif text-xl">Khế Ước Kết Nối Thành Viên</div>
+                                        </div>
+                                    </div>
+                                    <h3 class="font-display font-bold text-lg text-[#161514]">1. Mỗi Nhóm 1 Mã Mời Cố Định Duy Nhất</h3>
+                                    <p class="text-xs text-black/70 leading-relaxed">
+                                        Host sở hữu 1 mã mời cố định duy nhất (VD: <strong>#DALAT26</strong>). Bạn bè nhập mã là vào thẳng nhóm, tự động chặn trùng lặp thành viên.
+                                    </p>
+                                    <div class="p-3 rounded-xl bg-[#f4efe6] border border-black/10 flex items-center justify-between font-mono">
+                                        <span class="text-xs text-black/65">Ấn tín nhóm #GRP-101:</span>
+                                        <span class="font-bold text-lg tracking-widest text-[#161514]">#DALAT26</span>
+                                    </div>
+                                </div>
+
+                                <!-- Painting Bento Card 2 -->
+                                <div class="wiro-bento-card space-y-3">
+                                    <div class="wiro-painting-inset"
+                                         style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/%22The_School_of_Athens%22_by_Raffaello_Sanzio_da_Urbino.jpg/1280px-%22The_School_of_Athens%22_by_Raffaello_Sanzio_da_Urbino.jpg');">
+                                        <div class="relative z-10 h-full p-3.5 flex flex-col justify-between text-white">
+                                            <span class="self-start font-mono text-[10px] font-bold bg-cyan text-[#161514] px-2.5 py-0.5 rounded-full">
+                                                FR-HOST-003 &amp; FR-HOST-004
+                                            </span>
+                                            <div class="font-wiro-serif text-xl">Chuẩn Số Nguyên VND • 0₫ Sai Lệch</div>
+                                        </div>
+                                    </div>
+                                    <h3 class="font-display font-bold text-lg text-[#161514]">2. Chia Đều Hoặc Chia Theo Món Ăn</h3>
+                                    <p class="text-xs text-black/70 leading-relaxed">
+                                        Hỗ trợ <strong>Chia đều</strong> hoặc <strong>Chia theo từng món</strong> kèm phụ phí/tip, trừ giảm giá và tự động tạo khoản phải thu cho từng người.
+                                    </p>
+                                    <div class="p-3 rounded-xl bg-[#161514] text-white flex items-center justify-between font-mono text-xs">
+                                        <span>Lẩu Bò (1,920,000₫ / 6 người):</span>
+                                        <span class="text-sm font-bold text-[#D4FF00]">320,000 ₫ / người</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== SCENE 04 (Z = -3750px): VIETQR, URGENT REMINDER & 3 RBAC ROLES ==================== -->
+                    <div id="zGate-3" class="z-story-gate">
+                        <div class="wiro-fresco-banner-card p-6 sm:p-10 space-y-6">
+                            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 border-b border-black/10 pb-4">
+                                <div>
+                                    <span class="font-mono text-xs font-bold uppercase text-amber-800">CHƯƠNG III • ĐỐI SOÁT &amp; PHÂN QUYỀN 3 TẦNG BẬC</span>
+                                    <h2 class="font-wiro-sans font-bold text-2xl sm:text-4xl text-[#161514] mt-1">
+                                        Nhắc nợ khẩn, Quét VietQR <span class="font-wiro-serif font-normal text-3xl sm:text-5xl text-[#5b21b6]">&amp; Hệ thống 3 Vai trò.</span>
+                                    </h2>
+                                </div>
+                                <div class="bg-[#FF5E36] text-white px-4 py-2 rounded-2xl flex items-center gap-2 shadow-sm">
+                                    <span class="bell-ringing text-base">🚨</span>
+                                    <span class="font-mono text-xs font-bold">Popup nhắc nợ khẩn khi người nợ đăng nhập!</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                <div class="wiro-bento-card space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-mono text-xs font-bold bg-cyan/35 px-2.5 py-0.5 rounded-full">VAI TRÒ 01</span>
+                                        <span class="font-mono text-[11px] text-black/50">FR-USER-001 → 004</span>
+                                    </div>
+                                    <h3 class="font-display font-bold text-lg text-[#161514]">👤 User (Thành viên)</h3>
+                                    <p class="text-xs text-black/70 leading-relaxed">
+                                        Xem nhóm tham gia, theo dõi công nợ cá nhân, lịch sử hóa đơn, dòng tiền sổ quỹ và bấm <strong>1 chạm mở mã VietQR</strong> điền sẵn số tiền.
+                                    </p>
+                                </div>
+
+                                <div class="wiro-bento-card space-y-2 border-2 border-[#161514]">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-mono text-xs font-bold bg-[#D4FF00] px-2.5 py-0.5 rounded-full">VAI TRÒ 02</span>
+                                        <span class="font-mono text-[11px] text-black/50">FR-HOST-001 → 006</span>
+                                    </div>
+                                    <h3 class="font-display font-bold text-lg text-[#161514]">👑 Host (Chủ nhóm)</h3>
+                                    <p class="text-xs text-black/70 leading-relaxed">
+                                        Quản lý mã mời, tạo hóa đơn chia tiền, ghi thu/chi quỹ, bắn lệnh <strong>🔔 Nhắc nợ khẩn</strong>, đối soát thực tế và <strong>Chuyển nhượng quyền Host</strong>.
+                                    </p>
+                                </div>
+
+                                <div class="wiro-bento-card space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-mono text-xs font-bold bg-amber/50 px-2.5 py-0.5 rounded-full">VAI TRÒ 03</span>
+                                        <span class="font-mono text-[11px] text-black/50">FR-ADM-001 → 007</span>
+                                    </div>
+                                    <h3 class="font-display font-bold text-lg text-[#161514]">🛡️ Admin (Hệ thống)</h3>
+                                    <p class="text-xs text-black/70 leading-relaxed">
+                                        Giám sát KPI toàn server, khóa/mở khóa tài khoản vi phạm, xóa mềm nhóm thủ công và chạy tác vụ <strong>rà soát nhóm quá hạn 5 năm</strong>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== SCENE 05 (Z = -5000px): HEART OF THE PAINTING -> REGISTER ==================== -->
+                    <div id="zGate-4" class="z-story-gate">
+                        <div class="wiro-os-window max-w-2xl mx-auto p-8 sm:p-12 text-center space-y-6">
+                            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#D4FF00] text-[#161514] font-mono text-xs font-bold border border-black/15">
+                                <span>✦ TÂM BỨC TRANH • KHỞI TẠO TÀI KHOẢN CỦA BẠN</span>
+                            </div>
+
+                            <h2 class="font-wiro-sans font-bold text-4xl sm:text-6xl text-[#161514] leading-[1.04]">
+                                Bước Vào Hệ Thống <br/>
+                                <span class="font-wiro-serif font-normal text-5xl sm:text-7xl text-[#5b21b6]">
+                                    SQUAD.CASH OS.
+                                </span>
+                            </h2>
+
+                            <p class="text-sm sm:text-base text-black/70 max-w-lg mx-auto leading-relaxed">
+                                Cuộn thêm một nhịp chuột cuối cùng để <strong>đi xuyên qua tâm bức tranh vào giao diện Đăng Ký Tài Khoản</strong>, hoặc bấm chọn bên dưới:
+                            </p>
+
+                            <div class="max-w-md mx-auto p-3.5 rounded-2xl bg-[#f5f1e8] border border-black/10 space-y-2">
+                                <div class="flex justify-between font-mono text-xs font-bold text-black/80">
+                                    <span>TIẾN ĐỘ ĐI VÀO TRANG ĐĂNG KÝ:</span>
+                                    <span id="finalPortalChargeText">90%</span>
+                                </div>
+                                <div class="w-full h-2.5 bg-black/10 rounded-full overflow-hidden">
+                                    <div id="finalPortalChargeBar" class="h-full bg-[#161514] transition-all duration-100" style="width: 90%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+                                <button type="button" onclick="triggerStoryFinalTransition('register')" class="btn-wiro-dark px-8 py-4 text-sm sm:text-base flex items-center gap-2.5">
+                                    <span>🚀 Vào Giao Diện Đăng Ký Tài Khoản</span>
+                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </button>
+                                <button type="button" onclick="triggerStoryFinalTransition('login')" class="btn-wiro-glass px-6 py-4 text-sm">
+                                    Tôi Đã Có Tài Khoản (Đăng Nhập)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- LAYER 6: Bottom Wiro Scroll Telemetry Pill -->
+                <div class="relative z-40 max-w-6xl w-full mx-auto px-4 pb-3.5 flex items-center justify-between text-xs">
+                    <div class="wiro-floating-nav w-full flex items-center justify-between py-2.5 px-5">
+                        <div class="flex items-center gap-3">
+                            <div class="mouse-scroll-icon">
+                                <div class="mouse-scroll-wheel"></div>
+                            </div>
+                            <span id="scrollyBottomHint" class="font-medium text-black/85">
+                                Lăn chuột để đi sâu vào bên trong bức tranh Phục Hưng (Lớp 01/05)
+                            </span>
+                        </div>
+
+                        <div class="flex items-center gap-4 font-mono">
+                            <span id="scrollyDepthBadge" class="text-black/55 hidden sm:inline">ĐỘ SÂU TRANH: 0%</span>
+                            <span id="scrollyPercentBadge" class="text-[#5b21b6] font-bold">0%</span>
+                            <button type="button" onclick="scrollNextStoryChapter()" class="btn-wiro-dark px-3.5 py-1.5 text-xs">
+                                Lớp tranh tiếp →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================================
+         VIEW 0: CLEAN, ARTISTIC LANDING PAGE (TRANG GIỚI THIỆU GỌN GÀNG & TRỪU TƯỢNG)
+    ============================================================================= -->

@@ -1,0 +1,239 @@
+<main id="view-admin" class="relative z-10 hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
+        
+        <!-- Admin Header & Dashboard KPIs (Unified Wiro Renaissance OS Window - FR-ADM-005) -->
+        <section class="card-clean overflow-hidden bg-white">
+            <div class="os-window-bar">
+                <div class="flex items-center gap-2.5">
+                    <div class="os-dots">
+                        <span class="os-dot bg-coral"></span>
+                        <span class="os-dot bg-amber"></span>
+                        <span class="os-dot bg-mint"></span>
+                    </div>
+                    <span class="font-mono text-xs font-bold text-ink/75 ml-1">squad.cash/os/root-admin-governance</span>
+                </div>
+                <span class="font-mono text-[11px] font-bold bg-coral text-white px-2.5 py-0.5 rounded-full border border-ink">
+                    FR-ADM-001 → 007
+                </span>
+            </div>
+
+            <div class="workspace-fresco-strip px-6 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <span class="bg-coral text-white border-2 border-ink font-mono text-xs font-bold px-3 py-1 rounded-full shadow-bold-sm">
+                        VAI TRÒ: ADMIN TOÀN HỆ THỐNG
+                    </span>
+                    <span class="fr-badge">FR-ADM-005</span>
+                </div>
+                <span class="font-wiro-serif text-lg sm:text-xl text-amber">
+                    ✦ Giám Sát Toàn Server &amp; Bảo Toàn Dữ Liệu 5 Năm
+                </span>
+            </div>
+
+            <div class="p-6 sm:p-8 space-y-6 bg-white">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <h1 class="font-wiro-sans font-bold text-2xl sm:text-4xl text-ink leading-tight">
+                            Dashboard Thống kê &amp; <span class="font-wiro-serif font-normal text-3xl sm:text-5xl text-indigo">Quản trị Toàn Server.</span>
+                        </h1>
+                        <p class="text-xs text-muted mt-1">
+                            Trạng thái dữ liệu: <span class="font-mono font-semibold text-rose-700">Chưa có API thống kê quản trị</span> • Các số liệu không được tính giả.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <select onchange="notify('Chưa có API thống kê server; chưa thể lọc kết quả thực.')" class="input-clean px-3.5 py-2 text-xs font-bold bg-amber/30">
+                            <option>Toàn thời gian (Tích lũy)</option>
+                            <option>30 ngày gần nhất</option>
+                            <option>Quý 4 / 2026</option>
+                        </select>
+                    </div>
+                </div>
+
+            <!-- 3 Vibrant Color KPI Cards per FR-ADM-005 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card-cyan p-6">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase text-ink">1. Tổng số Tài khoản (Đã đăng ký)</span>
+                        <div class="w-8 h-8 rounded-lg bg-white border-2 border-ink flex items-center justify-center">
+                            <i data-lucide="users" class="w-4 h-4 text-ink"></i>
+                        </div>
+                    </div>
+                    <div id="admKpiUsers" class="font-mono font-bold text-3xl text-ink mt-3">—</div>
+                    <p class="text-xs font-semibold text-ink/80 mt-1">Chưa có API thống kê tài khoản</p>
+                </div>
+
+                <div class="card-amber p-6">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase text-ink">2. Tổng số Nhóm Quỹ (Trên Server)</span>
+                        <div class="w-8 h-8 rounded-lg bg-white border-2 border-ink flex items-center justify-center">
+                            <i data-lucide="layers" class="w-4 h-4 text-ink"></i>
+                        </div>
+                    </div>
+                    <div id="admKpiGroups" class="font-mono font-bold text-3xl text-ink mt-3">—</div>
+                    <p class="text-xs font-semibold text-ink/80 mt-1">Chưa có API thống kê nhóm</p>
+                </div>
+
+                <div class="card-violet p-6">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase text-lime">3. Tổng giá trị Giao dịch đã ghi nhận</span>
+                        <div class="w-8 h-8 rounded-lg bg-lime border-2 border-ink flex items-center justify-center">
+                            <i data-lucide="bar-chart-3" class="w-4 h-4 text-ink"></i>
+                        </div>
+                    </div>
+                    <div class="font-mono font-bold text-3xl text-white mt-3">—</div>
+                    <p class="text-xs text-white/85 mt-1">Chưa có API tổng hợp giao dịch</p>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <!-- Admin Navigation Sub-Tabs -->
+        <div class="flex flex-wrap gap-2 bg-white p-2 rounded-2xl border-[1.5px] border-ink">
+            <button id="aTabBtn-accounts" onclick="switchAdminTab('accounts')" class="px-4 py-2.5 rounded-xl font-display font-bold text-xs sm:text-sm bg-ink text-white flex items-center gap-2">
+                <i data-lucide="user-check" class="w-4 h-4"></i>
+                <span>1. Quản lý Tài khoản (Khóa / Mở khóa)</span>
+                <span class="fr-badge">FR-ADM-001/002/003</span>
+            </button>
+            <button id="aTabBtn-groups" onclick="switchAdminTab('groups')" class="px-4 py-2.5 rounded-xl font-display font-bold text-xs sm:text-sm text-muted hover:text-ink flex items-center gap-2">
+                <i data-lucide="folder-kanban" class="w-4 h-4"></i>
+                <span>2. Danh sách Nhóm &amp; Xóa thủ công</span>
+                <span class="fr-badge">FR-ADM-004 &amp; 006</span>
+            </button>
+            <button id="aTabBtn-retention" onclick="switchAdminTab('retention')" class="px-4 py-2.5 rounded-xl font-display font-bold text-xs sm:text-sm text-muted hover:text-ink flex items-center gap-2">
+                <i data-lucide="clock" class="w-4 h-4"></i>
+                <span>3. Tác vụ Tự động Xóa Nhóm Quá Hạn 5 Năm</span>
+                <span class="fr-badge">FR-ADM-007</span>
+            </button>
+        </div>
+
+        <!-- ==================== ADMIN TAB 1: ACCOUNTS (FR-ADM-001, 002, 003) ==================== -->
+        <section id="aTabContent-accounts" class="card-clean p-6 sm:p-8 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <h3 class="font-display font-bold text-xl text-ink">Danh sách Tài khoản Toàn Hệ thống</h3>
+                    <p class="text-xs text-muted mt-0.5">
+                        Chưa có API liệt kê tài khoản quản trị. Danh sách hiện trống và không thực hiện khóa tài khoản thực.
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <input id="admUserSearch" type="text" oninput="renderAdminAccountsTable()" placeholder="Tìm mã user, tên, email..." 
+                        class="input-clean px-3.5 py-2 text-xs">
+                    <select id="admUserStatusFilter" onchange="renderAdminAccountsTable()" class="input-clean px-3.5 py-2 text-xs font-bold">
+                        <option value="all">Tất cả trạng thái</option>
+                        <option value="active">Đang hoạt động</option>
+                        <option value="locked">Bị khóa</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-y border-line bg-canvas font-mono text-xs text-muted uppercase">
+                            <th class="py-3.5 px-4">Mã User</th>
+                            <th class="py-3.5 px-4">Tên hiển thị</th>
+                            <th class="py-3.5 px-4">Email / SĐT (Masked)</th>
+                            <th class="py-3.5 px-4">Ngày tạo</th>
+                            <th class="py-3.5 px-4 text-center">Số nhóm</th>
+                            <th class="py-3.5 px-4 text-center">Trạng thái</th>
+                            <th class="py-3.5 px-4 text-right">Thao tác Admin</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admAccountsTableBody" class="divide-y divide-line text-sm">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ==================== ADMIN TAB 2: ALL GROUPS & MANUAL DELETE (FR-ADM-004 & 006) ==================== -->
+        <section id="aTabContent-groups" class="hidden card-clean p-6 sm:p-8 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <h3 class="font-display font-bold text-xl text-ink">Quản lý Nhóm Quỹ Toàn Server &amp; Xóa Thủ Công</h3>
+                    <p class="text-xs text-muted mt-0.5">
+                        Chưa có API truy xuất và xóa mềm nhóm dành cho Admin. Bảng hiện trống; không xóa dữ liệu thực.
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <select id="admGroupFilter" onchange="renderAdminGroupsTable()" class="input-clean px-3.5 py-2 text-xs font-bold">
+                        <option value="all">Tất cả trạng thái nhóm</option>
+                        <option value="active">Đang hoạt động</option>
+                        <option value="inactive">Ít hoạt động (&gt;12 tháng)</option>
+                        <option value="disputed">Đang có tranh chấp</option>
+                        <option value="soft_deleted">Chờ xóa (Xóa mềm)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-y border-line bg-canvas font-mono text-xs text-muted uppercase">
+                            <th class="py-3.5 px-4">Mã Nhóm</th>
+                            <th class="py-3.5 px-4">Tên Nhóm &amp; Host</th>
+                            <th class="py-3.5 px-4 text-center">Thành viên</th>
+                            <th class="py-3.5 px-4">Hoạt động cuối</th>
+                            <th class="py-3.5 px-4 text-center">Trạng thái</th>
+                            <th class="py-3.5 px-4 text-right">Thao tác (FR-ADM-006)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admGroupsTableBody" class="divide-y divide-line text-sm">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ==================== ADMIN TAB 3: 5-YEAR AUTO RETENTION CRONJOB (FR-ADM-007) ==================== -->
+        <section id="aTabContent-retention" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Left 5 Cols: Retention Policy Config -->
+                <div class="lg:col-span-5 card-clean p-6 sm:p-8 space-y-5">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-display font-bold text-xl text-ink">Cấu hình Tác vụ Rà soát 5 Năm</h3>
+                        <span class="fr-badge">FR-ADM-007</span>
+                    </div>
+                    <p class="text-xs text-muted leading-relaxed">
+                        Tác vụ nền quét các nhóm có <strong>ngày hoạt động cuối cùng &gt; 5 năm</strong> (không xóa chỉ dựa vào ngày tạo). Tự động loại trừ nhóm có tranh chấp hoặc nghĩa vụ chưa giải quyết.
+                    </p>
+
+                    <div class="space-y-3 card-subtle p-4 text-xs">
+                        <div class="flex justify-between py-1 border-b border-line">
+                            <span class="text-muted">Mốc thời gian không hoạt động:</span>
+                            <span class="font-mono font-bold text-ink">5 Năm (1,825 ngày)</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-line">
+                            <span class="text-muted">Thời hạn gửi cảnh báo trước:</span>
+                            <span class="font-mono font-bold text-ink">30 ngày trước xóa mềm</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-line">
+                            <span class="text-muted">Thời gian lưu giữ chờ khôi phục:</span>
+                            <span class="font-mono font-bold text-ink">90 ngày (Backup &amp; Retention)</span>
+                        </div>
+                        <div class="flex justify-between py-1">
+                            <span class="text-muted">Cơ chế an toàn:</span>
+                            <span class="font-mono font-bold text-emerald-700">Tự động bỏ qua nếu có tranh chấp</span>
+                        </div>
+                    </div>
+
+                    <button onclick="runFiveYearRetentionScan()" class="btn-cta-lime w-full py-3.5 rounded-xl font-display font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2">
+                        <i data-lucide="play" class="w-4 h-4"></i>
+                        <span>Chạy Tác Vụ Quét &amp; Rà Soát Ngay</span>
+                    </button>
+                </div>
+
+                <!-- Right 7 Cols: Scan Candidates & Audit Log -->
+                <div class="lg:col-span-7 card-clean p-6 sm:p-8 space-y-5">
+                    <h3 class="font-display font-bold text-xl text-ink">Kết quả Quét Nhóm Quá Hạn 5 Năm &amp; Nhật ký Tác vụ</h3>
+
+                    <div id="retentionCandidatesList" class="card-subtle p-5 text-sm text-muted">
+                        Chưa có API quét nhóm quá hạn hoặc nhật ký tác vụ thực. Không có kết quả đã thực hiện.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>

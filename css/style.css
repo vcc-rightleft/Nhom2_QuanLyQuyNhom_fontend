@@ -12,7 +12,9 @@ body {
 
 .app-renaissance-ambient {
     position: fixed;
-    top: 0; left: 0; right: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 360px;
     z-index: 0;
     pointer-events: none;
@@ -22,7 +24,17 @@ body {
     background-size: cover;
     background-position: center 22%;
     opacity: 0.34;
-    filter: saturate(0.9) contrast(1.05);
+}
+
+.font-wiro-serif {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-weight: 600;
+}
+
+.font-wiro-sans {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.03em;
 }
 
 .os-window-bar {
@@ -34,11 +46,22 @@ body {
     justify-content: space-between;
     gap: 8px;
 }
-.os-dots { display: inline-flex; align-items: center; gap: 6px; }
-.os-dot { width: 11px; height: 11px; border-radius: 999px; border: 1.5px solid #121212; display: inline-block; }
+
+.os-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.os-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 999px;
+    border: 1.5px solid #121212;
+    display: inline-block;
+}
 
 .workspace-fresco-strip {
-    position: relative;
     background-image:
         linear-gradient(90deg, rgba(18, 18, 18, 0.84) 0%, rgba(18, 18, 18, 0.45) 55%, rgba(18, 18, 18, 0.80) 100%),
         url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/%22The_School_of_Athens%22_by_Raffaello_Sanzio_da_Urbino.jpg/1280px-%22The_School_of_Athens%22_by_Raffaello_Sanzio_da_Urbino.jpg');
@@ -54,6 +77,7 @@ body {
     border-radius: 16px;
     box-shadow: 4px 4px 0px #121212;
 }
+
 .card-subtle {
     background-color: #FAFAFA;
     border: 2px solid #121212;
@@ -61,30 +85,98 @@ body {
     box-shadow: 2px 2px 0px #121212;
 }
 
-.card-lime { background-color: #D4FF00; border: 2px solid #121212; border-radius: 16px; box-shadow: 3px 3px 0px #121212; }
-.card-violet { background-color: #7C3AED; color: #FFFFFF; border: 2px solid #121212; border-radius: 16px; box-shadow: 3px 3px 0px #121212; }
-.card-coral { background-color: #FF5E36; color: #FFFFFF; border: 2px solid #121212; border-radius: 16px; box-shadow: 3px 3px 0px #121212; }
-.card-cyan { background-color: #38BDF8; color: #121212; border: 2px solid #121212; border-radius: 16px; box-shadow: 3px 3px 0px #121212; }
-.card-amber { background-color: #FACC15; color: #121212; border: 2px solid #121212; border-radius: 16px; box-shadow: 3px 3px 0px #121212; }
+.card-coral {
+    background-color: #FF5E36;
+    color: #FFFFFF;
+    border: 2px solid #121212;
+    border-radius: 14px;
+    box-shadow: 3px 3px 0px #121212;
+}
 
-.btn-cta-lime { background-color: #D4FF00; color: #121212; border: 2px solid #121212; box-shadow: 3px 3px 0px #121212; transition: all 0.15s ease; }
-.btn-cta-lime:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 4px 4px 0px #121212; background-color: #dcf936; }
+.btn-cta-lime {
+    background-color: #D4FF00;
+    color: #121212;
+    border: 2px solid #121212;
+    box-shadow: 3px 3px 0px #121212;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
 
-.btn-cta-indigo { background-color: #7C3AED; color: #FFFFFF; border: 2px solid #121212; box-shadow: 3px 3px 0px #121212; transition: all 0.15s ease; }
-.btn-cta-indigo:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 4px 4px 0px #121212; background-color: #6D28D9; }
+.btn-cta-lime:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0px #121212;
+    background-color: #dcf936;
+}
 
-.btn-outline { background-color: #FFFFFF; color: #121212; border: 2px solid #121212; box-shadow: 2px 2px 0px #121212; transition: all 0.15s ease; }
-.btn-outline:hover:not(:disabled) { background-color: #F4FFC2; transform: translate(-1px, -1px); box-shadow: 3px 3px 0px #121212; }
+.btn-cta-indigo {
+    background-color: #7C3AED;
+    color: #FFFFFF;
+    border: 2px solid #121212;
+    box-shadow: 3px 3px 0px #121212;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
 
-.input-clean { background-color: #FFFFFF; border: 2px solid #121212; border-radius: 12px; transition: all 0.15s ease; }
-.input-clean:focus { outline: none; border-color: #7C3AED; box-shadow: 3px 3px 0px #7C3AED; }
+.btn-cta-indigo:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0px #121212;
+    background-color: #6D28D9;
+}
 
-.font-wiro-serif { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-weight: 600; }
-.font-wiro-sans { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.03em; }
+.btn-outline {
+    background-color: #FFFFFF;
+    color: #121212;
+    border: 2px solid #121212;
+    box-shadow: 2px 2px 0px #121212;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
 
-.pulse-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; background-color: #10B981; animation: neoPulse 1.8s infinite; }
-.pulse-dot.offline { background-color: #FACC15; animation: none; }
-@keyframes neoPulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+.btn-outline:hover:not(:disabled) {
+    background-color: #F4FFC2;
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0px #121212;
+}
 
-.toast-progress { height: 4px; background-color: #D4FF00; width: 100%; animation: toastProgressShrink 4.2s linear forwards; }
-@keyframes toastProgressShrink { from { width: 100%; } to { width: 0%; } }
+.input-clean {
+    background-color: #FFFFFF;
+    border: 2px solid #121212;
+    border-radius: 12px;
+    transition: all 0.15s ease;
+}
+
+.input-clean:focus {
+    outline: none;
+    border-color: #7C3AED;
+    box-shadow: 3px 3px 0px #7C3AED;
+    transform: translate(-1px, -1px);
+}
+
+.fr-badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background-color: #FACC15;
+    color: #121212;
+    border: 1.5px solid #121212;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(18, 18, 18, 0.65);
+    backdrop-filter: blur(2px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    padding: 16px;
+}
+
+.modal-overlay.active {
+    display: flex;
+}

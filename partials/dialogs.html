@@ -1,0 +1,611 @@
+<!-- ============================================================================
+         MODALS FOR SRS WORKFLOWS (CONFIRM PAYMENT, LOCK ACCOUNT, DELETE GROUP, VIEW INVOICE)
+    ============================================================================= -->
+
+    <!-- MODAL 1: HOST CONFIRM MEMBER PAYMENT (FR-HOST-005) -->
+    <div id="modalConfirmPayment" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="card-clean max-w-md w-full p-6 sm:p-7 space-y-5">
+            <div class="flex items-center justify-between border-b border-line pb-3">
+                <div class="flex items-center gap-2">
+                    <h3 class="font-display font-bold text-lg text-ink">Đối soát &amp; Xác nhận Thanh toán</h3>
+                    <span class="fr-badge">FR-HOST-005</span>
+                </div>
+                <button onclick="closeModal('modalConfirmPayment')" class="text-muted hover:text-ink font-mono font-bold">✕</button>
+            </div>
+
+            <form onsubmit="submitConfirmPayment(event)" class="space-y-4">
+                <input type="hidden" id="payDebtId">
+                <div class="card-subtle p-3.5 text-xs space-y-1">
+                    <div class="flex justify-between">
+                        <span class="text-muted">Thành viên:</span>
+                        <span id="payMemberName" class="font-bold text-ink">Lê Quang Minh</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-muted">Khoản phải trả:</span>
+                        <span id="payDebtTitle" class="font-medium text-ink">Hóa đơn Lẩu Bò Ba Toa</span>
+                    </div>
+                    <div class="flex justify-between pt-1 border-t border-line">
+                        <span class="text-muted">Số tiền còn nợ hiện tại:</span>
+                        <span id="payRemainingText" class="font-mono font-bold text-rose-600 text-sm">350,000 ₫</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-ink mb-1">Số tiền thực nhận (VND - Hỗ trợ trả một phần)</label>
+                    <input id="payReceivedAmount" type="number" required min="1000" step="1000" 
+                        class="input-clean w-full px-4 py-2.5 font-mono font-bold text-base">
+                    <p class="text-[11px] text-muted mt-1">Nếu nhỏ hơn số còn nợ: Ghi nhận <strong>Trả một phần</strong>. Nếu lớn hơn: Hệ thống sẽ cảnh báo xử lý phần dư.</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-ink mb-1">Phương thức nhận</label>
+                        <select id="payMethod" class="input-clean w-full px-3 py-2 text-xs font-semibold">
+                            <option value="Chuyển khoản">Chuyển khoản</option>
+                            <option value="Tiền mặt">Tiền mặt</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-ink mb-1">Mã tham chiếu / Ghi chú</label>
+                        <input id="payRefNote" type="text" required value="FT263089912" class="input-clean w-full px-3 py-2 font-mono text-xs">
+                    </div>
+                </div>
+
+                <label class="flex items-start gap-2 text-xs cursor-pointer">
+                    <input type="checkbox" required checked class="mt-0.5 accent-indigo">
+                    <span>Tôi (Host) xác nhận đã đối soát giao dịch thực tế trước khi cập nhật công nợ (Mục 2.3 SRS).</span>
+                </label>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modalConfirmPayment')" class="btn-outline px-4 py-2.5 rounded-xl font-display font-bold text-xs">Hủy</button>
+                    <button type="submit" class="btn-cta-lime px-5 py-2.5 rounded-xl font-display font-bold text-xs uppercase">Xác nhận Đã Thu Tiền</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ADMIN LOCK ACCOUNT (FR-ADM-002) -->
+    <div id="modalAdminLockUser" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="card-clean max-w-md w-full p-6 sm:p-7 space-y-5">
+            <div class="flex items-center justify-between border-b border-line pb-3">
+                <div class="flex items-center gap-2">
+                    <h3 class="font-display font-bold text-lg text-ink">Khóa Tài Khoản Người Dùng</h3>
+                    <span class="fr-badge">FR-ADM-002</span>
+                </div>
+                <button onclick="closeModal('modalAdminLockUser')" class="text-muted hover:text-ink font-mono font-bold">✕</button>
+            </div>
+
+            <form onsubmit="submitAdminLockUser(event)" class="space-y-4">
+                <input type="hidden" id="lockTargetUserId">
+                <p class="text-xs text-muted">
+                    Tài khoản mục tiêu: <strong id="lockTargetUserName" class="text-ink font-mono">USR-1088</strong>. Dữ liệu nhóm, hóa đơn và giao dịch lịch sử sẽ được giữ nguyên.
+                </p>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-ink mb-1">Lý do khóa tài khoản (Bắt buộc lưu Audit Log)</label>
+                    <textarea id="lockReasonInput" required rows="2" placeholder="Nhập lý do vi phạm hoặc yêu cầu bảo mật..." 
+                        class="input-clean w-full p-3 text-xs">Phát hiện đăng nhập bất thường từ nhiều thiết bị lạ.</textarea>
+                </div>
+
+                <label class="flex items-center gap-2 text-xs cursor-pointer">
+                    <input type="checkbox" checked class="accent-indigo">
+                    <span>Thu hồi ngay các phiên đăng nhập (Active Sessions) đang hoạt động</span>
+                </label>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modalAdminLockUser')" class="btn-outline px-4 py-2.5 rounded-xl font-display font-bold text-xs">Hủy</button>
+                    <button type="submit" class="bg-rose-600 text-white border-[1.5px] border-ink px-5 py-2.5 rounded-xl font-display font-bold text-xs uppercase">Xác Nhận Khóa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: ADMIN MANUAL DELETE GROUP (FR-ADM-006) -->
+    <div id="modalAdminDeleteGroup" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="card-clean max-w-md w-full p-6 sm:p-7 space-y-5">
+            <div class="flex items-center justify-between border-b border-line pb-3">
+                <div class="flex items-center gap-2">
+                    <h3 class="font-display font-bold text-lg text-ink">Cảnh báo Xóa Nhóm Thủ Công</h3>
+                    <span class="fr-badge">FR-ADM-006</span>
+                </div>
+                <button onclick="closeModal('modalAdminDeleteGroup')" class="text-muted hover:text-ink font-mono font-bold">✕</button>
+            </div>
+
+            <form onsubmit="submitAdminDeleteGroup(event)" class="space-y-4">
+                <input type="hidden" id="delGroupId">
+                <div id="delGroupSummaryBox" class="card-subtle p-4 text-xs space-y-1.5">
+                    <!-- Populated by JS -->
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-ink mb-1">Lý do xóa nhóm (Lưu Audit Log)</label>
+                    <input id="delGroupReason" type="text" required value="Nhóm không hoạt động trên 18 tháng, số dư bằng 0." class="input-clean w-full px-3.5 py-2.5 text-xs">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-ink mb-1">Nhập lại mã nhóm (<span id="delGroupCodeHint" class="font-mono text-indigo">GRP-105</span>) để xác nhận</label>
+                    <input id="delGroupConfirmCode" type="text" required placeholder="Nhập mã nhóm..." class="input-clean w-full px-3.5 py-2.5 font-mono text-xs uppercase">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modalAdminDeleteGroup')" class="btn-outline px-4 py-2.5 rounded-xl font-display font-bold text-xs">Hủy</button>
+                    <button type="submit" class="bg-rose-600 text-white border-[1.5px] border-ink px-5 py-2.5 rounded-xl font-display font-bold text-xs uppercase">Chuyển sang Xóa Mềm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: HOST CREATE NEW GROUP (FR-HOST-001) -->
+    <div id="modalHostCreateGroup" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="card-clean max-w-md w-full p-6 sm:p-7 space-y-5">
+            <div class="flex items-center justify-between border-b border-line pb-3">
+                <div class="flex items-center gap-2">
+                    <h3 class="font-display font-bold text-lg text-ink">Tạo Nhóm Quỹ Mới</h3>
+                    <span class="fr-badge">FR-HOST-001</span>
+                </div>
+                <button onclick="closeModal('modalHostCreateGroup')" class="text-muted hover:text-ink font-mono font-bold">✕</button>
+            </div>
+
+            <form onsubmit="submitHostCreateGroup(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-ink mb-1">Tên nhóm quỹ (Bắt buộc)</label>
+                    <input id="newGroupNameInput" type="text" required maxlength="80" placeholder="VD: Quỹ Cắm Trại Hồ Trị An" class="input-clean w-full px-4 py-2.5 text-sm font-medium">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-ink mb-1">Mô tả tùy chọn</label>
+                    <textarea id="newGroupDescInput" rows="2" placeholder="Mục đích thu chi của nhóm..." class="input-clean w-full p-3 text-xs"></textarea>
+                </div>
+                <p class="text-xs text-muted">Người tạo sẽ được gán quyền <strong>Host</strong> của nhóm này.</p>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modalHostCreateGroup')" class="btn-outline px-4 py-2.5 rounded-xl font-display font-bold text-xs">Hủy</button>
+                    <button type="submit" class="btn-cta-lime px-5 py-2.5 rounded-xl font-display font-bold text-xs uppercase">Tạo Nhóm Ngay</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 5: USER INVOICE DETAIL VIEWER (FR-USER-003) -->
+    <div id="modalUserInvoiceDetail" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="card-clean max-w-lg w-full p-6 sm:p-7 space-y-5">
+            <div class="flex items-center justify-between border-b border-line pb-3">
+                <div class="flex items-center gap-2">
+                    <h3 id="uInvModalTitle" class="font-display font-bold text-lg text-ink">Chi tiết Hóa đơn</h3>
+                    <span class="fr-badge">FR-USER-003</span>
+                </div>
+                <button onclick="closeModal('modalUserInvoiceDetail')" class="text-muted hover:text-ink font-mono font-bold">✕</button>
+            </div>
+            <div id="uInvModalBody" class="space-y-4 text-sm">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL 6: VIETQR SMART TRANSFER PREVIEW FOR STUDENTS & YOUNG PROS -->
+    <div id="modalVietQrPay" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="card-clean max-w-sm w-full p-6 space-y-4 text-center bg-white">
+            <div class="flex items-center justify-between border-b border-line pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="bg-lime border border-ink font-mono text-xs font-bold px-2.5 py-0.5 rounded-md">VIETQR AUTO-FILL</span>
+                    <h3 class="font-display font-bold text-base text-ink">Quét QR Chuyển Khoản Nhanh</h3>
+                </div>
+                <button onclick="closeModal('modalVietQrPay')" class="text-muted hover:text-ink font-mono font-bold">✕</button>
+            </div>
+
+            <div class="card-subtle p-4 space-y-3 bg-canvas">
+                <div class="mx-auto w-44 h-44 bg-white border-2 border-ink rounded-2xl p-2 flex items-center justify-center shadow-bold-sm">
+                    <img id="vietQrImage" src="https://img.vietqr.io/image/VCB-1029384756-compact2.png?amount=350000&addInfo=SQUADCASH%20DBT901&accountName=PHAN%20DUC%20ANH" 
+                        alt="VietQR Code" class="w-full h-full object-contain rounded-lg" />
+                </div>
+                <div class="space-y-1 text-xs">
+                    <div class="font-mono font-bold text-indigo text-base" id="qrAmountDisplay">350,000 ₫</div>
+                    <div class="text-muted">Chủ quỹ (Host): <strong class="text-ink">PHAN ĐỨC ANH (Vietcombank)</strong></div>
+                    <div class="font-mono text-[11px] bg-white border border-ink/20 px-2.5 py-1 rounded inline-block" id="qrMemoDisplay">
+                        Nội dung: SQUADCASH DBT-901
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-[11px] text-muted leading-relaxed">
+                Tự động điền sẵn số tiền &amp; nội dung chuyển khoản chuẩn cho App Ngân hàng / MoMo. Sau khi bạn chuyển xong, Host sẽ bấm đối soát 1 chạm.
+            </p>
+
+            <div class="grid grid-cols-2 gap-2.5">
+                <button type="button" onclick="copyQrTransferInfo()" class="btn-outline py-2.5 rounded-xl font-display font-bold text-xs">
+                    Copy Nội dung CK
+                </button>
+                <button type="button" onclick="closeModal('modalVietQrPay'); notify('Đã lưu thông báo chuyển khoản! Chờ Host đối soát thực tế.');" class="btn-cta-lime py-2.5 rounded-xl font-display font-bold text-xs">
+                    Tôi Đã Chuyển
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 7: COMMAND PALETTE (CTRL + K) FOR POWER USERS -->
+    <div id="modalCmdPalette" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-start justify-center pt-20 p-4">
+        <div class="card-clean max-w-lg w-full p-5 space-y-4 bg-white">
+            <div class="flex items-center gap-3 border-b-2 border-ink pb-3">
+                <i data-lucide="terminal" class="w-5 h-5 text-indigo"></i>
+                <input id="cmdSearchInput" type="text" oninput="filterCmdPalette(this.value)" placeholder="Gõ lệnh nhanh: tạo hóa đơn, xem nợ, đổi mã mời, khóa user..." 
+                    class="w-full text-sm font-medium focus:outline-none bg-transparent">
+                <button onclick="closeModal('modalCmdPalette')" class="font-mono text-xs bg-canvas border border-ink px-2 py-0.5 rounded">ESC</button>
+            </div>
+            <div id="cmdPaletteList" class="space-y-1.5 max-h-64 overflow-y-auto">
+                <button type="button" onclick="closeModal('modalCmdPalette'); openUserProfileModal();" class="cmd-item w-full p-2.5 rounded-xl flex items-center justify-between text-left text-xs">
+                    <span class="font-bold text-ink">👤 Sửa thông tin cá nhân, Ngân hàng VietQR &amp; Đổi mật khẩu</span>
+                    <span class="font-mono text-[11px] bg-indigo text-white px-2 py-0.5 rounded border border-ink">Profile</span>
+                </button>
+                <button type="button" onclick="runCmdAction('host', 'invoice')" class="cmd-item w-full p-2.5 rounded-xl flex items-center justify-between text-left text-xs">
+                    <span class="font-bold text-ink">⚡ Chia tiền hóa đơn ăn uống / đi chơi mới</span>
+                    <span class="font-mono text-[11px] bg-lime px-2 py-0.5 rounded border border-ink">Host • FR-HOST-003</span>
+                </button>
+                <button type="button" onclick="runCmdAction('user', 'debts')" class="cmd-item w-full p-2.5 rounded-xl flex items-center justify-between text-left text-xs">
+                    <span class="font-bold text-ink">💳 Xem các khoản tôi còn nợ &amp; Lấy mã VietQR</span>
+                    <span class="font-mono text-[11px] bg-cyan px-2 py-0.5 rounded border border-ink">User • FR-USER-002</span>
+                </button>
+                <button type="button" onclick="runCmdAction('host', 'members')" class="cmd-item w-full p-2.5 rounded-xl flex items-center justify-between text-left text-xs">
+                    <span class="font-bold text-ink">🔑 Lấy mã mời cố định #DALAT26 của nhóm</span>
+                    <span class="font-mono text-[11px] bg-amber px-2 py-0.5 rounded border border-ink">Host • FR-HOST-002</span>
+                </button>
+                <button type="button" onclick="closeModal('modalCmdPalette'); switchRoleView('host'); switchHostTab('members'); openTransferHostModal('USR-1042');" class="cmd-item w-full p-2.5 rounded-xl flex items-center justify-between text-left text-xs">
+                    <span class="font-bold text-ink">👑 Chuyển nhượng quyền Host (Chủ nhóm) cho người khác</span>
+                    <span class="font-mono text-[11px] bg-lime px-2 py-0.5 rounded border border-ink">Host • Handover</span>
+                </button>
+                <button type="button" onclick="runCmdAction('host', 'debts')" class="cmd-item w-full p-2.5 rounded-xl flex items-center justify-between text-left text-xs">
+                    <span class="font-bold text-ink">✅ Đối soát &amp; gạch nợ cho thành viên đã đóng tiền</span>
+                    <span class="font-mono text-[11px] bg-lime px-2 py-0.5 rounded border border-ink">Host • FR-HOST-005</span>
+                </button>
+                <button type="button" data-squad-admin-only onclick="runCmdAction('admin', 'accounts')" class="cmd-item w-full p-2.5 rounded-xl flex items-center justify-between text-left text-xs">
+                    <span class="font-bold text-ink">🛡️ Quản trị hệ thống &amp; Rà soát nhóm quá hạn 5 năm</span>
+                    <span class="font-mono text-[11px] bg-coral text-white px-2 py-0.5 rounded border border-ink">Admin • FR-ADM-007</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL 8: GIANT URGENT DEBT REMINDER OVERLAY FOR DEBTOR UPON LOGIN -->
+    <div id="modalUrgentDebtReminder" class="fixed inset-0 z-50 hidden bg-ink/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="card-clean urgent-alert-card max-w-xl w-full overflow-hidden bg-white border-4 border-ink">
+            <!-- Top High-Contrast Warning Header -->
+            <div class="bg-coral text-white px-6 py-5 border-b-4 border-ink flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-14 h-14 rounded-2xl bg-amber text-ink border-2 border-ink shadow-bold-sm flex items-center justify-center text-3xl shrink-0">
+                        <span class="bell-ringing">🚨</span>
+                    </div>
+                    <div>
+                        <span class="inline-block font-mono text-[11px] font-bold uppercase tracking-wider bg-ink text-lime px-2.5 py-0.5 rounded-md">
+                            THÔNG BÁO KHẨN TỪ HOST NHÓM QUỸ
+                        </span>
+                        <h2 class="font-display font-bold text-2xl sm:text-3xl text-white mt-1 leading-tight">
+                            NHẮC NHỞ THANH TOÁN CÔNG NỢ!
+                        </h2>
+                    </div>
+                </div>
+                <button type="button" onclick="acknowledgeUrgentReminder()" class="w-9 h-9 rounded-xl bg-white text-ink border-2 border-ink font-mono font-bold text-sm flex items-center justify-center shrink-0">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Body Content -->
+            <div class="p-6 sm:p-8 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-amber/30 border-2 border-ink">
+                    <div>
+                        <div class="text-xs font-bold uppercase text-muted">Người gửi lệnh nhắc nợ</div>
+                        <div class="font-display font-bold text-base text-ink mt-0.5">
+                            👑 Phan Đức Anh (@ducanh_host) — Chủ nhóm #GRP-101
+                        </div>
+                        <div id="urgentReminderTimestamp" class="font-mono text-[11px] text-muted mt-0.5">
+                            Vừa gửi lúc: Hôm nay • Yêu cầu thanh toán sớm
+                        </div>
+                    </div>
+                    <div class="sm:text-right">
+                        <div class="text-xs font-bold uppercase text-muted">Tổng cần thanh toán ngay</div>
+                        <div id="urgentReminderTotalAmount" class="font-mono font-bold text-2xl sm:text-3xl text-coral">
+                            650,000 ₫
+                        </div>
+                    </div>
+                </div>
+
+                <!-- List of Reminded Debts -->
+                <div class="space-y-2.5">
+                    <div class="flex items-center justify-between text-xs font-bold uppercase text-muted">
+                        <span>Chi tiết khoản nợ Host vừa nhắc bạn</span>
+                        <span class="font-mono text-indigo">SRS FR-USER-002</span>
+                    </div>
+                    <div id="urgentReminderItemsList" class="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+                        <!-- Populated dynamically by JS -->
+                    </div>
+                </div>
+
+                <!-- Custom Host Message Box -->
+                <div class="p-4 rounded-xl bg-canvas border-2 border-ink text-xs space-y-1">
+                    <div class="font-mono font-bold text-ink uppercase">💬 Lời nhắn từ Host:</div>
+                    <p id="urgentReminderMessageText" class="text-ink font-medium leading-relaxed">
+                        "Anh em ơi, kiểm tra và chuyển khoản thanh toán giúp mình khoản nợ quỹ / hóa đơn tồn đọng để mình chốt sổ quỹ nhóm đúng hạn nhé!"
+                    </p>
+                </div>
+
+                <!-- Big Action Buttons -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <button type="button" onclick="acknowledgeUrgentReminder()" class="btn-outline py-3.5 px-4 rounded-xl font-display font-bold text-xs uppercase tracking-wider">
+                        Đã Hiểu, Để Tôi Xem Sau
+                    </button>
+                    <button type="button" id="urgentPayNowQrBtn" onclick="payFromUrgentModal()" class="btn-cta-lime py-3.5 px-5 rounded-xl font-display font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2">
+                        <span>⚡ Quét VietQR Trả Ngay</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL 9: TRANSFER HOST OWNERSHIP TO ANOTHER MEMBER -->
+    <div id="modalTransferHost" class="fixed inset-0 z-50 hidden bg-ink/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="card-clean max-w-md w-full p-6 sm:p-7 space-y-5 bg-white">
+            <div class="flex items-center justify-between border-b-2 border-ink pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-amber border-2 border-ink flex items-center justify-center text-base">👑</span>
+                    <h3 class="font-display font-bold text-lg text-ink">Chuyển Quyền Host (Chủ Nhóm)</h3>
+                </div>
+                <button type="button" onclick="closeModal('modalTransferHost')" class="text-muted hover:text-ink font-mono font-bold">✕</button>
+            </div>
+
+            <form onsubmit="submitTransferHostRole(event)" class="space-y-4">
+                <input type="hidden" id="transferTargetMemberId">
+
+                <div class="card-subtle p-4 bg-amber/20 space-y-2 text-xs">
+                    <div class="flex justify-between items-center">
+                        <span class="text-muted font-semibold">Host hiện tại (Bàn giao):</span>
+                        <span id="transferCurrentHostName" class="font-mono font-bold text-ink">Phan Đức Anh (@ducanh_host)</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-2 border-t border-ink/15">
+                        <span class="text-muted font-semibold">Host mới (Tiếp nhận):</span>
+                        <span id="transferNewHostName" class="font-mono font-bold text-indigo text-sm">Lê Quang Minh (@minh_le)</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-ink mb-1">Số TK ngân hàng nhận quỹ của Host mới (VietQR)</label>
+                    <input id="transferNewBankAccount" type="text" required value="9876543210 - MB Bank" 
+                        class="input-clean w-full px-3.5 py-2.5 font-mono text-xs font-bold">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-ink mb-1">Ghi chú bàn giao sổ quỹ (Lưu vào Audit Log)</label>
+                    <input id="transferReasonNote" type="text" required placeholder="Lý do chuyển quyền quản lý nhóm" 
+                        class="input-clean w-full px-3.5 py-2.5 text-xs">
+                </div>
+
+                <label class="flex items-start gap-2 text-xs cursor-pointer bg-canvas p-3 rounded-xl border border-line">
+                    <input type="checkbox" required checked class="mt-0.5 accent-indigo">
+                    <span>Tôi xác nhận chuyển quyền <strong>Host</strong> cho thành viên này. Sau khi chuyển, tôi sẽ trở về vai trò <strong>User (Thành viên)</strong> trong nhóm.</span>
+                </label>
+
+                <div class="flex justify-end gap-2.5 pt-2">
+                    <button type="button" onclick="closeModal('modalTransferHost')" class="btn-outline px-4 py-2.5 rounded-xl font-display font-bold text-xs">
+                        Hủy
+                    </button>
+                    <button type="submit" class="btn-cta-lime px-5 py-2.5 rounded-xl font-display font-bold text-xs uppercase flex items-center gap-1.5">
+                        <span>👑 Xác Nhận Bàn Giao Host</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- MODAL 10: LUMINOUS ORGANIC PORTAL / IRIS BURN REVEAL & NEW USER ONBOARDING -->
+    <div id="portalRevealOverlay" class="hidden">
+        <!-- WebGL / 2D Procedural Organic Glowing Ring Canvas (Masks the screen & expands with glowing edges) -->
+        <canvas id="portalCanvas"></canvas>
+
+
+        <!-- Center Clean Western Bold Onboarding Deck (Revealed inside the glowing portal for New Registration) -->
+        <div id="portalOnboardingStage" class="portal-onboarding-stage">
+            <div class="card-clean overflow-hidden bg-white border-4 border-ink shadow-[0_0_50px_rgba(212,255,0,0.35)]">
+                <!-- Unified Wiro OS Window Titlebar + Renaissance Fresco Strip -->
+                <div class="os-window-bar">
+                    <div class="flex items-center gap-2.5">
+                        <div class="os-dots">
+                            <span class="os-dot bg-coral"></span>
+                            <span class="os-dot bg-amber"></span>
+                            <span class="os-dot bg-mint"></span>
+                        </div>
+                        <span class="font-mono text-xs font-bold text-ink/75 ml-1">squad.cash/os/new-member-onboarding</span>
+                    </div>
+                    <span class="font-mono text-[11px] font-bold bg-lime text-ink px-2.5 py-0.5 rounded-full border border-ink">
+                        Luminous Portal Reveal • SRS v2.5
+                    </span>
+                </div>
+                <div class="workspace-fresco-strip px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-8 h-8 rounded-lg bg-lime text-ink border-2 border-ink font-display font-bold flex items-center justify-center text-base shadow-bold-sm">$</span>
+                        <span class="font-mono text-xs font-bold uppercase tracking-wider text-lime">SQUAD.CASH • RENAISSANCE OPERATING SYSTEM</span>
+                    </div>
+                    <span class="font-wiro-serif text-lg text-white/90">✦ Khởi Đầu Minh Bạch Cùng Hội Quỹ</span>
+                </div>
+
+                <!-- Main Onboarding Body -->
+                <div class="p-6 sm:p-8 space-y-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b-2 border-line">
+                        <div>
+                            <h2 class="font-display font-bold text-2xl sm:text-3xl text-ink">
+                                Chào mừng <span id="onboardUserName" class="bg-lime px-2 py-0.5 rounded-lg border-2 border-ink">Phan Đức Anh</span> nhập cuộc!
+                            </h2>
+                            <p class="text-sm text-muted mt-1.5">
+                                Cổng ánh sáng SQUAD.CASH đã mở — Nắm gọn 3 tính năng cốt lõi trước khi bước vào hệ thống:
+                            </p>
+                        </div>
+
+                        <!-- Neo-Brutalist Verified Stamp -->
+                        <div class="neo-verified-badge shrink-0 text-center">
+                            <div class="text-[10px] uppercase tracking-wider">ACCOUNT STATUS</div>
+                            <div class="text-sm font-extrabold">✓ VERIFIED USER</div>
+                        </div>
+                    </div>
+
+                    <!-- 3 Interactive Feature Cards (Click to preview tip) -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Step 1 -->
+                        <div id="onboardCard-1" onclick="highlightOnboardStep(1)" class="card-subtle p-4 cursor-pointer border-2 border-ink bg-lime/35 space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <span class="font-mono text-[11px] font-bold bg-ink text-lime px-2.5 py-0.5 rounded-md">01 • INVITE CODE</span>
+                                <span class="w-8 h-8 rounded-lg bg-white border-2 border-ink flex items-center justify-center font-bold text-sm">🔑</span>
+                            </div>
+                            <h4 class="font-display font-bold text-base text-ink">1. Vào nhóm bằng 1 Mã duy nhất</h4>
+                            <p class="text-xs text-muted leading-relaxed">
+                                Mỗi nhóm chỉ dùng <strong>1 mã cố định</strong> (VD: <code class="font-mono font-bold text-indigo">#DALAT26</code>). Nhập mã để tham gia ngay hoặc tự tạo nhóm làm Host.
+                            </p>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div id="onboardCard-2" onclick="highlightOnboardStep(2)" class="card-subtle p-4 cursor-pointer space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <span class="font-mono text-[11px] font-bold bg-cyan text-ink border border-ink px-2.5 py-0.5 rounded-md">02 • SMART SPLIT</span>
+                                <span class="w-8 h-8 rounded-lg bg-white border-2 border-ink flex items-center justify-center font-bold text-sm">⚡</span>
+                            </div>
+                            <h4 class="font-display font-bold text-base text-ink">2. Chia bill chuẩn từng đồng</h4>
+                            <p class="text-xs text-muted leading-relaxed">
+                                Hỗ trợ <strong>Chia đều</strong> hoặc <strong>Chia theo món</strong> chuẩn số nguyên VND, kèm chip cộng tiền nhanh <code class="font-mono font-bold">+50k, +100k</code>.
+                            </p>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div id="onboardCard-3" onclick="highlightOnboardStep(3)" class="card-subtle p-4 cursor-pointer space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <span class="font-mono text-[11px] font-bold bg-coral text-white border border-ink px-2.5 py-0.5 rounded-md">03 • VIETQR &amp; HOST</span>
+                                <span class="w-8 h-8 rounded-lg bg-white border-2 border-ink flex items-center justify-center font-bold text-sm">💳</span>
+                            </div>
+                            <h4 class="font-display font-bold text-base text-ink">3. Quét VietQR &amp; Đối soát</h4>
+                            <p class="text-xs text-muted leading-relaxed">
+                                Bấm <strong>QR Trả</strong> để quét mã tự điền số tiền. Công nợ chỉ gạch khi <strong>Host</strong> xác nhận đã nhận tiền thực tế.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Interactive Tip Strip -->
+                    <div class="p-3.5 rounded-xl bg-canvas border-2 border-ink flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                        <div class="flex items-center gap-2.5">
+                            <span class="bg-amber border border-ink font-mono font-bold px-2 py-0.5 rounded">PRO TIP</span>
+                            <span id="onboardDynamicTip" class="font-medium text-ink">
+                                Bấm phím tắt <kbd class="bg-white border border-ink px-1.5 py-0.5 rounded font-mono font-bold">Ctrl + K</kbd> ở bất kỳ đâu để bật thanh tìm kiếm &amp; chuyển nhanh chức năng!
+                            </span>
+                        </div>
+                        <span class="font-mono text-[11px] font-bold text-indigo shrink-0">Bấm từng thẻ trên để xem chi tiết</span>
+                    </div>
+
+                    <!-- Bottom CTA Buttons -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-line">
+                        <button type="button" onclick="closeWesternOnboarding('host')" class="btn-outline px-4 py-3 rounded-xl font-display font-bold text-xs uppercase">
+                            👑 Mở Cổng Sáng Vào Vai Trò Host
+                        </button>
+                        <button type="button" onclick="closeWesternOnboarding('user')" class="btn-cta-lime px-6 py-3.5 rounded-xl font-display font-bold text-sm uppercase tracking-wider flex items-center gap-2">
+                            <span>Mở Rộng Vòng Sáng &amp; Vào Không Gian User</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 11: USER PROFILE, BANK VIETQR & CHANGE PASSWORD -->
+    <div id="modalUserProfile" class="fixed inset-0 z-50 hidden bg-ink/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="card-clean max-w-lg w-full overflow-hidden bg-white">
+            <div class="os-window-bar">
+                <div class="flex items-center gap-2.5">
+                    <div class="os-dots">
+                        <span class="os-dot bg-coral"></span>
+                        <span class="os-dot bg-amber"></span>
+                        <span class="os-dot bg-mint"></span>
+                    </div>
+                    <span class="font-mono text-xs font-bold text-ink/75 ml-1">squad.cash/os/user-profile</span>
+                </div>
+                <button type="button" onclick="closeModal('modalUserProfile')" class="text-muted hover:text-ink font-mono font-bold px-1.5">✕</button>
+            </div>
+
+            <div class="p-6 sm:p-7 space-y-5">
+                <div class="grid grid-cols-2 gap-2 bg-canvas p-1.5 rounded-xl border-2 border-ink">
+                    <button type="button" id="profTabBtn-info" onclick="switchProfileModalTab('info')"
+                        class="py-2 px-3 rounded-lg font-display font-bold text-xs bg-lime text-ink border border-ink shadow-bold-sm">
+                        1. Thông tin &amp; Ngân hàng
+                    </button>
+                    <button type="button" id="profTabBtn-password" onclick="switchProfileModalTab('password')"
+                        class="py-2 px-3 rounded-lg font-display font-bold text-xs text-muted hover:text-ink">
+                        2. Đổi mật khẩu
+                    </button>
+                </div>
+
+                <!-- TAB 1: PROFILE & BANK FORM -->
+                <form id="profileForm-info" onsubmit="submitUserProfileUpdate(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-ink mb-1">Tên hiển thị</label>
+                            <input id="profFullName" type="text" required class="input-clean w-full px-3.5 py-2.5 text-sm font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-ink mb-1">Số điện thoại</label>
+                            <input id="profPhone" type="text" placeholder="09xxxxxxxx" class="input-clean w-full px-3.5 py-2.5 font-mono text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-ink mb-1">Email tài khoản (Không đổi)</label>
+                        <input id="profEmail" type="email" readonly class="input-clean w-full px-3.5 py-2.5 text-sm bg-canvas text-muted cursor-not-allowed">
+                    </div>
+
+                    <div class="card-subtle p-4 space-y-3 bg-canvas/70">
+                        <div class="font-mono text-xs font-bold text-indigo uppercase">Thông tin nhận tiền (VietQR)</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase text-ink mb-1">Ngân hàng</label>
+                                <input id="profBankName" type="text" placeholder="VD: Vietcombank, MB Bank" class="input-clean w-full px-3 py-2 text-xs font-medium">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase text-ink mb-1">Số tài khoản</label>
+                                <input id="profBankAccountNo" type="text" placeholder="VD: 1029384756" class="input-clean w-full px-3 py-2 font-mono text-xs font-bold">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-ink mb-1">Tên chủ tài khoản (In hoa không dấu)</label>
+                            <input id="profBankAccountName" type="text" placeholder="VD: LE QUANG MINH" class="input-clean w-full px-3 py-2 font-mono text-xs uppercase">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-2.5 pt-1">
+                        <button type="button" onclick="closeModal('modalUserProfile')" class="btn-outline px-4 py-2.5 rounded-xl font-display font-bold text-xs">Đóng</button>
+                        <button type="submit" class="btn-cta-lime px-5 py-2.5 rounded-xl font-display font-bold text-xs uppercase">Lưu thay đổi</button>
+                    </div>
+                </form>
+
+                <!-- TAB 2: CHANGE PASSWORD FORM -->
+                <form id="profileForm-password" onsubmit="submitUserPasswordChange(event)" class="hidden space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-ink mb-1">Mật khẩu hiện tại</label>
+                        <input id="profCurrentPwd" type="password" required class="input-clean w-full px-3.5 py-2.5 font-mono text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-ink mb-1">Mật khẩu mới (Tối thiểu 8 ký tự)</label>
+                        <input id="profNewPwd" type="password" required minlength="8" class="input-clean w-full px-3.5 py-2.5 font-mono text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-ink mb-1">Nhập lại mật khẩu mới</label>
+                        <input id="profConfirmPwd" type="password" required minlength="8" class="input-clean w-full px-3.5 py-2.5 font-mono text-sm">
+                    </div>
+
+                    <div class="flex justify-end gap-2.5 pt-1">
+                        <button type="button" onclick="closeModal('modalUserProfile')" class="btn-outline px-4 py-2.5 rounded-xl font-display font-bold text-xs">Hủy</button>
+                        <button type="submit" class="btn-cta-indigo px-5 py-2.5 rounded-xl font-display font-bold text-xs uppercase">Cập nhật mật khẩu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- CLEAN TOAST NOTIFICATION -->
+    <div id="cleanToastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+    <!-- ============================================================================
+         APPLICATION JAVASCRIPT & SRS BUSINESS LOGIC
+    ============================================================================= -->
