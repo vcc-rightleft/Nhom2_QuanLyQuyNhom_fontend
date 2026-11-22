@@ -5,7 +5,7 @@
                 if (role !== fallback) return switchRoleView(fallback);
             }
             refreshSquadNavigation();
-            ['landing', 'auth', 'user', 'host', 'admin'].forEach(r => {
+            ['landing', 'auth', 'user', 'host', 'admin', 'notifications'].forEach(r => {
                 const viewEl = document.getElementById(`view-${r}`);
                 if (viewEl) viewEl.classList.add('hidden');
                 const btn = document.getElementById(`roleBtn-${r}`);
@@ -24,6 +24,8 @@
                 renderHostWorkspace();
             } else if (role === 'admin') {
                 renderAdminWorkspace();
+            } else if (role === 'notifications') {
+                if (typeof loadAllSquadNotifications === 'function') loadAllSquadNotifications();
             }
             refreshSquadNavigation();
             window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -1,7 +1,7 @@
 /* SQUAD.CASH modular bootstrap — tải HTML trước, JavaScript sau. */
 (async function bootstrapSquad() {
-  const partials = ["shell", "view-landing", "view-auth", "view-user", "view-host", "view-admin", "dialogs"];
-  const scripts = ["js/squad/state.js", "js/squad/session.js", "js/squad/backend-api.js", "js/squad/navigation.js", "js/squad/authentication.js", "js/squad/user-workspace.js", "js/squad/host-workspace.js", "js/squad/admin-workspace.js", "js/squad/dialogs.js", "js/squad/interactions.js", "js/squad/quick-actions.js", "js/squad/debt-alerts.js", "js/squad/host-transfer.js", "js/squad/onboarding.js", "js/squad/transitions.js", "js/squad/cinematic-intro.js", "js/squad/workspace-animations.js", "js/squad/profile.js"];
+  const partials = ["shell", "view-landing", "view-auth", "view-user", "view-host", "view-admin", "view-notifications", "dialogs"];
+  const scripts = ["js/squad/state.js", "js/squad/session.js", "js/squad/backend-api.js", "js/squad/navigation.js", "js/squad/notifications.js", "js/squad/authentication.js", "js/squad/user-workspace.js", "js/squad/host-workspace.js", "js/squad/admin-workspace.js", "js/squad/dialogs.js", "js/squad/interactions.js", "js/squad/quick-actions.js", "js/squad/debt-alerts.js", "js/squad/host-transfer.js", "js/squad/onboarding.js", "js/squad/transitions.js", "js/squad/cinematic-intro.js", "js/squad/workspace-animations.js", "js/squad/profile.js"];
   const loading = document.getElementById('squad-loading');
   try {
     for (const name of partials) {
@@ -50,8 +50,19 @@
       const mode = params.get('mode');
       if (role === 'auth' && ['login', 'register'].includes(mode) && typeof switchAuthTab === 'function') switchAuthTab(mode);
       const tab = params.get('tab');
-      if (role === 'user' && tab === 'debts' && typeof switchUserSubTab === 'function') {
-        try { switchUserSubTab('debts'); } catch (e) { console.warn('Không chuyển được tab công nợ', e); }
+      if (role === 'user' && ['debts','invoices','ledger'].includes(tab) && typeof switchUserSubTab === 'function') {
+        try {
+          const groupId = Number(params.get('group_id'));
+          if (Number.isSafeInteger(groupId) && groupId > 0 && userJoinedGroups.some(g => g.id === groupId)) {
+            await selectSquadGroup(groupId);
+          }
+          switchUserSubTab(tab);
+          const billId = Number(params.get('bill_id'));
+          if (tab === 'invoices' && Number.isSafeInteger(billId) && billId > 0 &&
+              groupInvoices.some(b => b.id === 'INV-' + billId) && typeof openUserInvoiceModal === 'function') {
+            openUserInvoiceModal('INV-' + billId);
+          }
+        } catch (e) { console.warn('Không thể mở thông báo liên quan', e); }
       }
       if (role === 'host' && tab === 'invoice' && typeof switchHostTab === 'function') {
         try { switchHostTab('invoice'); } catch (e) { console.warn('Không chuyển được tab hóa đơn', e); }

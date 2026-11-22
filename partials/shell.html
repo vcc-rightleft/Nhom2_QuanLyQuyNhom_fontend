@@ -61,6 +61,24 @@
 
             <!-- Right Controls: Live FastAPI Bridge, Sound FX Toggle & SRS Badge Toggle -->
             <div class="flex flex-wrap items-center gap-2.5">
+                <!-- T3CC8F7: Notifications from authenticated API -->
+                <div id="squadBellRoot" data-squad-auth-only class="hidden relative">
+                    <button id="squadBellButton" type="button" onclick="toggleSquadNotificationDropdown()"
+                        aria-label="Thông báo" aria-haspopup="true" aria-expanded="false"
+                        class="relative inline-flex items-center justify-center w-11 h-10 bg-white hover:bg-lime/30 border-2 border-ink rounded-xl shadow-bold-sm">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span id="squadUnreadBadge" aria-label="Số thông báo chưa đọc"
+                            class="hidden absolute -top-2 -right-2 min-w-5 h-5 px-1 bg-red-600 text-white rounded-full text-[11px] font-bold text-center leading-5"></span>
+                    </button>
+                    <div id="squadNotificationDropdown" role="dialog" aria-label="Thông báo gần đây"
+                        class="hidden absolute right-0 top-12 z-[90] w-[min(92vw,370px)] bg-white rounded-xl border-2 border-ink shadow-xl overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-3 border-b border-line">
+                            <strong class="font-display text-sm">Thông báo mới nhất</strong>
+                            <button type="button" onclick="showAllSquadNotifications()" class="text-indigo text-xs font-bold underline">Xem tất cả</button>
+                        </div>
+                        <div id="squadNotificationPreview" class="max-h-80 overflow-y-auto p-3" aria-live="polite">Đang tải...</div>
+                    </div>
+                </div>
                 <button type="button" data-squad-auth-only onclick="openUserProfileModal()" title="Chỉnh sửa thông tin cá nhân & Đổi mật khẩu"
                     class="inline-flex items-center gap-1.5 bg-indigo text-white hover:bg-indigo-700 px-3 py-2 rounded-xl border-2 border-ink text-xs font-mono font-bold shadow-bold-sm">
                     <i data-lucide="user-cog" class="w-3.5 h-3.5"></i>

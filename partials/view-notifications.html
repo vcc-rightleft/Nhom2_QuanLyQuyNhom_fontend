@@ -1,0 +1,21 @@
+<main id="view-notifications" class="relative z-10 hidden flex-1 max-w-5xl w-full mx-auto px-4 sm:px-8 py-8 space-y-5">
+  <section class="bg-white border-2 border-ink rounded-2xl shadow-bold-sm overflow-hidden">
+    <div class="flex flex-wrap items-center justify-between gap-3 p-5 sm:p-7 border-b border-line">
+      <div>
+        <h1 class="font-display font-bold text-2xl text-ink">Thông báo</h1>
+        <p class="text-muted text-sm mt-1">Cập nhật hoạt động liên quan đến tài khoản của bạn.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button type="button" onclick="filterSquadNotifications('all')" id="notificationFilterAll" class="px-3 py-2 rounded-lg border border-ink text-sm font-bold bg-lime">Tất cả</button>
+        <button type="button" onclick="filterSquadNotifications('unread')" id="notificationFilterUnread" class="px-3 py-2 rounded-lg border border-line text-sm font-bold">Chưa đọc</button>
+        <button type="button" onclick="markAllSquadNotificationsRead()" class="px-3 py-2 rounded-lg bg-indigo text-white text-sm font-bold">Đánh dấu tất cả đã đọc</button>
+      </div>
+    </div>
+    <div id="squadAllNotifications" class="divide-y divide-line" aria-live="polite"><p class="p-6 text-muted">Đang tải thông báo...</p></div>
+    <div class="px-5 py-4 border-t border-line flex items-center justify-between gap-3 text-sm">
+      <button id="squadNotificationPrev" type="button" onclick="navigateSquadNotificationPage(-1)" class="px-3 py-2 rounded-lg border border-line font-bold disabled:opacity-40" disabled>Trước</button>
+      <span id="squadNotificationPageLabel" class="text-muted font-semibold">Trang 1</span>
+      <button id="squadNotificationNext" type="button" onclick="navigateSquadNotificationPage(1)" class="px-3 py-2 rounded-lg border border-line font-bold disabled:opacity-40" disabled>Tiếp</button>
+    </div>
+  </section>
+</main>

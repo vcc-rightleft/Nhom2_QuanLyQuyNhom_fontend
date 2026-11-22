@@ -8,7 +8,7 @@ try {
 function isSquadSignedIn() { return Boolean(squadSession?.signedIn); }
 function canViewSquad(role) {
   if (role === 'landing' || role === 'auth') return !isSquadSignedIn();
-  if (role === 'user' || role === 'host') return isSquadSignedIn();
+  if (role === 'user' || role === 'host' || role === 'notifications') return isSquadSignedIn();
   if (role === 'admin') return isSquadSignedIn() && squadSession.role === 'admin' && squadSession.verifiedByServer === true;
   return false;
 }
@@ -28,6 +28,7 @@ function startSquadSession(name, role = 'user', verifiedByServer = false, accoun
   clearSquadWorkingData();
   if (typeof currentUserProfile !== 'undefined') { currentUserProfile = { full_name: squadSession.name, email: squadSession.accountId.includes('@') ? squadSession.accountId : '', phone: '', bank_name: '', bank_account_no: '', bank_account_name: '' }; syncProfileNameToUI(); }
   refreshSquadNavigation();
+  if (typeof window.squadNotificationsAuthChanged === 'function') window.squadNotificationsAuthChanged();
 }
 async function logoutSquad() {
   let revoked = false;
@@ -42,6 +43,7 @@ async function logoutSquad() {
   // Dọn token từ các luồng xác thực trước nếu đang dùng cùng ứng dụng.
   ['access_token','squadcash_token','token','refresh_token'].forEach(key => localStorage.removeItem(key));
   refreshSquadNavigation();
+  if (typeof window.squadNotificationsAuthChanged === 'function') window.squadNotificationsAuthChanged();
   const splash = document.getElementById('cinematicIntroSplash');
   if (splash) splash.classList.add('hidden');
   const overlay = document.getElementById('portalRevealOverlay');
