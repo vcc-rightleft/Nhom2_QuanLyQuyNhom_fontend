@@ -1,418 +1,364 @@
+// js/pages/debts.js — Tab Công nợ của nhóm cho Host (T3CD263)
 
+const groupDebts = [
+    {
+        id: 'DBT-901',
+        memberName: 'Lê Quang Minh',
+        type: 'fund',
+        typeLabel: 'Đóng quỹ',
+        desc: 'Đóng quỹ Đà Lạt đợt 2',
+        total: 1000000,
+        paid: 600000,
+        pendingApproval: false,
+        claimedAmount: 0,
+        refCode: '',
+        disputed: false,
+        rejectReason: '',
+        reminded: true,
+        remindCount: 2,
+    },
+    {
+        id: 'DBT-902',
+        memberName: 'Lê Quang Minh',
+        type: 'invoice',
+        typeLabel: 'Hóa đơn',
+        desc: 'Hóa đơn BBQ Tối Thứ 7 (#INV-202)',
+        total: 250000,
+        paid: 0,
+        pendingApproval: true,
+        claimedAmount: 250000,
+        refCode: 'VCB-882190',
+        disputed: false,
+        rejectReason: '',
+        reminded: false,
+        remindCount: 0,
+    },
+    {
+        id: 'DBT-903',
+        memberName: 'Lê Quang Minh',
+        type: 'adjustment',
+        typeLabel: 'Khoản điều chỉnh',
+        desc: 'Hoàn tiền dư mua nước suối',
+        total: 150000,
+        paid: 150000,
+        pendingApproval: false,
+        claimedAmount: 0,
+        refCode: '',
+        disputed: false,
+        rejectReason: '',
+        reminded: false,
+        remindCount: 0,
+    },
+    {
+        id: 'DBT-904',
+        memberName: 'Trần Khánh Vy',
+        type: 'invoice',
+        typeLabel: 'Hóa đơn',
+        desc: 'Hóa đơn Thuê Xe Limousine (#INV-201)',
+        total: 550000,
+        paid: 0,
+        pendingApproval: true,
+        claimedAmount: 550000,
+        refCode: 'MB-440192',
+        disputed: false,
+        rejectReason: '',
+        reminded: false,
+        remindCount: 0,
+    },
+    {
+        id: 'DBT-905',
+        memberName: 'Đặng Tuấn Kiệt',
+        type: 'invoice',
+        typeLabel: 'Hóa đơn',
+        desc: 'Hóa đơn Hải Sản Đêm (#INV-199)',
+        total: 480000,
+        paid: 0,
+        pendingApproval: false,
+        claimedAmount: 0,
+        refCode: '',
+        disputed: true,
+        rejectReason: '',
+        reminded: false,
+        remindCount: 0,
+    },
+];
 
-(function () {
-    // Dữ liệu mẫu chuẩn cấu trúc API (tự động dùng nếu API backend chưa sẵn sàng hoặc đang test UI)
-    const MOCK_DEBTS = [
-        {
-            id: 101,
-            group_id: 1,
-            group_name: "Nhóm 2 - Đồ án Công nghệ Phần mềm",
-            title: "Đóng quỹ nhóm tháng 11/2026",
-            type: "owe", // "owe": tôi nợ người khác | "owed": người khác nợ tôi
-            amount: 150000,
-            status: "unpaid", // "unpaid" | "pending" | "paid"
-            due_date: "2026-11-20",
-            counterparty_name: "Nguyễn Văn An (Trưởng nhóm)",
-            receiver_bank: {
-                bank_id: "MB",
-                bank_name: "MB Bank (Quân Đội)",
-                account_number: "0987654321",
-                account_name: "NGUYEN VAN AN"
-            }
-        },
-        {
-            id: 102,
-            group_id: 1,
-            group_name: "Nhóm 2 - Đồ án Công nghệ Phần mềm",
-            title: "Tiền in ấn tài liệu & slide thuyết trình",
-            type: "owe",
-            amount: 45000,
-            status: "pending",
-            due_date: "2026-11-18",
-            counterparty_name: "Trần Thị Bình",
-            receiver_bank: {
-                bank_id: "VCB",
-                bank_name: "Vietcombank",
-                account_number: "1023456789",
-                account_name: "TRAN THI BINH"
-            }
-        },
-        {
-            id: 103,
-            group_id: 2,
-            group_name: "Quỹ Liên Hoan Lớp HN-KS25-CNTT2",
-            title: "Tiền nước uống buổi họp team",
-            type: "owed",
-            amount: 120000,
-            status: "unpaid",
-            due_date: "2026-11-22",
-            counterparty_name: "Lê Hoàng Nam",
-            receiver_bank: null
-        },
-        {
-            id: 104,
-            group_id: 2,
-            group_name: "Quỹ Liên Hoan Lớp HN-KS25-CNTT2",
-            title: "Vé liên hoan cuối kỳ",
-            type: "owe",
-            amount: 250000,
-            status: "unpaid",
-            due_date: "2026-11-25",
-            counterparty_name: "Phạm Minh Đức (Thủ quỹ)",
-            receiver_bank: {
-                bank_id: "TCB",
-                bank_name: "Techcombank",
-                account_number: "190368686868",
-                account_name: "PHAM MINH DUC"
-            }
-        }
-    ];
+function escapeText(str) {
+    if (typeof escapeHtml === 'function') return escapeHtml(str);
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
 
-    let allDebts = [];
-    let selectedProofBase64 = null;
+function formatMoneyCell(amount) {
+    const n = Number(amount) || 0;
+    return `${n.toLocaleString('en-US')}<br /><span class="text-[11px]">đ</span>`;
+}
 
-    function formatCurrency(amount) {
-        if (typeof window.formatMoney === "function") {
-            return window.formatMoney(amount);
-        }
-        return new Intl.NumberFormat("vi-VN").format(amount || 0) + " đ";
+function formatPlainMoney(amount) {
+    const n = Number(amount) || 0;
+    return `${n.toLocaleString('en-US')} đ`;
+}
+
+function openModal(id) {
+    document.getElementById(id)?.classList.remove('hidden');
+}
+
+function closeModal(id) {
+    document.getElementById(id)?.classList.add('hidden');
+}
+
+function notify(msg) {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const el = document.createElement('div');
+    el.className = 'pointer-events-auto card-clean bg-ink text-white px-4 py-3 rounded-xl flex items-center justify-between gap-3 text-xs font-medium shadow-bold-md';
+    el.innerHTML = `<span>${escapeText(msg)}</span><button type="button" onclick="this.parentElement.remove()" class="font-mono font-bold text-[10px] bg-amber text-ink border border-white px-2 py-0.5 rounded shrink-0 cursor-pointer">ĐÓNG</button>`;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+}
+
+function updateProgress() {
+    const totalAll = groupDebts.reduce((s, d) => s + d.total, 0);
+    const paidAll = groupDebts.reduce((s, d) => s + d.paid, 0);
+    const pct = totalAll > 0 ? Math.min(100, Math.round((paidAll / totalAll) * 100)) : 0;
+
+    const label = document.getElementById('hostDebtProgressLabel');
+    const bar = document.getElementById('hostDebtProgressBar');
+    if (label) {
+        label.textContent = `${pct}% Đã thu (${formatPlainMoney(paidAll)} / ${formatPlainMoney(totalAll)})`;
+    }
+    if (bar) {
+        bar.style.width = `${pct}%`;
+    }
+}
+
+function renderPendingApprovals() {
+    const listEl = document.getElementById('pendingApprovalsList');
+    const badgeEl = document.getElementById('pendingApprovalCountBadge');
+    if (!listEl) return;
+
+    const pendingItems = groupDebts.filter((d) => d.pendingApproval && (d.total - d.paid) > 0);
+    if (badgeEl) {
+        badgeEl.textContent = `${pendingItems.length} chờ duyệt`;
     }
 
-    // Lấy danh sách công nợ từ Backend API (fallback sang MOCK_DEBTS nếu chưa có endpoint)
-    async function loadMyDebts() {
-        try {
-            if (window.api && typeof window.api.get === "function") {
-                const res = await window.api.get("/debts/me");
-                if (Array.isArray(res) && res.length > 0) {
-                    allDebts = res;
-                    initGroupFilter();
-                    renderPage();
-                    return;
-                }
-            }
-        } catch (err) {
-            console.warn("Sử dụng dữ liệu mẫu cho Trang công nợ của tôi:", err.message);
-        }
-
-        allDebts = [...MOCK_DEBTS];
-        initGroupFilter();
-        renderPage();
+    if (pendingItems.length === 0) {
+        listEl.innerHTML = `
+      <div class="rounded-xl bg-canvas border border-ink/20 px-4 py-3 text-xs text-muted font-mono">
+        Không có thanh toán nào đang chờ xác nhận.
+      </div>
+    `;
+        return;
     }
 
-    function initGroupFilter() {
-        const groupSelect = document.getElementById("filter-group");
-        const uniqueGroups = new Map();
-        allDebts.forEach((d) => uniqueGroups.set(String(d.group_id), d.group_name));
-
-        groupSelect.innerHTML = `<option value="all">Tất cả nhóm (${uniqueGroups.size})</option>`;
-        uniqueGroups.forEach((name, id) => {
-            const opt = document.createElement("option");
-            opt.value = id;
-            opt.textContent = name;
-            groupSelect.appendChild(opt);
-        });
-    }
-
-    function updateSummaryCards() {
-        let totalIOwe = 0;
-        let countIOwe = 0;
-        let totalOwedToMe = 0;
-        let countOwedToMe = 0;
-
-        allDebts.forEach((item) => {
-            if (item.status !== "paid") {
-                if (item.type === "owe") {
-                    totalIOwe += Number(item.amount);
-                    countIOwe++;
-                } else if (item.type === "owed") {
-                    totalOwedToMe += Number(item.amount);
-                    countOwedToMe++;
-                }
-            }
-        });
-
-        const net = totalOwedToMe - totalIOwe;
-        document.getElementById("total-i-owe").textContent = formatCurrency(totalIOwe);
-        document.getElementById("count-i-owe").textContent = `${countIOwe} khoản chưa hoàn tất`;
-
-        document.getElementById("total-owed-to-me").textContent = formatCurrency(totalOwedToMe);
-        document.getElementById("count-owed-to-me").textContent = `${countOwedToMe} khoản đang chờ thu`;
-
-        const netEl = document.getElementById("net-balance");
-        netEl.textContent = (net > 0 ? "+" : "") + formatCurrency(net);
-        netEl.style.color = net >= 0 ? "#059669" : "#dc2626";
-    }
-
-    function getStatusBadge(item) {
-        if (item.type === "owed") {
-            return item.status === "paid"
-                ? `<span class="badge badge-paid">Đã nhận tiền</span>`
-                : `<span class="badge badge-receive">Người khác nợ bạn</span>`;
-        }
-        switch (item.status) {
-            case "paid":
-                return `<span class="badge badge-paid">Đã thanh toán</span>`;
-            case "pending":
-                return `<span class="badge badge-pending">Chờ duyệt ảnh CK</span>`;
-            default:
-                return `<span class="badge badge-unpaid">Chưa thanh toán</span>`;
-        }
-    }
-
-    function renderPage() {
-        updateSummaryCards();
-
-        const groupFilter = document.getElementById("filter-group").value;
-        const typeFilter = document.getElementById("filter-type").value;
-        const statusFilter = document.getElementById("filter-status").value;
-        const keyword = document.getElementById("filter-search").value.trim().toLowerCase();
-
-        const filtered = allDebts.filter((item) => {
-            if (groupFilter !== "all" && String(item.group_id) !== groupFilter) return false;
-            if (typeFilter !== "all" && item.type !== typeFilter) return false;
-            if (statusFilter !== "all" && item.status !== statusFilter) return false;
-            if (
-                keyword &&
-                !item.title.toLowerCase().includes(keyword) &&
-                !item.counterparty_name.toLowerCase().includes(keyword) &&
-                !item.group_name.toLowerCase().includes(keyword)
-            ) {
-                return false;
-            }
-            return true;
-        });
-
-        const container = document.getElementById("debt-groups-container");
-        if (filtered.length === 0) {
-            container.innerHTML = `
-        <div style="background:#fff; padding:40px; border-radius:12px; text-align:center; color:#64748b;">
-          Không tìm thấy khoản công nợ nào phù hợp với bộ lọc.
-        </div>`;
-            return;
-        }
-
-        // Gom nhóm các khoản nợ theo group_id
-        const grouped = new Map();
-        filtered.forEach((item) => {
-            if (!grouped.has(item.group_id)) {
-                grouped.set(item.group_id, {
-                    group_name: item.group_name,
-                    items: []
-                });
-            }
-            grouped.get(item.group_id).items.push(item);
-        });
-
-        let html = "";
-        grouped.forEach((group) => {
-            const groupTotalOwe = group.items
-                .filter((i) => i.type === "owe" && i.status !== "paid")
-                .reduce((sum, i) => sum + Number(i.amount), 0);
-
-            html += `
-        <section class="group-debt-section">
-          <div class="group-header">
-            <div class="group-title">📁 ${group.group_name}</div>
-            <div style="font-size: 13px; color: #475569;">
-              Cần trả trong nhóm: <strong style="color: #dc2626;">${formatCurrency(groupTotalOwe)}</strong>
+    listEl.innerHTML = pendingItems
+        .map((d) => {
+            const amt = d.claimedAmount || Math.max(0, d.total - d.paid);
+            return `
+        <div class="debt-row rounded-2xl border-2 border-ink bg-canvas/70 px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="space-y-1 text-xs">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-mono font-bold text-ink">${escapeText(d.id)}</span>
+              <span class="font-bold text-ink">${escapeText(d.memberName)}</span>
+              <span class="font-mono text-[11px] bg-white border border-ink/25 px-2 py-0.5 rounded">${escapeText(d.desc)}</span>
+            </div>
+            <div class="font-mono text-[11px] text-muted">
+              Báo trả: <strong class="text-emerald-700">${formatPlainMoney(amt)}</strong>
+              ${d.refCode ? ` • Mã GD: <strong class="text-ink">${escapeText(d.refCode)}</strong>` : ''}
             </div>
           </div>
-          <div>
-            ${group.items
-                    .map((item) => {
-                        const isOwe = item.type === "owe";
-                        const bankInfo = item.receiver_bank
-                            ? ` • STK nhận: <strong>${item.receiver_bank.bank_id} - ${item.receiver_bank.account_number}</strong>`
-                            : "";
 
-                        let actionBtn = "";
-                        if (isOwe) {
-                            if (item.status === "unpaid") {
-                                actionBtn = `<button type="button" class="btn-pay" data-open-pay="${item.id}">Tôi đã trả</button>`;
-                            } else if (item.status === "pending") {
-                                actionBtn = `<button type="button" class="btn-pay" disabled>Đang chờ duyệt</button>`;
-                            }
-                        }
-
-                        return `
-                  <div class="debt-item">
-                    <div class="debt-info">
-                      <h4>${item.title}</h4>
-                      <div class="debt-meta">
-                        ${isOwe ? "Người nhận:" : "Người nợ:"} <strong>${item.counterparty_name}</strong>
-                        • Hạn: ${item.due_date || "Không có"}
-                        ${isOwe ? bankInfo : ""}
-                      </div>
-                    </div>
-                    <div class="debt-actions">
-                      ${getStatusBadge(item)}
-                      <div class="debt-amount" style="color: ${isOwe ? "#dc2626" : "#059669"};">
-                        ${isOwe ? "-" : "+"}${formatCurrency(item.amount)}
-                      </div>
-                      ${actionBtn}
-                    </div>
-                  </div>
-                `;
-                    })
-                    .join("")}
+          <div class="flex items-center gap-2 shrink-0">
+            <button type="button" onclick="openConfirmPaymentModal('${escapeText(d.id)}')" class="btn-cta-lime px-3.5 py-1.5 rounded-xl font-mono text-xs font-bold">
+              ✓ Xác nhận
+            </button>
+            <button type="button" onclick="openRejectPaymentModal('${escapeText(d.id)}')" class="btn-reject px-3.5 py-1.5 rounded-xl font-mono text-xs font-bold">
+              ✕ Từ chối
+            </button>
           </div>
-        </section>
+        </div>
       `;
-        });
+        })
+        .join('');
+}
 
-        container.innerHTML = html;
+function renderHostDebtsTable() {
+    renderPendingApprovals();
 
-        // Gắn sự kiện click nút "Tôi đã trả"
-        container.querySelectorAll("[data-open-pay]").forEach((btn) => {
-            btn.addEventListener("click", () => {
-                const debtId = Number(btn.getAttribute("data-open-pay"));
-                openPaymentModal(debtId);
-            });
-        });
-    }
+    const memberFilter = document.getElementById('hostMemberFilter')?.value || 'all';
+    const filter = document.getElementById('hostDebtFilter')?.value || 'all';
+    const tbody = document.getElementById('hostDebtsTableBody');
+    if (!tbody) return;
 
-    function openPaymentModal(debtId) {
-        const debt = allDebts.find((d) => d.id === debtId);
-        if (!debt) return;
-
-        const bank = debt.receiver_bank || {
-            bank_id: "MB",
-            bank_name: "Chưa cập nhật ngân hàng",
-            account_number: "Chưa có STK",
-            account_name: debt.counterparty_name
-        };
-
-        const transferNote = `THANHTOAN NO ${debt.id}`;
-
-        document.getElementById("modal-debt-id").value = debt.id;
-        document.getElementById("modal-debt-title").textContent = debt.title;
-        document.getElementById("modal-debt-amount").textContent = formatCurrency(debt.amount);
-        document.getElementById("modal-receiver-name").textContent = `${bank.account_name} (${debt.counterparty_name})`;
-        document.getElementById("modal-bank-name").textContent = bank.bank_name;
-        document.getElementById("modal-account-number").textContent = bank.account_number;
-        document.getElementById("modal-transfer-note").textContent = transferNote;
-
-        // Tạo ảnh VietQR tự động điền số tiền và nội dung chuyển khoản
-        const qrImg = document.getElementById("modal-vietqr-img");
-        if (bank.account_number && bank.account_number !== "Chưa có STK") {
-            const qrUrl = `https://img.vietqr.io/image/${bank.bank_id}-${bank.account_number}-compact2.png?amount=${debt.amount}&addInfo=${encodeURIComponent(transferNote)}&accountName=${encodeURIComponent(bank.account_name)}`;
-            qrImg.src = qrUrl;
-            qrImg.style.display = "inline-block";
-        } else {
-            qrImg.style.display = "none";
-        }
-
-        // Reset form upload ảnh
-        selectedProofBase64 = null;
-        document.getElementById("proof-image-input").value = "";
-        document.getElementById("proof-preview").style.display = "none";
-        document.getElementById("payment-note").value = "";
-
-        document.getElementById("pay-modal").classList.add("active");
-    }
-
-    function closePaymentModal() {
-        document.getElementById("pay-modal").classList.remove("active");
-    }
-
-    function setupEvents() {
-        ["filter-group", "filter-type", "filter-status"].forEach((id) => {
-            document.getElementById(id).addEventListener("change", renderPage);
-        });
-        document.getElementById("filter-search").addEventListener("input", renderPage);
-
-        document.getElementById("close-modal-btn").addEventListener("click", closePaymentModal);
-        document.getElementById("cancel-modal-btn").addEventListener("click", closePaymentModal);
-
-        // Copy số tài khoản & nội dung CK
-        document.getElementById("btn-copy-stk").addEventListener("click", () => {
-            const stk = document.getElementById("modal-account-number").textContent;
-            navigator.clipboard.writeText(stk);
-            alert("Đã sao chép số tài khoản: " + stk);
-        });
-
-        document.getElementById("btn-copy-note").addEventListener("click", () => {
-            const note = document.getElementById("modal-transfer-note").textContent;
-            navigator.clipboard.writeText(note);
-            alert("Đã sao chép nội dung chuyển khoản: " + note);
-        });
-
-        // Xử lý chọn & preview ảnh minh chứng
-        const dropzone = document.getElementById("upload-dropzone");
-        const fileInput = document.getElementById("proof-image-input");
-        const previewImg = document.getElementById("proof-preview");
-
-        dropzone.addEventListener("click", () => fileInput.click());
-
-        fileInput.addEventListener("change", (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            if (!file.type.startsWith("image/")) {
-                alert("Vui lòng chọn tệp hình ảnh (JPG, PNG, WEBP).");
-                fileInput.value = "";
-                return;
-            }
-            if (file.size > 5 * 1024 * 1024) {
-                alert("Ảnh vượt quá dung lượng tối đa 5MB.");
-                fileInput.value = "";
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                selectedProofBase64 = ev.target.result;
-                previewImg.src = selectedProofBase64;
-                previewImg.style.display = "inline-block";
-            };
-            reader.readAsDataURL(file);
-        });
-
-        // Submit form xác nhận đã trả kèm ảnh biên lai
-        document.getElementById("payment-proof-form").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const debtId = Number(document.getElementById("modal-debt-id").value);
-            const note = document.getElementById("payment-note").value.trim();
-
-            if (!selectedProofBase64) {
-                alert("Vui lòng tải lên ảnh biên lai chuyển khoản trước khi xác nhận!");
-                return;
-            }
-
-            const submitBtn = document.getElementById("submit-proof-btn");
-            submitBtn.disabled = true;
-            submitBtn.textContent = "Đang gửi...";
-
-            try {
-                // Gọi API backend nếu có
-                if (window.api && typeof window.api.post === "function") {
-                    await window.api.post(`/debts/${debtId}/confirm-payment`, {
-                        proof_image: selectedProofBase64,
-                        note: note
-                    });
-                }
-            } catch (err) {
-                console.warn("Cập nhật local state do API chưa phản hồi:", err.message);
-            } finally {
-                // Cập nhật trạng thái sang "pending" (Chờ duyệt minh chứng) trên UI
-                const idx = allDebts.findIndex((d) => d.id === debtId);
-                if (idx !== -1) {
-                    allDebts[idx].status = "pending";
-                }
-                submitBtn.disabled = false;
-                submitBtn.textContent = "Gửi xác nhận đã trả";
-                closePaymentModal();
-                renderPage();
-                alert("Đã gửi xác nhận thanh toán và ảnh minh chứng thành công!");
-            }
-        });
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        // if (typeof window.renderLayout === "function") {
-        //     window.renderLayout("debts");
-        // }
-        setupEvents();
-        loadMyDebts();
+    const filtered = groupDebts.filter((d) => {
+        if (memberFilter !== 'all' && d.memberName !== memberFilter) return false;
+        const rem = d.total - d.paid;
+        if (filter === 'pending_review') return d.pendingApproval === true && rem > 0;
+        if (filter === 'fund') return d.type === 'fund' && rem > 0;
+        if (filter === 'invoice') return d.type === 'invoice' && rem > 0;
+        if (filter === 'disputed') return d.disputed === true;
+        if (filter === 'paid') return rem <= 0;
+        return true;
     });
-})();
+
+    tbody.innerHTML = filtered
+        .map((d) => {
+            const rem = Math.max(0, d.total - d.paid);
+            let statusHtml = '';
+            if (rem === 0) {
+                statusHtml = `<span class="font-mono text-xs font-bold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full whitespace-nowrap">✓ Đã trả đủ</span>`;
+            } else if (d.pendingApproval) {
+                statusHtml = `<span class="font-mono text-xs font-bold bg-cyan/30 text-ink border border-ink px-2.5 py-1 rounded-full whitespace-nowrap">⏳ Chờ xác nhận</span>`;
+            } else if (d.disputed) {
+                statusHtml = `<span class="font-mono text-xs font-bold bg-purple-100 text-purple-800 px-2.5 py-1 rounded-full whitespace-nowrap">⚠ Đang tranh chấp</span>`;
+            } else if (d.paid > 0) {
+                statusHtml = `<span class="font-mono text-xs font-bold bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full whitespace-nowrap">Trả một phần</span>`;
+            } else {
+                statusHtml = `<span class="font-mono text-xs font-bold bg-rose-100 text-rose-500 px-2.5 py-1 rounded-full whitespace-nowrap">Chưa trả</span>`;
+            }
+
+            const reasonNote = d.rejectReason && rem > 0 && !d.pendingApproval
+                ? `<div class="mt-1 font-mono text-[11px] text-rose-600">Lý do từ chối: ${escapeText(d.rejectReason)}</div>`
+                : '';
+
+            const actionHtml = rem > 0
+                ? `<div class="inline-flex flex-wrap justify-end items-center gap-1.5">
+            ${d.pendingApproval
+                    ? `<button type="button" onclick="openRejectPaymentModal('${escapeText(d.id)}')" class="btn-reject px-3 py-1.5 rounded-xl font-mono text-[11px] font-bold leading-tight text-center">
+                    Từ chối
+                  </button>`
+                    : `<button type="button" onclick="sendHostDebtReminder('${escapeText(d.id)}')" class="${d.reminded ? 'bg-amber text-ink border-2 border-ink shadow-clean' : 'btn-outline'} px-3 py-1.5 rounded-xl font-mono text-[11px] font-bold leading-tight text-center">
+                    ${d.reminded ? '🔔 Đã nhắc<br />(' + (d.remindCount || 1) + ')' : '🔔 Nhắc<br />nợ'}
+                  </button>`
+                }
+            <button type="button" onclick="openConfirmPaymentModal('${escapeText(d.id)}')" class="btn-cta-lime px-3.5 py-1.5 rounded-xl font-mono text-[11px] font-bold leading-tight text-center">
+              Xác nhận<br />trả
+            </button>
+          </div>`
+                : `<span class="font-mono text-xs text-muted">Đã đối soát</span>`;
+
+            return `
+        <tr class="debt-row align-middle">
+          <td class="py-3.5 px-3.5 font-mono text-xs font-bold">${escapeText(d.id)}</td>
+          <td class="py-3.5 px-3.5 font-semibold text-xs text-ink">${escapeText(d.memberName)}</td>
+          <td class="py-3.5 px-3.5">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span class="font-mono text-[11px] bg-canvas px-2 py-0.5 rounded border border-ink/20 shrink-0">${escapeText(d.typeLabel)}</span>
+              <span class="font-medium text-xs text-ink">${escapeText(d.desc)}</span>
+            </div>
+            ${reasonNote}
+          </td>
+          <td class="py-3.5 px-3.5 text-right font-mono text-xs">${formatMoneyCell(d.total)}</td>
+          <td class="py-3.5 px-3.5 text-right font-mono text-xs text-emerald-600">${formatMoneyCell(d.paid)}</td>
+          <td class="py-3.5 px-3.5 text-right font-mono text-xs font-bold ${rem > 0 ? 'text-rose-500' : 'text-muted'}">${formatMoneyCell(rem)}</td>
+          <td class="py-3.5 px-3.5 text-center">${statusHtml}</td>
+          <td class="py-3.5 px-3.5 text-right">${actionHtml}</td>
+        </tr>
+      `;
+        })
+        .join('');
+
+    updateProgress();
+}
+
+function sendHostDebtReminder(debtId) {
+    const d = groupDebts.find((item) => item.id === debtId);
+    if (!d) return;
+    const rem = Math.max(0, d.total - d.paid);
+    d.reminded = true;
+    d.remindCount = (d.remindCount || 0) + 1;
+    renderHostDebtsTable();
+    notify(`Đã nhắc nợ ${d.memberName} (${formatPlainMoney(rem)}) cho khoản ${d.id}.`);
+}
+
+function openConfirmPaymentModal(debtId) {
+    const d = groupDebts.find((item) => item.id === debtId);
+    if (!d) return;
+    const rem = Math.max(0, d.total - d.paid);
+    document.getElementById('payDebtId').value = d.id;
+    document.getElementById('payMemberName').textContent = d.memberName;
+    document.getElementById('payDebtTitle').textContent = d.desc;
+    document.getElementById('payRemainingText').textContent = formatPlainMoney(rem);
+    document.getElementById('payReceivedAmount').value = d.pendingApproval && d.claimedAmount ? Math.min(rem, d.claimedAmount) : rem;
+    if (d.refCode) {
+        document.getElementById('payRefNote').value = d.refCode;
+    }
+    openModal('modalConfirmPayment');
+}
+
+function submitConfirmPayment(e) {
+    e.preventDefault();
+    const debtId = document.getElementById('payDebtId').value;
+    const received = parseInt(document.getElementById('payReceivedAmount').value, 10) || 0;
+    const d = groupDebts.find((item) => item.id === debtId);
+    if (!d) return;
+
+    const rem = d.total - d.paid;
+    d.pendingApproval = false;
+    d.claimedAmount = 0;
+    d.disputed = false;
+    d.rejectReason = '';
+
+    if (received > rem) {
+        d.paid = d.total;
+        notify(`Số tiền nhập lớn hơn số còn nợ (${formatPlainMoney(rem)}). Đã ghi nhận trả đủ.`);
+    } else {
+        d.paid += received;
+        notify(`Đã xác nhận thanh toán ${formatPlainMoney(received)} cho ${d.memberName}.`);
+    }
+
+    closeModal('modalConfirmPayment');
+    renderHostDebtsTable();
+}
+
+function syncRejectReasonInput() {
+    const selectEl = document.getElementById('rejectReasonSelect');
+    const detailEl = document.getElementById('rejectReasonDetail');
+    if (!selectEl || !detailEl) return;
+    if (selectEl.value !== 'Lý do khác') {
+        detailEl.value = selectEl.value;
+    } else {
+        detailEl.value = '';
+        detailEl.focus();
+    }
+}
+
+function openRejectPaymentModal(debtId) {
+    const d = groupDebts.find((item) => item.id === debtId);
+    if (!d) return;
+    document.getElementById('rejectDebtId').value = d.id;
+    document.getElementById('rejectMemberName').textContent = d.memberName;
+    document.getElementById('rejectDebtTitle').textContent = `${d.id} • ${d.desc}`;
+
+    const selectEl = document.getElementById('rejectReasonSelect');
+    if (selectEl) selectEl.value = 'Chưa nhận được tiền trên sao kê';
+    syncRejectReasonInput();
+    openModal('modalRejectPayment');
+}
+
+function submitRejectPayment(e) {
+    e.preventDefault();
+    const debtId = document.getElementById('rejectDebtId').value;
+    const reason = (document.getElementById('rejectReasonDetail')?.value || '').trim();
+    if (!reason) {
+        notify('Vui lòng nhập lý do từ chối.');
+        return;
+    }
+
+    const d = groupDebts.find((item) => item.id === debtId);
+    if (!d) return;
+
+    d.pendingApproval = false;
+    d.claimedAmount = 0;
+    d.rejectReason = reason;
+
+    closeModal('modalRejectPayment');
+    renderHostDebtsTable();
+    notify(`Đã từ chối thanh toán khoản ${d.id} của ${d.memberName} (${reason}).`);
+}
+
+document.addEventListener('DOMContentLoaded', renderHostDebtsTable);
