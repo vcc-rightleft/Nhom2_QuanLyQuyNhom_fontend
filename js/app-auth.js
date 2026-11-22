@@ -133,6 +133,26 @@ function formatVND(amount) {
 // 2. TOP NAVIGATION & SRS BADGE TOGGLE
 // =========================================================================
 function switchRoleView(role) {
+    if (role === 'user') {
+        if (typeof getAccessToken === 'function' && !getAccessToken()) {
+            notify('Vui lòng đăng nhập trước khi vào trang User!');
+            role = 'auth';
+        } else {
+            window.location.href = './group.html';
+            return;
+        }
+    }
+
+    if (role === 'host') {
+        if (typeof getAccessToken === 'function' && !getAccessToken()) {
+            notify('Vui lòng đăng nhập trước khi vào trang Host!');
+            role = 'auth';
+        } else {
+            window.location.href = './formbill.html';
+            return;
+        }
+    }
+
     ['landing', 'auth', 'user', 'host', 'admin'].forEach(r => {
         const viewEl = document.getElementById(`view-${r}`);
         if (viewEl) viewEl.classList.add('hidden');
@@ -142,17 +162,13 @@ function switchRoleView(role) {
 
     const targetView = document.getElementById(`view-${role}`);
     if (targetView) targetView.classList.remove('hidden');
-    
+
     const activeBtn = document.getElementById(`roleBtn-${role}`);
     if (activeBtn) {
         activeBtn.className = "px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-2 transition-all bg-lime text-ink border-2 border-ink shadow-bold-sm";
     }
 
-    if (role === 'user') {
-        renderUserWorkspace();
-    } else if (role === 'host') {
-        renderHostWorkspace();
-    } else if (role === 'admin') {
+    if (role === 'admin') {
         renderAdminWorkspace();
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });

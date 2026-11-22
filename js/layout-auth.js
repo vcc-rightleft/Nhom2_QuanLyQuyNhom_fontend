@@ -45,9 +45,7 @@ function renderHeaderLayout() {
                     class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all text-muted hover:text-ink">
                     <span>4. Trang Admin 🛡️</span>
                 </button>
-                <a href="pages/items.html" class="px-3 py-2 rounded-lg font-mono font-bold text-xs text-indigo hover:underline">
-                    Items Page ↗
-                </a>
+                
             </nav>
 
             <!-- Khu vực Trạng thái Đăng nhập / Token & Test 401 -->

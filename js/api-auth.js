@@ -50,8 +50,11 @@ if (typeof window.apiClient === 'undefined' && typeof axios !== 'undefined') {
         baseURL: baseURL,
         headers: { 'Content-Type': 'application/json' }
     });
-    window.apiClient.interceptors.request.use(config => {
-        const token = localStorage.getItem('access_token') || localStorage.getItem('token');
+    window.apiClient.interceptors.request.use((config) => {
+        const token =
+            localStorage.getItem('squad_cash_token') ||
+            localStorage.getItem('access_token') ||
+            localStorage.getItem('token');
         if (token) config.headers.Authorization = `Bearer ${token}`;
         return config;
     });

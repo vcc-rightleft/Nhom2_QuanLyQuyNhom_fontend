@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQUAD.CASH — Vai Trò User (Quản Lý Quỹ Nhóm)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        canvas: '#F6F5F0',
+                        surface: '#FFFFFF',
+                        ink: '#121212',
+                        muted: '#52525B',
+                        line: '#E4E4E7',
+                        indigo: {
+                            DEFAULT: '#7C3AED',
+                            50: '#F5F3FF',
+                            100: '#EDE9FE',
+                            600: '#7C3AED',
+                            700: '#6D28D9'
+                        },
+                        lime: {
+                            DEFAULT: '#D4FF00',
+                            soft: '#F4FFC2'
+                        },
+                        coral: '#FF5E36',
+                        cyan: '#38BDF8',
+                        amber: '#FACC15',
+                        mint: '#10B981'
+                    },
+                    fontFamily: {
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace']
+                    },
+                    boxShadow: {
+                        'clean': '3px 3px 0px #121212',
+                        'bold': '4px 4px 0px #121212',
+                        'bold-sm': '2px 2px 0px #121212'
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="../css/group.css">
+</head>
+<body class="min-h-screen flex flex-col relative">
+    <div class="app-renaissance-ambient"></div>
+    <canvas id="appAmbientCanvas" class="fixed inset-0 w-full h-full pointer-events-none z-[1]"></canvas>
+
+    <header class="sticky top-0 z-40 bg-white border-b-2 border-ink px-4 sm:px-8 py-3.5 shadow-clean">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-lime text-ink border-2 border-ink shadow-bold-sm flex items-center justify-center font-display font-bold text-xl">
+                    $
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-display font-bold text-lg tracking-tight text-ink">SQUAD.CASH</span>
+                        <span class="font-mono text-[11px] font-bold bg-lime border-[1.5px] border-ink px-2 py-0.5 rounded-md text-ink">
+                            RENAISSANCE OS v2.5
+                        </span>
+                    </div>
+                    <p class="text-xs text-muted font-medium">Wiro Renaissance Art × Western Bold FinTech OS</p>
+                </div>
+            </div>
+
+            <nav class="flex items-center bg-canvas p-1.5 rounded-xl border-2 border-ink overflow-x-auto gap-1">
+                <button type="button" onclick="window.location.href='./auth.html'"
+                    class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-2 transition-all text-muted hover:text-ink">
+                    <i data-lucide="log-in" class="w-4 h-4"></i>
+                    <span>1. Đăng nhập / Đăng ký</span>
+                </button>
+                <button type="button"
+                    class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-2 transition-all bg-lime text-ink border-2 border-ink shadow-bold-sm">
+                    <i data-lucide="user" class="w-4 h-4"></i>
+                    <span>2. Vai trò User</span>
+                </button>
+                <button type="button" onclick="goToHostPage()"
+                    class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-2 transition-all text-muted hover:text-ink">
+                    <i data-lucide="crown" class="w-4 h-4"></i>
+                    <span>3. Vai trò Host</span>
+                </button>
+            </nav>
+
+            <div class="flex flex-wrap items-center gap-2.5">
+                <button type="button" onclick="pingFastApiBackend()" id="apiStatusPill" title="Bấm để kiểm tra kết nối FastAPI http://127.0.0.1:8000"
+                    class="inline-flex items-center gap-2 bg-white hover:bg-lime/30 px-3 py-2 rounded-xl border-2 border-ink text-xs font-mono font-bold shadow-bold-sm">
+                    <span id="apiPulseDot" class="pulse-dot"></span>
+                    <span id="apiStatusLabel">API: 127.0.0.1:8000</span>
+                </button>
+                <button type="button" id="soundToggleBtn" onclick="toggleSoundFx()"
+                    class="inline-flex items-center gap-1.5 bg-cyan/40 hover:bg-cyan px-3 py-2 rounded-xl border-2 border-ink text-xs font-mono font-bold shadow-bold-sm">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                    <span id="soundToggleLabel">FX: BẬT</span>
+                </button>
+                <label class="inline-flex items-center gap-2 cursor-pointer bg-amber/40 px-3 py-2 rounded-xl border-2 border-ink text-xs font-bold select-none shadow-bold-sm">
+                    <input type="checkbox" checked onchange="toggleFrBadges(this.checked)" class="accent-indigo w-4 h-4 rounded">
+                    <span class="font-mono text-ink">Nhãn SRS (FR-Code)</span>
+                </label>
+                <div class="inline-flex items-center gap-2 bg-indigo-50 px-3 py-1.5 rounded-xl border-2 border-ink text-xs font-mono shadow-bold-sm">
+                    <i data-lucide="user-check" class="w-3.5 h-3.5 text-indigo shrink-0"></i>
+                    <span id="currentUserBadge" class="font-bold text-indigo">Đang tải...</span>
+                    <button type="button" onclick="logoutAccount()"
+                        class="bg-coral hover:opacity-90 text-white px-2.5 py-0.5 rounded-md border border-ink font-bold text-[11px]">
+                        Đăng xuất
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main id="view-user" class="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
+        <section class="card-clean overflow-hidden bg-white">
+            <div class="os-window-bar">
+                <div class="flex items-center gap-2.5">
+                    <div class="os-dots">
+                        <span class="os-dot bg-coral"></span>
+                        <span class="os-dot bg-amber"></span>
+                        <span class="os-dot bg-mint"></span>
+                    </div>
+                    <span class="font-mono text-xs font-bold text-ink/75 ml-1">squad.cash/os/user-workspace</span>
+                </div>
+                <span class="font-mono text-[11px] font-bold bg-cyan text-ink px-2.5 py-0.5 rounded-full border border-ink">
+                    FR-USER-001 → 004
+                </span>
+            </div>
+
+            <div class="workspace-fresco-strip px-6 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="bg-cyan text-ink border-2 border-ink font-mono text-xs font-bold px-3 py-1 rounded-full shadow-bold-sm">
+                        VAI TRÒ: USER (THÀNH VIÊN NHÓM)
+                    </span>
+                    <span class="font-mono text-xs font-bold bg-black/55 text-lime border border-white/30 px-2.5 py-1 rounded-md">
+                        Phiên JWT • Đồng bộ MySQL
+                    </span>
+                </div>
+                <span class="font-wiro-serif text-lg sm:text-xl text-white/90">
+                    ✦ Sổ Cái Minh Bạch Cá Nhân • Renaissance OS
+                </span>
+            </div>
+
+            <div class="p-6 sm:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white">
+                <div class="space-y-2">
+                    <h1 class="font-wiro-sans font-bold text-2xl sm:text-4xl text-ink leading-tight">
+                        Không gian Theo dõi <span class="font-wiro-serif font-normal text-3xl sm:text-5xl text-indigo">Tài chính Cá nhân.</span>
+                    </h1>
+                    <p class="text-sm text-muted max-w-2xl">
+                        Theo nguyên tắc phân quyền SRS: Bạn xem các nhóm mình tham gia, nghĩa vụ công nợ của bản thân, hóa đơn liên quan và sổ quỹ minh bạch.
+                    </p>
+                </div>
+
+                <div class="card-coral p-5 min-w-[270px]">
+                    <span class="text-xs font-bold uppercase text-white/90 block">Tổng số dư quỹ (Tất cả nhóm)</span>
+                    <div id="userTotalBalanceKpi" class="font-mono font-bold text-2xl sm:text-3xl text-lime mt-1">
+                        0 ₫
+                    </div>
+                    <span class="font-mono text-[11px] text-white/90 block mt-1">⚡ Chỉ gạch nợ khi Host đã đối soát</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <h2 class="font-display font-bold text-xl text-ink">Nhóm của tôi đang tham gia</h2>
+                    <span class="fr-badge">FR-USER-001</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <button type="button" onclick="openModal('modalJoinGroup')" class="btn-outline px-4 py-2 rounded-xl font-display font-bold text-xs flex items-center gap-1.5">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Nhập mã mời tham gia nhóm mới</span>
+                    </button>
+                    <button type="button" onclick="openModal('modalCreateGroup')" class="btn-cta-lime px-4 py-2 rounded-xl font-display font-bold text-xs flex items-center gap-1.5">
+                        <i data-lucide="folder-plus" class="w-4 h-4"></i>
+                        <span>+ Tạo nhóm mới</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="userGroupsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+        </section>
+
+        <section id="userGroupDetailSection" class="hidden card-clean p-6 sm:p-8 space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-line">
+                <div>
+                    <span class="font-mono text-xs font-bold text-indigo uppercase">Đang xem chi tiết nhóm</span>
+                    <h3 id="userSelectedGroupName" class="font-display font-bold text-2xl text-ink mt-0.5">
+                        Chọn một nhóm để xem chi tiết
+                    </h3>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex flex-wrap gap-2 bg-canvas p-1.5 rounded-xl border border-ink/15">
+                        <button type="button" id="uSubBtn-debts" onclick="switchUserSubTab('debts')" class="px-4 py-2 rounded-lg font-display font-bold text-xs bg-white text-ink border border-ink shadow-clean flex items-center gap-1.5">
+                            <span>Công nợ của tôi</span>
+                            <span class="fr-badge">FR-USER-002</span>
+                        </button>
+                        <button type="button" id="uSubBtn-invoices" onclick="switchUserSubTab('invoices')" class="px-4 py-2 rounded-lg font-display font-bold text-xs text-muted hover:text-ink flex items-center gap-1.5">
+                            <span>Lịch sử hóa đơn</span>
+                            <span class="fr-badge">FR-USER-003</span>
+                        </button>
+                        <button type="button" id="uSubBtn-ledger" onclick="switchUserSubTab('ledger')" class="px-4 py-2 rounded-lg font-display font-bold text-xs text-muted hover:text-ink flex items-center gap-1.5">
+                            <span>Sổ quỹ &amp; Dòng tiền</span>
+                            <span class="fr-badge">FR-USER-004</span>
+                        </button>
+                    </div>
+                    <button type="button" onclick="goToHostPage()" class="btn-cta-lime px-3.5 py-2.5 rounded-xl font-mono font-bold text-xs">
+                        👑 Quản trị Host →
+                    </button>
+                </div>
+            </div>
+
+            <div id="uSubContent-debts" class="space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <p class="text-sm text-muted">
+                        Chỉ hiển thị các khoản phải trả của riêng bạn gồm: Đóng quỹ, Hóa đơn và Khoản điều chỉnh.
+                    </p>
+                    <span class="font-mono text-xs bg-amber-50 text-amber-800 border border-amber-300 px-3 py-1 rounded-lg">
+                        Lưu ý SRS 2.3: Trạng thái chỉ đổi khi Host đã đối soát thực tế.
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-y border-line bg-canvas font-mono text-xs text-muted uppercase">
+                                <th class="py-3.5 px-4">Mã khoản nợ</th>
+                                <th class="py-3.5 px-4">Phân loại</th>
+                                <th class="py-3.5 px-4">Mô tả &amp; Ngày phát sinh</th>
+                                <th class="py-3.5 px-4 text-right">Tổng phải trả</th>
+                                <th class="py-3.5 px-4 text-right">Đã thanh toán</th>
+                                <th class="py-3.5 px-4 text-right">Còn nợ</th>
+                                <th class="py-3.5 px-4 text-center">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userDebtsTableBody" class="divide-y divide-line text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="uSubContent-invoices" class="hidden space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <p class="text-sm text-muted">Danh sách các hóa đơn đã phát sinh trong nhóm. Bấm vào từng hóa đơn để xem chi tiết món và phần phân bổ.</p>
+                    <select id="userInvoiceModeFilter" onchange="renderUserInvoices(this.value)" class="input-clean px-3.5 py-2 text-xs font-semibold">
+                        <option value="ALL">Tất cả hình thức chia</option>
+                        <option value="EQUAL">Chia đều (Equal Split)</option>
+                        <option value="ITEMIZED">Chia theo món (Itemized Split)</option>
+                        <option value="CUSTOM">Tự chọn số tiền (Custom Split)</option>
+                    </select>
+                </div>
+
+                <div id="userInvoicesList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <div id="uSubContent-ledger" class="hidden space-y-5">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="card-lime p-5">
+                        <span class="text-xs font-bold text-ink uppercase">Tổng Thu Quỹ</span>
+                        <div id="userLedgerIn" class="font-mono font-bold text-2xl text-ink mt-1">+0 ₫</div>
+                    </div>
+                    <div class="card-coral p-5">
+                        <span class="text-xs font-bold text-white uppercase">Tổng Chi Quỹ</span>
+                        <div id="userLedgerOut" class="font-mono font-bold text-2xl text-white mt-1">-0 ₫</div>
+                    </div>
+                    <div class="card-violet p-5">
+                        <span class="text-xs font-bold text-lime uppercase">Số Dư Quỹ Hiện Tại</span>
+                        <div id="userLedgerBalance" class="font-mono font-bold text-2xl text-white mt-1">0 ₫</div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-y border-line bg-canvas font-mono text-xs text-muted uppercase">
+                                <th class="py-3 px-4">Mã GD</th>
+                                <th class="py-3 px-4">Loại</th>
+                                <th class="py-3 px-4">Nội dung giao dịch</th>
+                                <th class="py-3 px-4">Phương thức</th>
+                                <th class="py-3 px-4">Người ghi nhận &amp; Thời gian</th>
+                                <th class="py-3 px-4 text-right">Số tiền (VND)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userLedgerTableBody" class="divide-y divide-line text-sm">
+                            <tr>
+                                <td colspan="6" class="py-8 px-4 text-center text-xs text-muted">Chưa có giao dịch sổ quỹ nào trong nhóm này.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="modalJoinGroup" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="card-clean max-w-md w-full p-6 sm:p-7 space-y-5 bg-white">
+            <div class="flex items-center justify-between border-b border-line pb-3">
+                <div class="flex items-center gap-2">
+                    <h3 class="font-display font-bold text-lg text-ink">Tham Gia Nhóm Bằng Mã Mời</h3>
+                    <span class="fr-badge">FR-HOST-002</span>
+                </div>
+                <button type="button" onclick="closeModal('modalJoinGroup')" class="text-muted hover:text-ink font-mono font-bold">✕</button>
+            </div>
+            <form onsubmit="submitJoinGroupByCode(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-ink mb-1.5">Nhập mã mời nhóm</label>
+                    <input id="joinInviteCodeInput" type="text" required maxlength="16" placeholder="VD: DALAT26"
+                        class="input-clean w-full px-4 py-3 font-mono font-bold text-lg uppercase tracking-widest text-center bg-canvas">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modalJoinGroup')" class="btn-outline px-4 py-2.5 rounded-xl font-display font-bold text-xs">Hủy</button>
+                    <button type="submit" class="btn-cta-indigo px-5 py-2.5 rounded-xl font-display font-bold text-xs uppercase">Tham Gia Nhóm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalCreateGroup" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="card-clean max-w-md w-full p-6 sm:p-7 space-y-5 bg-white">
+            <div class="flex items-center justify-between border-b border-line pb-3">
+                <div class="flex items-center gap-2">
+                    <h3 class="font-display font-bold text-lg text-ink">Tạo Nhóm Quỹ Mới</h3>
+                    <span class="fr-badge">FR-HOST-001</span>
+                </div>
+                <button type="button" onclick="closeModal('modalCreateGroup')" class="text-muted hover:text-ink font-mono font-bold">✕</button>
+            </div>
+            <form onsubmit="submitCreateGroup(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-ink mb-1">Tên nhóm quỹ (Bắt buộc)</label>
+                    <input id="newGroupNameInput" type="text" required maxlength="80" placeholder="VD: Quỹ Cắm Trại Hồ Trị An"
+                        class="input-clean w-full px-4 py-2.5 text-sm font-medium">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-ink mb-1">Mô tả tùy chọn</label>
+                    <textarea id="newGroupDescInput" rows="2" placeholder="Mục đích thu chi của nhóm..."
+                        class="input-clean w-full p-3 text-xs"></textarea>
+                </div>
+                <p class="text-xs text-muted">Người tạo sẽ được gán quyền <strong>Host</strong> của nhóm này.</p>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modalCreateGroup')" class="btn-outline px-4 py-2.5 rounded-xl font-display font-bold text-xs">Hủy</button>
+                    <button type="submit" class="btn-cta-lime px-5 py-2.5 rounded-xl font-display font-bold text-xs uppercase">Tạo Nhóm Ngay</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalUserInvoiceDetail" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="card-clean max-w-lg w-full p-6 sm:p-7 space-y-5 bg-white">
+            <div class="flex items-center justify-between border-b border-line pb-3">
+                <div class="flex items-center gap-2">
+                    <h3 id="uInvModalTitle" class="font-display font-bold text-lg text-ink">Chi tiết Hóa đơn</h3>
+                    <span class="fr-badge">FR-USER-003</span>
+                </div>
+                <button type="button" onclick="closeModal('modalUserInvoiceDetail')" class="text-muted hover:text-ink font-mono font-bold">✕</button>
+            </div>
+            <div id="uInvModalBody" class="space-y-4 text-sm max-h-[70vh] overflow-y-auto pr-1"></div>
+        </div>
+    </div>
+
+    <div id="cleanToastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+    <script src="../js/group.js"></script>
+</body>
+</html>
