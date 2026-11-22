@@ -7,13 +7,6 @@ import api from "../api.js";
 
 const $ = (id) => document.getElementById(id);
 
-const GROUP_MEMBERS = [
-    "Phan Đức Anh",
-    "Minh Thắng",
-    "Lê Quang Minh",
-    "Nguyễn Phương Thảo"
-];
-
 let currentSplitMode = "equal";
 let interactiveFxEnabled = true;
 let audioCtx = null;
@@ -997,115 +990,9 @@ function updateSplitPreview() {
 function initLegacyBillForm() {
     const form = $("bill-form");
     if (!form) return;
-
-    const list = $("members-checklist");
-
-    if (list && !list.children.length) {
-        list.innerHTML = GROUP_MEMBERS
-            .map((name, index) => `
-                <label class="flex items-center gap-3 p-3 bg-white border-2 border-ink rounded-xl cursor-pointer">
-                    <input
-                        type="checkbox"
-                        class="member-checkbox"
-                        value="${escapeHTML(name)}"
-                        checked
-                        id="mem-${index}"
-                    >
-                    <span>${escapeHTML(name)}</span>
-                </label>
-            `)
-            .join("");
-    }
-
-    if ($("bill-date")) {
-        const date = new Date();
-
-        const localDate = new Date(
-            date.getTime() -
-            date.getTimezoneOffset() * 60000
-        );
-
-        $("bill-date").value = localDate
-            .toISOString()
-            .slice(0, 10);
-    }
-
-    $("bill-total")?.addEventListener(
-        "input",
-        updateSplitPreview
-    );
-
-    list?.addEventListener(
-        "change",
-        updateSplitPreview
-    );
-
-    updateSplitPreview();
-
     form.addEventListener("submit", (event) => {
         event.preventDefault();
-
-        const checked = Array.from(
-            document.querySelectorAll(
-                ".member-checkbox:checked"
-            )
-        );
-
-        if (!checked.length) {
-            notify(
-                "Vui lòng chọn ít nhất một thành viên.",
-                true
-            );
-            return;
-        }
-
-        const total = readAmount("bill-total");
-
-        if (total <= 0) {
-            notify(
-                "Số tiền hóa đơn phải lớn hơn 0.",
-                true
-            );
-            return;
-        }
-
-        const newBill = {
-            id: `BIL-${Date.now()}`,
-            title: $("bill-title")?.value.trim() || "Hóa đơn",
-            groupCode: $("bill-group")?.value || "",
-            total,
-            payer: $("bill-payer")?.value || "",
-            date: $("bill-date")?.value || "",
-            splitCount: checked.length
-        };
-
-        // Chế độ giao diện cũ chỉ lưu dữ liệu mẫu.
-        // Không coi đây là hóa đơn đã lưu vào MySQL.
-        let existing = [];
-
-        try {
-            existing = JSON.parse(
-                localStorage.getItem("squad_cash_bills") ||
-                "[]"
-            );
-
-            if (!Array.isArray(existing)) {
-                existing = [];
-            }
-        } catch {
-            existing = [];
-        }
-
-        existing.unshift(newBill);
-
-        localStorage.setItem(
-            "squad_cash_bills",
-            JSON.stringify(existing)
-        );
-
-        notify(
-            `Đã lưu hóa đơn mẫu ${newBill.id} trên trình duyệt.`
-        );
+        notify("Vui lòng sử dụng mục Tạo hóa đơn trong giao diện chính; không lưu hóa đơn mẫu.", true);
     });
 }
 
