@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SQUAD.CASH — Lịch sử Giao dịch &amp; Sao kê Tháng (T3CD008)</title>
+    <title>SQUAD.CASH — Lịch sử Giao dịch &amp; Sao kê Tháng (T3CD008 &amp; T3CDF02)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -74,10 +74,10 @@
                         <span class="font-display font-bold text-lg tracking-tight text-ink">SQUAD.CASH</span>
                         <span
                             class="font-mono text-[11px] font-bold bg-lime border-[1.5px] border-ink px-2 py-0.5 rounded-md text-ink">
-                            T3CD008
+                            T3CDF02
                         </span>
                     </div>
-                    <p class="text-xs text-muted font-medium">Lịch sử giao dịch &amp; Sao kê quỹ nhóm</p>
+                    <p class="text-xs text-muted font-medium">Lịch sử giao dịch, Sao kê &amp; Xuất CSV</p>
                 </div>
             </a>
 
@@ -110,12 +110,17 @@
             </nav>
 
             <!-- Right Actions -->
-            <div class="flex items-center gap-2.5">
+            <div class="flex items-center gap-2">
                 <div id="apiStatusBadge"
                     class="inline-flex items-center gap-2 bg-white px-3 py-2 rounded-xl border-2 border-ink text-xs font-mono font-bold shadow-bold-sm">
                     <span id="apiPulseDot" class="pulse-dot offline"></span>
                     <span id="apiStatusText">Đang kiểm tra API...</span>
                 </div>
+                <button type="button" id="btnExportStatementCsvTop"
+                    class="btn-outline px-3.5 py-2 rounded-xl font-display font-bold text-xs uppercase flex items-center gap-1.5">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    <span>Xuất CSV</span>
+                </button>
                 <button type="button" id="btnPrintStatementTop"
                     class="btn-cta-lime px-4 py-2 rounded-xl font-display font-bold text-xs uppercase flex items-center gap-1.5">
                     <i data-lucide="printer" class="w-4 h-4"></i>
@@ -148,7 +153,7 @@
             </h1>
         </section>
 
-        <!-- BANNER OS WINDOW (GIỐNG MẪU SQUAD.CASH) -->
+        <!-- BANNER OS WINDOW -->
         <section class="no-print card-clean overflow-hidden bg-white">
             <div class="os-window-bar">
                 <div class="flex items-center gap-2.5">
@@ -160,7 +165,7 @@
                     <span class="font-mono text-xs font-bold text-ink/75 ml-1">squad.cash/os/history-and-statement</span>
                 </div>
                 <span class="font-mono text-[11px] font-bold bg-lime text-ink px-2.5 py-0.5 rounded-full border border-ink">
-                    FR-USER-004 • SAO KÊ THÁNG
+                    T3CD008 • T3CDF02 EXPORT CSV
                 </span>
             </div>
 
@@ -185,19 +190,19 @@
                         Lịch sử Giao dịch &amp; <span class="font-wiro-serif font-normal text-3xl sm:text-5xl text-indigo">Sao kê Theo Tháng.</span>
                     </h1>
                     <p class="text-sm text-muted max-w-2xl">
-                        Lọc nhanh toàn bộ giao dịch thu/chi quỹ, theo dõi biểu đồ biến động dòng tiền theo tháng bằng
-                        <strong>Chart.js</strong> và in bản sao kê chính thức chỉ với một chạm.
+                        Lọc nhanh toàn bộ giao dịch thu/chi quỹ, theo dõi biểu đồ biến động dòng tiền bằng
+                        <strong>Chart.js</strong>, xuất file <strong>CSV</strong> theo kỳ đang chọn và in bản sao kê chính thức.
                     </p>
                 </div>
 
                 <!-- Chọn Nhóm & Kỳ Sao Kê Tháng -->
-                <div class="flex flex-wrap items-end gap-3">
+                <div class="flex flex-wrap items-end gap-2.5">
                     <div>
                         <label for="groupIdInput" class="block font-mono text-[11px] font-bold uppercase text-muted mb-1">
-                            Mã Nhóm (Group ID)
+                            Mã Nhóm
                         </label>
                         <input id="groupIdInput" type="number" min="1" value="1"
-                            class="input-clean w-28 px-3 py-2 font-mono font-bold text-sm text-center" />
+                            class="input-clean w-24 px-3 py-2 font-mono font-bold text-sm text-center" />
                     </div>
                     <div>
                         <label for="statementMonthInput" class="block font-mono text-[11px] font-bold uppercase text-muted mb-1">
@@ -207,14 +212,19 @@
                             class="input-clean px-3.5 py-2 font-mono font-bold text-sm" />
                     </div>
                     <button type="button" id="btnReloadData"
-                        class="btn-cta-indigo px-4 py-2.5 rounded-xl font-display font-bold text-xs uppercase flex items-center gap-1.5">
+                        class="btn-cta-indigo px-3.5 py-2.5 rounded-xl font-display font-bold text-xs uppercase flex items-center gap-1.5">
                         <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                        <span>Tải dữ liệu</span>
+                        <span>Tải</span>
+                    </button>
+                    <button type="button" id="btnExportStatementCsv"
+                        class="btn-outline px-3.5 py-2.5 rounded-xl font-display font-bold text-xs uppercase flex items-center gap-1.5">
+                        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                        <span>Xuất CSV Sao kê</span>
                     </button>
                     <button type="button" id="btnPrintStatementHero"
-                        class="btn-cta-lime px-4 py-2.5 rounded-xl font-display font-bold text-xs uppercase flex items-center gap-1.5">
+                        class="btn-cta-lime px-3.5 py-2.5 rounded-xl font-display font-bold text-xs uppercase flex items-center gap-1.5">
                         <i data-lucide="printer" class="w-4 h-4"></i>
-                        <span>In sao kê (PDF)</span>
+                        <span>In sao kê</span>
                     </button>
                 </div>
             </div>
@@ -306,7 +316,7 @@
         </section>
 
         <!-- ====================================================================
-             BẢNG LỊCH SỬ GIAO DỊCH CÓ BỘ LỌC
+             BẢNG LỊCH SỬ GIAO DỊCH CÓ BỘ LỌC & XUẤT CSV
         ===================================================================== -->
         <section class="card-clean overflow-hidden bg-white">
             <div class="os-window-bar no-print">
@@ -323,7 +333,6 @@
             <!-- Thanh Bộ Lọc (Ẩn khi in) -->
             <div class="no-print p-5 bg-canvas border-b-2 border-ink space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                    <!-- Tìm kiếm -->
                     <div class="lg:col-span-2">
                         <label for="filterSearch" class="block font-mono text-[11px] font-bold uppercase text-muted mb-1">
                             Tìm kiếm (Mã GD, nội dung, danh mục)
@@ -332,7 +341,6 @@
                             class="input-clean w-full px-3.5 py-2 text-xs font-medium" />
                     </div>
 
-                    <!-- Loại giao dịch -->
                     <div>
                         <label for="filterType" class="block font-mono text-[11px] font-bold uppercase text-muted mb-1">
                             Loại giao dịch
@@ -344,7 +352,6 @@
                         </select>
                     </div>
 
-                    <!-- Từ ngày -->
                     <div>
                         <label for="filterDateFrom" class="block font-mono text-[11px] font-bold uppercase text-muted mb-1">
                             Từ ngày
@@ -352,7 +359,6 @@
                         <input id="filterDateFrom" type="date" class="input-clean w-full px-3 py-2 font-mono text-xs" />
                     </div>
 
-                    <!-- Đến ngày -->
                     <div>
                         <label for="filterDateTo" class="block font-mono text-[11px] font-bold uppercase text-muted mb-1">
                             Đến ngày
@@ -372,7 +378,12 @@
                         </select>
                     </div>
 
-                    <div class="flex items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" id="btnExportHistoryCsv"
+                            class="btn-cta-lime px-3.5 py-1.5 rounded-xl font-mono text-xs font-bold flex items-center gap-1.5">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                            <span>Xuất CSV Lịch sử</span>
+                        </button>
                         <button type="button" id="btnResetFilters"
                             class="btn-outline px-3.5 py-1.5 rounded-xl font-mono text-xs font-bold">
                             ↺ Xóa bộ lọc
@@ -408,38 +419,4 @@
                 </span>
                 <div class="flex flex-wrap items-center gap-4">
                     <span>Thu: <strong id="footerIncome" class="text-emerald-700">+0 ₫</strong></span>
-                    <span>Chi: <strong id="footerExpense" class="text-rose-600">-0 ₫</strong></span>
-                    <span>Ròng: <strong id="footerNet" class="text-indigo">0 ₫</strong></span>
-                </div>
-            </div>
-        </section>
-
-        <!-- KHU VỰC CHỮ KÝ CHỈ HIỆN KHI IN SAO KÊ -->
-        <section class="print-only pt-8">
-            <div class="grid grid-cols-2 gap-8 text-center text-xs">
-                <div class="space-y-14">
-                    <div>
-                        <div class="font-bold uppercase">Người lập sao kê</div>
-                        <div class="text-muted italic">(Ký, ghi rõ họ tên)</div>
-                    </div>
-                    <div class="font-mono">........................................</div>
-                </div>
-                <div class="space-y-14">
-                    <div>
-                        <div class="font-bold uppercase">Trưởng nhóm / Chủ quỹ (Host)</div>
-                        <div class="text-muted italic">(Ký, xác nhận đối soát)</div>
-                    </div>
-                    <div class="font-mono">........................................</div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Toast thông báo -->
-    <div id="toastContainer"
-        class="no-print fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
-
-    <script src="../js/pages/statement.js"></script>
-</body>
-
-</html>
+                    <span>Chi: <strong id="footerExpense" class="text-rose-

@@ -1,13 +1,13 @@
 /**
- * SQUAD.CASH — Task T3CD008: [UI] Trang lịch sử và sao kê
+ * SQUAD.CASH — Task T3CD008 & T3CDF02:
  * - Bảng giao dịch có bộ lọc đa tiêu chí
  * - Trang sao kê theo tháng có biểu đồ Thu/Chi (Chart.js)
  * - In sao kê bằng window.print()
+ * - Xuất CSV lịch sử giao dịch và sao kê theo kỳ đang chọn (UTF-8 BOM cho Excel)
  */
 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
-// Dữ liệu mẫu dự phòng (khi Backend tắt hoặc chưa có dữ liệu giao dịch trong DB)
 const MOCK_TRANSACTIONS = [
     {
         id: "TX-261101",
@@ -79,7 +79,6 @@ const MOCK_TRANSACTIONS = [
         status: "ACTIVE",
         amount: 500000,
     },
-    // Dữ liệu các tháng trước để biểu đồ 6 tháng sinh động
     {
         id: "TX-261001",
         occurred_at: "2026-10-05T09:00:00",
@@ -183,11 +182,10 @@ const MOCK_TRANSACTIONS = [
 ];
 
 let allTransactions = [];
-let chartViewMode = "months"; // "months" | "days"
+let chartViewMode = "months";
 let barChartInstance = null;
 let categoryChartInstance = null;
 
-// ---------------- HELPERS ----------------
 function getStoredToken() {
     return (
         localStorage.getItem("squad_cash_token") ||
@@ -195,6 +193,17 @@ function getStoredToken() {
         localStorage.getItem("token") ||
         ""
     );
+}
+
+function getCurrentViewerId() {
+    try {
+        const raw = localStorage.getItem("squad_cash_user");
+        if (raw) {
+            const user = JSON.parse(raw);
+            if (user && Number(user.id) > 0) return Number(user.id);
+        }
+    } catch (_) {}
+    return 1;
 }
 
 function formatVND(amount) {
@@ -261,7 +270,6 @@ function setApiBadge(online, text) {
     if (lbl) lbl.textContent = text;
 }
 
-// Chuẩn hóa một bản ghi giao dịch từ API Backend
 function normalizeTransaction(raw, index) {
     const idVal = raw.transaction_id ?? raw.id ?? `TX-${index + 1}`;
     const type = normalizeType(raw.type || raw.transaction_type);
@@ -275,26 +283,24 @@ function normalizeTransaction(raw, index) {
             raw.actor_name ||
             raw.payer_name ||
             raw.created_by_name ||
-            (raw.created_by ? `User #${raw.created_by}` : "Thành viên nhóm"),
+            (raw.payer_id ? `User #${raw.payer_id}` : raw.created_by ? `User #${raw.created_by}` : "Thành viên nhóm"),
         status: String(raw.status || "ACTIVE").toUpperCase(),
         amount: Math.abs(Math.round(Number(raw.amount) || 0)),
     };
 }
 
-// ---------------- TẢI DỮ LIỆU TỪ BACKEND (HOẶC DỰ PHÒNG MOCK) ----------------
 async function fetchTransactions() {
     const groupId = Math.max(1, parseInt(document.getElementById("groupIdInput")?.value, 10) || 1);
+    const viewerId = getCurrentViewerId();
     const token = getStoredToken();
     const headers = {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
 
-    // Thử lần lượt các endpoint lịch sử giao dịch có trong Backend
     const candidateEndpoints = [
-        `${API_BASE_URL}/api/groups/${groupId}/transactions`,
+        `${API_BASE_URL}/api/fund-transactions/history/${groupId}?viewer_id=${viewerId}&page=1&page_size=100`,
         `${API_BASE_URL}/api/groups/${groupId}/fund-transactions`,
-        `${API_BASE_URL}/api/groups/${groupId}/transaction-history`,
     ];
 
     for (const url of candidateEndpoints) {
@@ -315,19 +321,15 @@ async function fetchTransactions() {
                 showToast(`Đã tải ${allTransactions.length} giao dịch thật từ Backend (Nhóm #${groupId}).`);
                 return;
             }
-        } catch (_) {
-            // Tiếp tục thử endpoint kế tiếp hoặc chuyển sang dữ liệu mẫu
-        }
+        } catch (_) {}
     }
 
-    // Dự phòng dữ liệu mẫu để UI & Chart.js luôn hoạt động mượt khi test độc lập
     allTransactions = [...MOCK_TRANSACTIONS];
     setApiBadge(false, "Chế độ Dữ liệu mẫu");
     populateCategoryFilter();
     renderAll();
 }
 
-// ---------------- BỘ LỌC DỮ LIỆU ----------------
 function populateCategoryFilter() {
     const select = document.getElementById("filterCategory");
     if (!select) return;
@@ -373,7 +375,6 @@ function getFilteredTransactions() {
         .sort((a, b) => new Date(b.occurred_at) - new Date(a.occurred_at));
 }
 
-// ---------------- RENDER KPI & BẢNG GIAO DỊCH ----------------
 function renderKPIs(filteredList) {
     const selectedMonth = document.getElementById("statementMonthInput")?.value || "2026-11";
     const onlySelectedMonth = document.getElementById("filterOnlySelectedMonth")?.checked ?? true;
@@ -413,7 +414,6 @@ function renderKPIs(filteredList) {
     document.getElementById("kpiTotalCount").textContent = `${totalCount} GD`;
     document.getElementById("kpiAvgAmount").textContent = `Trung bình: ${formatVND(avg)} / GD`;
 
-    // Cập nhật chân bảng
     document.getElementById("tableRecordCounter").textContent = `Hiển thị ${totalCount} giao dịch`;
     document.getElementById("tableFooterSummary").textContent = `Tổng cộng: ${totalCount} giao dịch khớp bộ lọc`;
     document.getElementById("footerIncome").textContent = `+${formatVND(totalIn)}`;
@@ -471,7 +471,6 @@ function renderTransactionsTable(filteredList) {
         .join("");
 }
 
-// ---------------- BIỂU ĐỒ CHART.JS ----------------
 function getLastSixMonths(anchorYm) {
     const [yStr, mStr] = (anchorYm || "2026-11").split("-");
     const year = parseInt(yStr, 10) || 2026;
@@ -509,7 +508,7 @@ function renderBarChart() {
             let sumIn = 0;
             let sumOut = 0;
             allTransactions.forEach((tx) => {
-                if (getYearMonth(tx.occurred_at) !== ym) return;
+                if (tx.status === "CANCELLED" || getYearMonth(tx.occurred_at) !== ym) return;
                 if (tx.type === "INCOME") sumIn += tx.amount;
                 else sumOut += tx.amount;
             });
@@ -518,7 +517,9 @@ function renderBarChart() {
         });
     } else {
         if (titleEl) titleEl.textContent = `Biểu đồ Thu / Chi theo ngày (${formatMonthLabel(selectedMonth)})`;
-        const monthTxs = allTransactions.filter((tx) => getYearMonth(tx.occurred_at) === selectedMonth);
+        const monthTxs = allTransactions.filter(
+            (tx) => tx.status !== "CANCELLED" && getYearMonth(tx.occurred_at) === selectedMonth
+        );
         const dayMap = {};
 
         monthTxs.forEach((tx) => {
@@ -615,7 +616,7 @@ function renderCategoryChart(filteredList) {
     let totalExpense = 0;
 
     filteredList.forEach((tx) => {
-        if (tx.type !== "EXPENSE") return;
+        if (tx.type !== "EXPENSE" || tx.status === "CANCELLED") return;
         expenseByCat[tx.category] = (expenseByCat[tx.category] || 0) + tx.amount;
         totalExpense += tx.amount;
     });
@@ -687,7 +688,158 @@ function renderCategoryChart(filteredList) {
     }
 }
 
-// ---------------- CẬP NHẬT THÔNG TIN IN & GỌI window.print() ----------------
+// =========================================================================
+// TASK T3CDF02: XUẤT CSV LỊCH SỬ GIAO DỊCH & SAO KÊ THEO KỲ ĐANG CHỌN
+// =========================================================================
+function escapeCsvCell(value) {
+    const str = String(value ?? "").replaceAll('"', '""');
+    return `"${str}"`;
+}
+
+function downloadCsvFile(filename, rows) {
+    const csvContent =
+        "\uFEFF" + rows.map((row) => row.map(escapeCsvCell).join(",")).join("\r\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+function getPeriodSlug() {
+    const groupId = document.getElementById("groupIdInput")?.value || "1";
+    const selectedMonth = document.getElementById("statementMonthInput")?.value || "all";
+    const onlySelectedMonth = document.getElementById("filterOnlySelectedMonth")?.checked ?? true;
+    const dateFrom = document.getElementById("filterDateFrom")?.value || "";
+    const dateTo = document.getElementById("filterDateTo")?.value || "";
+
+    let periodPart = onlySelectedMonth ? selectedMonth : "toan-bo";
+    if (dateFrom || dateTo) {
+        periodPart = `${dateFrom || "dau"}_den_${dateTo || "nay"}`;
+    }
+    return { groupId, periodPart, selectedMonth, onlySelectedMonth, dateFrom, dateTo };
+}
+
+function exportHistoryCsv() {
+    const filtered = getFilteredTransactions();
+    if (filtered.length === 0) {
+        showToast("Không có giao dịch nào trong kỳ/bộ lọc hiện tại để xuất CSV!", true);
+        return;
+    }
+
+    const { groupId, periodPart } = getPeriodSlug();
+    const rows = [
+        ["Mã GD", "Ngày phát sinh", "Loại", "Danh mục", "Nội dung", "Người thực hiện", "Trạng thái", "Số tiền (VND)"],
+        ...filtered.map((tx) => [
+            tx.id,
+            formatDateTime(tx.occurred_at),
+            tx.type === "INCOME" ? "THU" : "CHI",
+            tx.category,
+            tx.description,
+            tx.actor,
+            tx.status === "ACTIVE" ? "Hợp lệ" : tx.status,
+            tx.type === "INCOME" ? tx.amount : -tx.amount,
+        ]),
+    ];
+
+    const filename = `lich_su_giao_dich_nhom${groupId}_${periodPart}.csv`;
+    downloadCsvFile(filename, rows);
+    showToast(`Đã xuất ${filtered.length} giao dịch ra file ${filename}`);
+}
+
+function calculateOpeningBalanceForPeriod(selectedMonth, onlySelectedMonth, dateFrom) {
+    let cutoffDate = "";
+    if (dateFrom) {
+        cutoffDate = dateFrom;
+    } else if (onlySelectedMonth && selectedMonth) {
+        cutoffDate = `${selectedMonth}-01`;
+    }
+    if (!cutoffDate) return 0;
+
+    return allTransactions.reduce((acc, tx) => {
+        if (tx.status === "CANCELLED" || tx.status === "VOIDED") return acc;
+        const txDate = getDateOnly(tx.occurred_at);
+        if (txDate && txDate < cutoffDate) {
+            return acc + (tx.type === "INCOME" ? tx.amount : -tx.amount);
+        }
+        return acc;
+    }, 0);
+}
+
+function exportStatementCsv() {
+    const filtered = getFilteredTransactions();
+    const { groupId, periodPart, selectedMonth, onlySelectedMonth, dateFrom, dateTo } = getPeriodSlug();
+
+    const openingBalance = calculateOpeningBalanceForPeriod(selectedMonth, onlySelectedMonth, dateFrom);
+    let totalIncome = 0;
+    let totalExpense = 0;
+    const expenseByCategory = {};
+
+    filtered.forEach((tx) => {
+        if (tx.status === "CANCELLED" || tx.status === "VOIDED") return;
+        if (tx.type === "INCOME") {
+            totalIncome += tx.amount;
+        } else {
+            totalExpense += tx.amount;
+            expenseByCategory[tx.category] = (expenseByCategory[tx.category] || 0) + tx.amount;
+        }
+    });
+
+    const netChange = totalIncome - totalExpense;
+    const closingBalance = openingBalance + netChange;
+    const periodLabel = dateFrom || dateTo
+        ? `Từ ${dateFrom || "đầu"} đến ${dateTo || "nay"}`
+        : onlySelectedMonth
+            ? formatMonthLabel(selectedMonth)
+            : "Toàn bộ thời gian";
+
+    const rows = [
+        ["BÁO CÁO SAO KÊ QUỸ NHÓM (SQUAD.CASH)"],
+        ["Mã nhóm", `#GRP-${groupId}`],
+        ["Kỳ sao kê", periodLabel],
+        ["Thời điểm xuất", formatDateTime(new Date().toISOString())],
+        [],
+        ["1. TỔNG HỢP DÒNG TIỀN TRONG KỲ", "Số tiền (VND)"],
+        ["Số dư đầu kỳ", openingBalance],
+        ["Tổng thu trong kỳ", totalIncome],
+        ["Tổng chi trong kỳ", totalExpense],
+        ["Chênh lệch ròng (Thu - Chi)", netChange],
+        ["Số dư cuối kỳ", closingBalance],
+        [],
+        ["2. CƠ CẤU CHI TIÊU THEO DANH MỤC", "Số tiền (VND)", "Tỉ trọng (%)"],
+        ...(Object.keys(expenseByCategory).length > 0
+            ? Object.entries(expenseByCategory).map(([cat, amt]) => [
+                  cat,
+                  amt,
+                  totalExpense > 0 ? ((amt / totalExpense) * 100).toFixed(1) + "%" : "0%",
+              ])
+            : [["Chưa có khoản chi trong kỳ", 0, "0%"]]),
+        [],
+        ["3. CHI TIẾT GIAO DỊCH TRONG KỲ"],
+        ["Mã GD", "Ngày phát sinh", "Loại", "Danh mục", "Nội dung", "Người thực hiện", "Trạng thái", "Số tiền (VND)"],
+        ...filtered.map((tx) => [
+            tx.id,
+            formatDateTime(tx.occurred_at),
+            tx.type === "INCOME" ? "THU" : "CHI",
+            tx.category,
+            tx.description,
+            tx.actor,
+            tx.status === "ACTIVE" ? "Hợp lệ" : tx.status,
+            tx.type === "INCOME" ? tx.amount : -tx.amount,
+        ]),
+    ];
+
+    const filename = `sao_ke_quy_nhom${groupId}_${periodPart}.csv`;
+    downloadCsvFile(filename, rows);
+    showToast(`Đã xuất sao kê kỳ đang chọn ra file ${filename}`);
+}
+
+// ---------------- IN SAO KÊ & RENDER TỔNG ----------------
 function updatePrintMetadata() {
     const groupId = document.getElementById("groupIdInput")?.value || "1";
     const selectedMonth = document.getElementById("statementMonthInput")?.value || "2026-11";
@@ -711,7 +863,6 @@ function handlePrintStatement() {
     window.print();
 }
 
-// ---------------- RENDER TỔNG & GẮN SỰ KIỆN ----------------
 function renderAll() {
     const filtered = getFilteredTransactions();
     renderKPIs(filtered);
@@ -752,7 +903,6 @@ function resetFilters() {
 document.addEventListener("DOMContentLoaded", () => {
     if (typeof lucide !== "undefined") lucide.createIcons();
 
-    // Gắn sự kiện bộ lọc
     ["filterSearch", "filterType", "filterCategory", "filterDateFrom", "filterDateTo", "filterOnlySelectedMonth", "statementMonthInput"].forEach(
         (id) => {
             const el = document.getElementById(id);
@@ -766,6 +916,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btnResetFilters")?.addEventListener("click", resetFilters);
     document.getElementById("btnPrintStatementTop")?.addEventListener("click", handlePrintStatement);
     document.getElementById("btnPrintStatementHero")?.addEventListener("click", handlePrintStatement);
+    document.getElementById("btnExportHistoryCsv")?.addEventListener("click", exportHistoryCsv);
+    document.getElementById("btnExportStatementCsv")?.addEventListener("click", exportStatementCsv);
+    document.getElementById("btnExportStatementCsvTop")?.addEventListener("click", exportStatementCsv);
     document.getElementById("chartModeMonths")?.addEventListener("click", () => setChartViewMode("months"));
     document.getElementById("chartModeDays")?.addEventListener("click", () => setChartViewMode("days"));
 
