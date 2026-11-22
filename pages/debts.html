@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SQUAD.CASH — Theo dõi Công nợ &amp; Xác nhận Thành viên Thanh toán</title>
+    <title>SQUAD.CASH — Tab Công nợ của nhóm cho Host (T3CD263)</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -122,6 +122,21 @@
             box-shadow: 1px 1px 0px #121212;
         }
 
+        .btn-reject {
+            background-color: #FFE4E6;
+            color: #9F1239;
+            border: 2px solid #121212;
+            box-shadow: 2px 2px 0px #121212;
+            transition: all 0.14s ease;
+            cursor: pointer;
+        }
+
+        .btn-reject:hover {
+            background-color: #FECDD3;
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px #121212;
+        }
+
         .btn-outline {
             background-color: #FFFFFF;
             color: #121212;
@@ -201,8 +216,32 @@
 </head>
 
 <body class="min-h-screen text-ink antialiased">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-        <!-- THEO DÕI CÔNG NỢ & XÁC NHẬN THÀNH VIÊN THANH TOÁN -->
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+        <!-- DANH SÁCH THANH TOÁN CHỜ XÁC NHẬN -->
+        <section class="card-clean p-6 sm:p-7 space-y-4 bg-white">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="space-y-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h2 class="font-display font-bold text-lg text-ink">Thanh toán chờ xác nhận</h2>
+                        <span class="fr-badge">T3CD263</span>
+                    </div>
+                    <p class="text-xs text-muted">
+                        Các khoản thành viên đã báo thanh toán — Host kiểm tra giao dịch rồi bấm <strong>Xác
+                            nhận</strong> hoặc <strong>Từ chối kèm lý do</strong>.
+                    </p>
+                </div>
+                <span id="pendingApprovalCountBadge"
+                    class="font-mono text-xs font-bold bg-amber border border-ink px-3 py-1 rounded-full">
+                    0 chờ duyệt
+                </span>
+            </div>
+
+            <div id="pendingApprovalsList" class="space-y-3">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- BẢNG NỢ THEO THÀNH VIÊN & BỘ LỌC -->
         <section id="hTabContent-debts" class="card-clean p-6 sm:p-8 space-y-6 bg-white">
             <div class="flex flex-wrap items-start justify-between gap-4">
                 <div class="space-y-1.5">
@@ -230,9 +269,18 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
+                    <select id="hostMemberFilter" onchange="renderHostDebtsTable()"
+                        class="input-clean px-3.5 py-2 text-xs font-bold min-w-[175px]">
+                        <option value="all">Tất cả thành viên</option>
+                        <option value="Lê Quang Minh">Lê Quang Minh</option>
+                        <option value="Trần Khánh Vy">Trần Khánh Vy</option>
+                        <option value="Đặng Tuấn Kiệt">Đặng Tuấn Kiệt</option>
+                    </select>
+
                     <select id="hostDebtFilter" onchange="renderHostDebtsTable()"
                         class="input-clean px-3.5 py-2 text-xs font-bold min-w-[190px]">
                         <option value="all">Tất cả khoản phải thu</option>
+                        <option value="pending_review">Chờ xác nhận</option>
                         <option value="fund">Chưa đóng quỹ</option>
                         <option value="invoice">Chưa trả hóa đơn</option>
                         <option value="disputed">Đang tranh chấp (Nhãn riêng)</option>
@@ -341,6 +389,71 @@
                     <button type="submit"
                         class="btn-cta-lime px-6 py-2.5 rounded-2xl font-display font-extrabold text-sm uppercase tracking-wide">
                         XÁC NHẬN ĐÃ THU TIỀN
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TỪ CHỐI THANH TOÁN KÈM LÝ DO -->
+    <div id="modalRejectPayment" class="fixed inset-0 z-50 hidden bg-ink/45 flex items-center justify-center p-4">
+        <div class="modal-shell max-w-lg w-full p-6 sm:p-7 space-y-5 bg-white">
+            <div class="flex items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <h3 class="font-display font-bold text-xl sm:text-2xl text-ink tracking-tight">Từ chối Xác nhận
+                        Thanh toán</h3>
+                    <span class="fr-badge">T3CD263</span>
+                </div>
+                <button type="button" onclick="closeModal('modalRejectPayment')"
+                    class="text-muted hover:text-ink text-lg font-bold px-1.5 cursor-pointer"
+                    aria-label="Đóng">✕</button>
+            </div>
+
+            <form onsubmit="submitRejectPayment(event)" class="space-y-4">
+                <input type="hidden" id="rejectDebtId" />
+
+                <div class="modal-summary-box px-4 py-3.5 text-sm space-y-1.5">
+                    <div class="flex items-center justify-between gap-3">
+                        <span class="text-muted font-medium">Thành viên:</span>
+                        <span id="rejectMemberName" class="font-bold text-ink"></span>
+                    </div>
+                    <div class="flex items-center justify-between gap-3 pt-1.5 border-t border-ink/10">
+                        <span class="text-muted font-medium">Khoản nợ:</span>
+                        <span id="rejectDebtTitle" class="font-semibold text-ink text-right"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-display font-bold text-xs uppercase tracking-wide text-ink mb-2">
+                        LÝ DO TỪ CHỐI
+                    </label>
+                    <select id="rejectReasonSelect" onchange="syncRejectReasonInput()"
+                        class="modal-input-pill w-full px-4 py-2.5 text-sm font-semibold">
+                        <option value="Chưa nhận được tiền trên sao kê">Chưa nhận được tiền trên sao kê</option>
+                        <option value="Số tiền chuyển chưa khớp khoản nợ">Số tiền chuyển chưa khớp khoản nợ</option>
+                        <option value="Ảnh minh chứng mờ hoặc sai thông tin">Ảnh minh chứng mờ hoặc sai thông tin
+                        </option>
+                        <option value="Lý do khác">Lý do khác</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-display font-bold text-xs uppercase tracking-wide text-ink mb-2">
+                        GHI CHÚ LÝ DO CHI TIẾT <span class="text-coral">*</span>
+                    </label>
+                    <textarea id="rejectReasonDetail" rows="3" required
+                        placeholder="Nhập lý do để thành viên kiểm tra và gửi lại..."
+                        class="modal-input-pill w-full px-4 py-2.5 text-sm font-medium"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal('modalRejectPayment')"
+                        class="btn-outline px-6 py-2.5 rounded-2xl font-display font-bold text-sm">
+                        Hủy
+                    </button>
+                    <button type="submit"
+                        class="btn-reject px-6 py-2.5 rounded-2xl font-display font-extrabold text-sm uppercase tracking-wide">
+                        XÁC NHẬN TỪ CHỐI
                     </button>
                 </div>
             </form>
