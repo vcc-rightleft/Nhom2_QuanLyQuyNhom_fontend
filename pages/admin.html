@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SQUAD.CASH — Quản trị Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#F6F5F0',
+            surface: '#FFFFFF',
+            ink: '#121212',
+            muted: '#52525B',
+            line: '#E4E4E7',
+            indigo: { DEFAULT: '#7C3AED', 50: '#F5F3FF', 100: '#EDE9FE', 600: '#7C3AED', 700: '#6D28D9' },
+            lime: { DEFAULT: '#D4FF00', soft: '#F4FFC2' },
+            coral: '#FF5E36',
+            cyan: '#38BDF8',
+            amber: '#FACC15',
+            mint: '#10B981'
+          },
+          fontFamily: {
+            display: ['Space Grotesk', 'sans-serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          },
+          boxShadow: {
+            clean: '3px 3px 0px #121212',
+            bold: '4px 4px 0px #121212',
+            'bold-sm': '2px 2px 0px #121212'
+          }
+        }
+      }
+    };
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/admin.css">
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
+  <script src="../js/admin.js" defer></script>
+</head>
+<body class="min-h-screen flex flex-col relative">
+  <div class="app-renaissance-ambient"></div>
+
+  <header class="sticky top-0 z-30 bg-white border-b-2 border-ink px-4 sm:px-8 py-3.5 shadow-clean">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+      <!-- Brand -->
+      <div class="flex gap-3 items-center">
+        <div class="w-10 h-10 bg-lime border-2 border-ink rounded-xl shadow-bold-sm flex justify-center items-center font-display font-bold text-xl">$</div>
+        <div>
+          <div class="flex items-center gap-2">
+            <b class="font-display text-lg">SQUAD.CASH</b>
+            <span class="font-mono text-[11px] font-bold bg-lime border-[1.5px] border-ink px-2 py-0.5 rounded-md text-ink">ADMIN • T3CCB5B</span>
+          </div>
+          <p class="text-xs text-muted">Không gian quản trị hệ thống · ADMIN</p>
+        </div>
+      </div>
+
+      <!-- Menu 4 vai trò đồng bộ -->
+      <nav class="flex items-center bg-canvas p-1.5 rounded-xl border-2 border-ink overflow-x-auto gap-1">
+        <button type="button" onclick="window.location.href='./auth.html'"
+          class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-2 transition-all text-muted hover:text-ink">
+          <i data-lucide="log-in" class="w-4 h-4"></i>
+          <span>1. Đăng nhập / Đăng ký</span>
+        </button>
+        <button type="button" onclick="window.location.href='./group.html'"
+          class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-2 transition-all text-muted hover:text-ink">
+          <i data-lucide="user" class="w-4 h-4"></i>
+          <span>2. Vai trò User</span>
+        </button>
+        <button type="button" onclick="window.location.href='./formbill.html'"
+          class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-2 transition-all text-muted hover:text-ink">
+          <i data-lucide="crown" class="w-4 h-4"></i>
+          <span>3. Vai trò Host</span>
+        </button>
+        <button type="button"
+          class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-2 transition-all bg-lime text-ink border-2 border-ink shadow-bold-sm">
+          <i data-lucide="shield" class="w-4 h-4"></i>
+          <span>4. Vai trò Admin</span>
+        </button>
+      </nav>
+
+      <!-- Trạng thái & Đăng xuất -->
+      <div class="flex flex-wrap gap-2 items-center">
+        <span id="authStatus" role="status" class="text-xs font-mono font-semibold bg-canvas border-2 border-ink px-3 py-1.5 rounded-xl text-muted">Đang kiểm tra kết nối…</span>
+        <div class="inline-flex items-center gap-2 bg-indigo-50 px-3 py-1.5 rounded-xl border-2 border-ink text-xs font-mono shadow-bold-sm">
+          <span id="adminUserBadge" class="font-bold text-indigo">ADMIN</span>
+          <button id="adminLogoutBtn" type="button" class="bg-coral text-white px-2.5 py-0.5 rounded-md border border-ink font-bold text-[11px]">Đăng xuất</button>
+        </div>
+        <button id="reloadAdmin" class="btn-outline px-3.5 py-2 rounded-xl text-xs font-bold" type="button">Làm mới</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="relative z-20 max-w-7xl mx-auto w-full px-4 sm:px-8 pt-4">
+    <div id="adminError" role="alert" class="hidden p-4 text-sm bg-rose-50 border-2 border-rose-500 rounded-xl font-medium text-rose-900"></div>
+  </div>
+
+  <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8" id="view-admin">
+    <!-- Dashboard KPIs + Chart.js -->
+    <section class="card-clean overflow-hidden bg-white">
+      <div class="os-window-bar">
+        <div class="flex items-center gap-2.5">
+          <div class="os-dots">
+            <span class="os-dot bg-coral"></span>
+            <span class="os-dot bg-amber"></span>
+            <span class="os-dot bg-mint"></span>
+          </div>
+          <span class="font-mono text-xs font-bold text-ink/75 ml-1">squad.cash/os/root-admin-governance</span>
+        </div>
+        <span class="font-mono text-[11px] font-bold bg-coral text-white px-2.5 py-0.5 rounded-full border border-ink">
+          FR-ADM-001 → 007 · T3CCB5B
+        </span>
+      </div>
+
+      <div class="workspace-fresco-strip px-6 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-coral text-white border-2 border-ink font-mono text-xs font-bold px-3 py-1 rounded-full shadow-bold-sm">
+            VAI TRÒ: ADMIN TOÀN HỆ THỐNG
+          </span>
+          <span class="fr-badge">FR-ADM-005</span>
+        </div>
+        <span class="font-wiro-serif text-lg sm:text-xl text-amber">
+          ✦ Giám Sát Toàn Server &amp; Bảo Toàn Dữ Liệu
+        </span>
+      </div>
+
+      <div class="p-6 sm:p-8 space-y-6 bg-white">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <h1 class="font-wiro-sans font-bold text-2xl sm:text-4xl text-ink leading-tight">
+              Dashboard Thống kê &amp; <span class="font-wiro-serif font-normal text-3xl sm:text-5xl text-indigo">Quản trị Toàn Server.</span>
+            </h1>
+            <p class="text-xs text-muted mt-1">
+              Thời điểm đồng bộ gần nhất: <span id="admLastSync" class="font-mono font-semibold text-ink">Chưa đồng bộ</span> • Dữ liệu thực từ CSDL.
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <select id="admPeriodFilter" class="input-clean px-3.5 py-2 text-xs font-bold bg-amber/30">
+              <option value="all">Toàn thời gian (Tích lũy)</option>
+              <option value="30d">30 ngày gần nhất</option>
+              <option value="q4">Quý 4 / 2026</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 4 KPI Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+          <div class="card-cyan p-5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase text-ink">1. Tổng số User</span>
+              <div class="w-8 h-8 rounded-lg bg-white border-2 border-ink flex items-center justify-center">
+                <i class="w-4 h-4 text-ink" data-lucide="users"></i>
+              </div>
+            </div>
+            <div class="font-mono font-bold text-2xl sm:text-3xl text-ink mt-3" id="admKpiUsers">—</div>
+            <p class="text-xs font-semibold text-ink/80 mt-1" id="admKpiUsersSub">Đang tải thống kê…</p>
+          </div>
+
+          <div class="card-amber p-5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase text-ink">2. Tổng số Nhóm</span>
+              <div class="w-8 h-8 rounded-lg bg-white border-2 border-ink flex items-center justify-center">
+                <i class="w-4 h-4 text-ink" data-lucide="layers"></i>
+              </div>
+            </div>
+            <div class="font-mono font-bold text-2xl sm:text-3xl text-ink mt-3" id="admKpiGroups">—</div>
+            <p class="text-xs font-semibold text-ink/80 mt-1" id="admKpiGroupsSub">Đang tải thống kê…</p>
+          </div>
+
+          <div class="card-lime p-5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase text-ink">3. Tổng Hóa đơn</span>
+              <div class="w-8 h-8 rounded-lg bg-white border-2 border-ink flex items-center justify-center">
+                <i class="w-4 h-4 text-ink" data-lucide="receipt"></i>
+              </div>
+            </div>
+            <div class="font-mono font-bold text-2xl sm:text-3xl text-ink mt-3" id="admKpiBills">—</div>
+            <p class="text-xs font-semibold text-ink/80 mt-1" id="admKpiBillsSub">Hóa đơn hiệu lực trên server</p>
+          </div>
+
+          <div class="card-violet p-5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase text-lime">4. Tổng tiền Giao dịch</span>
+              <div class="w-8 h-8 rounded-lg bg-lime border-2 border-ink flex items-center justify-center">
+                <i class="w-4 h-4 text-ink" data-lucide="bar-chart-3"></i>
+              </div>
+            </div>
+            <div class="font-mono font-bold text-2xl sm:text-3xl text-white mt-3" id="admKpiTransactions">—</div>
+            <p class="text-xs text-white/85 mt-1">Tổng giá trị giao dịch đã ghi nhận</p>
+          </div>
+        </div>
+
+        <!-- Biểu đồ Chart.js: Nhóm mới theo tháng -->
+        <div class="card-subtle p-5 bg-white space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="font-display font-bold text-base sm:text-lg text-ink">Nhóm mới theo tháng</h2>
+              <p class="text-xs text-muted">Thống kê số lượng nhóm quỹ mới tạo theo từng tháng (Chart.js).</p>
+            </div>
+            <span class="font-mono text-[11px] font-bold bg-lime border border-ink px-2.5 py-1 rounded-lg">CHART.JS</span>
+          </div>
+          <div class="relative h-[260px]">
+            <canvas id="admMonthlyGroupsChart"></canvas>
+            <p id="admChartEmpty" class="hidden text-center text-xs text-muted py-12 font-mono">Chưa có dữ liệu nhóm mới theo tháng.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sub-Tabs -->
+    <div class="flex flex-wrap gap-2 bg-white p-2 rounded-2xl border-[1.5px] border-ink">
+      <button type="button" class="px-4 py-2.5 rounded-xl font-display font-bold text-xs sm:text-sm bg-ink text-white flex items-center gap-2" id="aTabBtn-accounts">
+        <i class="w-4 h-4" data-lucide="user-check"></i>
+        <span>1. Quản lý Tài khoản (Khóa / Mở khóa)</span>
+        <span class="fr-badge">FR-ADM-001/002/003</span>
+      </button>
+      <button type="button" class="px-4 py-2.5 rounded-xl font-display font-bold text-xs sm:text-sm text-muted hover:text-ink flex items-center gap-2" id="aTabBtn-groups">
+        <i class="w-4 h-4" data-lucide="folder-kanban"></i>
+        <span>2. Nhóm không GD 30 ngày &amp; Xóa mềm</span>
+        <span id="admInactive30dBadge" class="font-mono text-[11px] font-bold bg-coral text-white px-2 py-0.5 rounded-full border border-ink">0</span>
+      </button>
+      <button type="button" class="px-4 py-2.5 rounded-xl font-display font-bold text-xs sm:text-sm text-muted hover:text-ink flex items-center gap-2" id="aTabBtn-retention">
+        <i class="w-4 h-4" data-lucide="clock"></i>
+        <span>3. Tác vụ Tự động Xóa Nhóm Quá Hạn 5 Năm</span>
+        <span class="fr-badge">FR-ADM-007</span>
+      </button>
+    </div>
+
+    <!-- TAB 1: ACCOUNTS -->
+    <section class="card-clean p-6 sm:p-8 space-y-6" id="aTabContent-accounts">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h3 class="font-display font-bold text-xl text-ink">Danh sách Tài khoản Toàn Hệ thống</h3>
+          <p class="text-xs text-muted mt-0.5">
+            Thông tin nhạy cảm (Email/SĐT) được che mask. Khóa tài khoản không làm xóa dữ liệu lịch sử tài chính.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <input class="input-clean px-3.5 py-2 text-xs" id="admUserSearch" placeholder="Tìm mã user, tên, email..." type="text" />
+          <select class="input-clean px-3.5 py-2 text-xs font-bold" id="admUserStatusFilter">
+            <option value="all">Tất cả trạng thái</option>
+            <option value="active">Đang hoạt động</option>
+            <option value="locked">Bị khóa</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-y border-line bg-canvas font-mono text-xs text-muted uppercase">
+              <th class="py-3.5 px-4">Mã User</th>
+              <th class="py-3.5 px-4">Tên hiển thị</th>
+              <th class="py-3.5 px-4">Email / SĐT (Masked)</th>
+              <th class="py-3.5 px-4">Ngày tạo</th>
+              <th class="py-3.5 px-4 text-center">Số nhóm</th>
+              <th class="py-3.5 px-4 text-center">Trạng thái</th>
+              <th class="py-3.5 px-4 text-right">Thao tác Admin</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-line text-sm" id="admAccountsTableBody"></tbody>
+        </table>
+      </div>
+      <div class="flex flex-wrap gap-3 items-center justify-end mt-5" id="admAccountsPager"></div>
+    </section>
+
+    <!-- TAB 2: GROUPS & 30-DAY INACTIVE SOFT DELETE -->
+    <section class="hidden card-clean p-6 sm:p-8 space-y-6" id="aTabContent-groups">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h3 class="font-display font-bold text-xl text-ink">Nhóm không có giao dịch 30 ngày &amp; Xóa mềm</h3>
+          <p class="text-xs text-muted mt-0.5">
+            Chỉ cho phép <strong>xóa mềm</strong> khi nhóm <strong>không còn nợ chưa trả</strong> và tự động gửi thông báo cho toàn bộ thành viên.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <input class="input-clean px-3.5 py-2 text-xs" id="admGroupSearch" placeholder="Tìm tên nhóm, mã nhóm..." type="text" />
+          <select class="input-clean px-3.5 py-2 text-xs font-bold" id="admGroupFilter">
+            <option value="inactive_30d" selected>Không có giao dịch 30 ngày</option>
+            <option value="all">Tất cả nhóm trên server</option>
+            <option value="active">Đang hoạt động</option>
+            <option value="soft_deleted">Đã xóa mềm</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-y border-line bg-canvas font-mono text-xs text-muted uppercase">
+              <th class="py-3.5 px-4">Mã Nhóm</th>
+              <th class="py-3.5 px-4">Tên Nhóm &amp; Host</th>
+              <th class="py-3.5 px-4 text-center">Thành viên</th>
+              <th class="py-3.5 px-4">Giao dịch gần nhất</th>
+              <th class="py-3.5 px-4 text-right">Nợ chưa trả</th>
+              <th class="py-3.5 px-4 text-center">Trạng thái</th>
+              <th class="py-3.5 px-4 text-right">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-line text-sm" id="admGroupsTableBody">
+            <tr>
+              <td class="py-6 px-4 text-muted text-sm" colspan="7">Đang tải danh sách nhóm…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 3: RETENTION 5 YEARS -->
+    <section class="hidden space-y-6" id="aTabContent-retention">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-5 card-clean p-6 sm:p-8 space-y-5">
+          <div class="flex items-center justify-between">
+            <h3 class="font-display font-bold text-xl text-ink">Cấu hình Tác vụ Rà soát 5 Năm</h3>
+            <span class="fr-badge">FR-ADM-007</span>
+          </div>
+          <p class="text-xs text-muted leading-relaxed">
+            Tác vụ nền quét các nhóm có <strong>ngày hoạt động cuối cùng &gt; 5 năm</strong>. Tự động loại trừ nhóm có tranh chấp hoặc nghĩa vụ chưa giải quyết.
+          </p>
+          <div class="space-y-3 card-subtle p-4 text-xs">
+            <div class="flex justify-between py-1 border-b border-line">
+              <span class="text-muted">Mốc thời gian không hoạt động:</span>
+              <span class="font-mono font-bold text-ink">5 Năm (1,825 ngày)</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-line">
+              <span class="text-muted">Thời hạn gửi cảnh báo trước:</span>
+              <span class="font-mono font-bold text-ink">30 ngày trước xóa mềm</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-line">
+              <span class="text-muted">Thời gian lưu giữ chờ khôi phục:</span>
+              <span class="font-mono font-bold text-ink">90 ngày (Backup &amp; Retention)</span>
+            </div>
+            <div class="flex justify-between py-1">
+              <span class="text-muted">Cơ chế an toàn:</span>
+              <span class="font-mono font-bold text-emerald-700">Tự động bỏ qua nếu có tranh chấp</span>
+            </div>
+          </div>
+          <button class="btn-cta-lime w-full py-3.5 rounded-xl font-display font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2" disabled title="Chưa có API Backend cho tác vụ quét 5 năm">
+            <i class="w-4 h-4" data-lucide="play"></i>
+            <span>Chạy Tác Vụ Quét &amp; Rà Soát Ngay</span>
+          </button>
+        </div>
+
+        <div class="lg:col-span-7 card-clean p-6 sm:p-8 space-y-5">
+          <h3 class="font-display font-bold text-xl text-ink">Kết quả Quét Nhóm Quá Hạn 5 Năm &amp; Nhật ký Tác vụ</h3>
+          <div class="space-y-3" id="retentionCandidatesList">
+            <p class="text-sm text-muted">Chưa có dữ liệu tác vụ. Tính năng quét 5 năm cần API Backend riêng.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL 1: KHÓA TÀI KHOẢN -->
+  <div class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4" id="modalAdminLockUser">
+    <div class="card-clean max-w-md w-full p-6 sm:p-7 space-y-5 bg-white">
+      <div class="flex items-center justify-between border-b border-line pb-3">
+        <div class="flex items-center gap-2">
+          <h3 class="font-display font-bold text-lg text-ink">Khóa Tài Khoản Người Dùng</h3>
+          <span class="fr-badge">FR-ADM-002</span>
+        </div>
+        <button type="button" class="text-muted hover:text-ink font-mono font-bold">✕</button>
+      </div>
+      <form class="space-y-4">
+        <input id="lockTargetUserId" type="hidden" />
+        <p class="text-xs text-muted">
+          Tài khoản mục tiêu: <strong class="text-ink font-mono" id="lockTargetUserName">—</strong>. Dữ liệu nhóm, hóa đơn và giao dịch lịch sử sẽ được giữ nguyên.
+        </p>
+        <div>
+          <label class="block text-xs font-bold uppercase text-ink mb-1">Lý do khóa tài khoản (Tối thiểu 5 ký tự)</label>
+          <textarea class="input-clean w-full p-3 text-xs" id="lockReasonInput" placeholder="Nhập lý do vi phạm hoặc yêu cầu bảo mật..." required rows="2"></textarea>
+        </div>
+        <label class="flex items-center gap-2 text-xs cursor-pointer">
+          <input checked class="accent-indigo" type="checkbox" />
+          <span>Thu hồi ngay các phiên đăng nhập (Active Sessions) đang hoạt động</span>
+        </label>
+        <div class="flex justify-end gap-2 pt-2">
+          <button class="btn-outline px-4 py-2.5 rounded-xl font-display font-bold text-xs" type="button">Hủy</button>
+          <button class="bg-rose-600 text-white border-[1.5px] border-ink px-5 py-2.5 rounded-xl font-display font-bold text-xs uppercase" type="submit">Xác Nhận Khóa</button>
+        </div>
+      </form>
+    </div>
+  </div>
+<!-- MODAL: XÁC NHẬN MỞ KHÓA TÀI KHOẢN -->
+  <div class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4" id="modalAdminUnlockUser">
+    <div class="card-clean max-w-md w-full p-6 sm:p-7 space-y-5 bg-white">
+      <div class="flex items-center justify-between border-b border-line pb-3">
+        <div class="flex items-center gap-2">
+          <h3 class="font-display font-bold text-lg text-ink">Xác nhận Mở Khóa Tài Khoản</h3>
+          <span class="fr-badge">FR-ADM-003</span>
+        </div>
+        <button type="button" id="closeUnlockModalX" class="text-muted hover:text-ink font-mono font-bold">✕</button>
+      </div>
+
+      <form id="unlockUserForm" class="space-y-4">
+        <input id="unlockTargetUserId" type="hidden" />
+        <p class="text-xs text-muted leading-relaxed">
+          Bạn có chắc muốn mở khóa tài khoản <strong class="text-ink font-mono" id="unlockTargetUserName">—</strong>?
+          Sau khi mở khóa, người dùng có thể đăng nhập và sử dụng hệ thống trở lại.
+        </p>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" id="cancelUnlockModalBtn" class="btn-outline px-4 py-2.5 rounded-xl font-display font-bold text-xs">Hủy</button>
+          <button type="submit" id="confirmUnlockSubmitBtn" class="btn-cta-lime px-5 py-2.5 rounded-xl font-display font-bold text-xs uppercase">Xác Nhận Mở Khóa</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- MODAL 2: XÁC NHẬN XÓA MỀM NHÓM & BÁO THÀNH VIÊN -->
+  <div class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4" id="modalAdminSoftDeleteGroup">
+    <div class="card-clean max-w-md w-full p-6 sm:p-7 space-y-5 bg-white">
+      <div class="flex items-center justify-between border-b border-line pb-3">
+        <div class="flex items-center gap-2">
+          <h3 class="font-display font-bold text-lg text-ink">Xác nhận Xóa Mềm Nhóm</h3>
+          <span class="fr-badge">T3CCB5B</span>
+        </div>
+        <button type="button" class="text-muted hover:text-ink font-mono font-bold">✕</button>
+      </div>
+      <form class="space-y-4">
+        <input id="softDeleteGroupId" type="hidden" />
+        <div class="card-subtle p-4 text-xs space-y-1.5" id="softDeleteGroupSummary"></div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-ink mb-1">Lý do xóa mềm (gửi kèm thông báo cho thành viên)</label>
+          <textarea class="input-clean w-full p-3 text-xs" id="softDeleteReasonInput" required rows="2">Nhóm không có giao dịch trong 30 ngày và đã tất toán toàn bộ công nợ.</textarea>
+        </div>
+        <label class="flex items-center gap-2 text-xs cursor-pointer">
+          <input id="softDeleteNotifyCheck" checked class="accent-indigo" type="checkbox" />
+          <span>Gửi thông báo xóa mềm tới toàn bộ thành viên trong nhóm</span>
+        </label>
+        <div class="flex justify-end gap-2 pt-2">
+          <button class="btn-outline px-4 py-2.5 rounded-xl font-display font-bold text-xs" type="button">Hủy</button>
+          <button class="btn-cta-lime px-5 py-2.5 rounded-xl font-display font-bold text-xs uppercase" type="submit">Xác Nhận Xóa Mềm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="adminToast" role="status" aria-live="polite" class="fixed bottom-5 right-5 z-[60] max-w-md"></div>
+</body>
+</html>

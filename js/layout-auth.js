@@ -4,6 +4,11 @@ function renderHeaderLayout() {
 
     const user = getCurrentUser();
     const token = getAccessToken();
+    const adminHref = window.location.pathname.includes("/pages/") ? "./admin.html" : "./pages/admin.html";
+    const displayName = user
+        ? (user.full_name || user.name || user.username || user.email || `User #${user.id || ""}`)
+        : "";
+    const displayRole = user ? String(user.role || "USER").toUpperCase() : "";
 
     headerContainer.innerHTML = `
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
@@ -16,14 +21,14 @@ function renderHeaderLayout() {
                     <div class="flex items-center gap-2">
                         <span class="font-display font-bold text-lg tracking-tight text-ink">SQUAD.CASH</span>
                         <span class="font-mono text-[11px] font-bold bg-lime border-[1.5px] border-ink px-2 py-0.5 rounded-md text-ink">
-                            SPRINT 2 • T3CC8A9
+                            RENAISSANCE OS v2.5
                         </span>
                     </div>
                     <p class="text-xs text-muted font-medium">Wiro Renaissance Art × Western Bold FinTech OS</p>
                 </div>
             </div>
 
-            <!-- Menu Điều Hướng Chung (Có kiểm tra chặn trang) -->
+            <!-- Menu Điều Hướng Chung -->
             <nav class="flex items-center bg-canvas p-1.5 rounded-xl border-2 border-ink overflow-x-auto gap-1">
                 <button id="roleBtn-landing" onclick="switchRoleView('landing')" 
                     class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all bg-lime text-ink border-2 border-ink shadow-bold-sm">
@@ -41,14 +46,13 @@ function renderHeaderLayout() {
                     class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all text-muted hover:text-ink">
                     <span>3. Trang Host 👑</span>
                 </button>
-                <button id="roleBtn-admin" onclick="switchRoleView('admin')" 
+                <button id="roleBtn-admin" onclick="window.location.href='${adminHref}'" 
                     class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all text-muted hover:text-ink">
                     <span>4. Trang Admin 🛡️</span>
                 </button>
-                
             </nav>
 
-            <!-- Khu vực Trạng thái Đăng nhập / Token & Test 401 -->
+            <!-- Khu vực Trạng thái Đăng nhập / Token -->
             <div class="flex flex-wrap items-center gap-2">
                 <button type="button" onclick="pingFastApiBackend()" class="inline-flex items-center gap-2 bg-white hover:bg-lime/30 px-3 py-2 rounded-xl border-2 border-ink text-xs font-mono font-bold shadow-bold-sm">
                     <span id="apiPulseDot" class="pulse-dot"></span>
@@ -57,7 +61,7 @@ function renderHeaderLayout() {
 
                 ${user && token ? `
                     <div class="inline-flex items-center gap-2 bg-indigo-50 px-3 py-1.5 rounded-xl border-2 border-ink text-xs font-mono">
-                        <span class="font-bold text-indigo">${user.name} (${user.role.toUpperCase()})</span>
+                        <span class="font-bold text-indigo">${displayName} (${displayRole})</span>
                         <button onclick="simulate401Unauthorized()" class="bg-amber text-ink px-2 py-0.5 rounded border border-ink font-bold text-[10px]" title="Test Axios Interceptor tự động đăng xuất khi gặp lỗi 401">
                             Test 401
                         </button>

@@ -1,0 +1,199 @@
+/* Nền Alabaster & Chấm bi chuẩn Wiro Renaissance */
+body {
+  background-color: #F2ECE1;
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(255, 248, 231, 0.88) 0%, rgba(242, 236, 225, 0.45) 48%, transparent 80%),
+    radial-gradient(rgba(18, 18, 18, 0.85) 1.25px, transparent 1.25px);
+  background-size: 100% 100%, 22px 22px;
+  background-attachment: fixed;
+  color: #121212;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-renaissance-ambient {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 360px;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(180deg, rgba(242, 236, 225, 0.25) 0%, rgba(242, 236, 225, 0.78) 65%, #F2ECE1 100%),
+    url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg/1920px-Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg');
+  background-size: cover;
+  background-position: center 22%;
+  opacity: 0.34;
+  filter: saturate(0.9) contrast(1.05);
+}
+
+.font-wiro-serif {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.font-wiro-sans {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: -0.03em;
+}
+
+/* OS Window Titlebar & Fresco Banner */
+.os-window-bar {
+  background: #EFE7D6;
+  border-bottom: 2px solid #121212;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.os-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.os-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  border: 1.5px solid #121212;
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+
+.os-window-bar:hover .os-dot {
+  transform: scale(1.2);
+}
+
+.workspace-fresco-strip {
+  position: relative;
+  overflow: hidden;
+  background-image:
+    linear-gradient(90deg, rgba(18, 18, 18, 0.84) 0%, rgba(18, 18, 18, 0.45) 55%, rgba(18, 18, 18, 0.80) 100%),
+    url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/%22The_School_of_Athens%22_by_Raffaello_Sanzio_da_Urbino.jpg/1280px-%22The_School_of_Athens%22_by_Raffaello_Sanzio_da_Urbino.jpg');
+  background-size: cover;
+  background-position: center 32%;
+  border-bottom: 2px solid #121212;
+  color: #FFFFFF;
+}
+
+/* Cards */
+.card-clean {
+  background-color: #FFFFFF;
+  border: 2px solid #121212;
+  border-radius: 16px;
+  box-shadow: 4px 4px 0px #121212;
+}
+
+.card-subtle {
+  background-color: #FAFAFA;
+  border: 2px solid #121212;
+  border-radius: 14px;
+  box-shadow: 2px 2px 0px #121212;
+}
+
+.card-lime,
+.card-violet,
+.card-coral,
+.card-cyan,
+.card-amber {
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #121212;
+  border-radius: 16px;
+  box-shadow: 3px 3px 0px #121212;
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card-lime { background-color: #D4FF00; color: #121212; }
+.card-violet { background-color: #7C3AED; color: #FFFFFF; }
+.card-coral { background-color: #FF5E36; color: #FFFFFF; }
+.card-cyan { background-color: #38BDF8; color: #121212; }
+.card-amber { background-color: #FACC15; color: #121212; }
+
+.card-lime:hover,
+.card-violet:hover,
+.card-coral:hover,
+.card-cyan:hover,
+.card-amber:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px #121212;
+}
+
+/* Buttons & Inputs */
+.btn-cta-lime {
+  background-color: #D4FF00;
+  color: #121212;
+  border: 2px solid #121212;
+  box-shadow: 3px 3px 0px #121212;
+  transition: all 0.15s ease;
+}
+
+.btn-cta-lime:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px #121212;
+  background-color: #dcf936;
+}
+
+.btn-cta-lime:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px #121212;
+}
+
+.btn-outline {
+  background-color: #FFFFFF;
+  color: #121212;
+  border: 2px solid #121212;
+  box-shadow: 2px 2px 0px #121212;
+  transition: all 0.15s ease;
+}
+
+.btn-outline:hover:not(:disabled) {
+  background-color: #F4FFC2;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px #121212;
+}
+
+.input-clean {
+  background-color: #FFFFFF;
+  border: 2px solid #121212;
+  border-radius: 12px;
+  transition: all 0.15s ease;
+}
+
+.input-clean:focus {
+  transform: translate(-1px, -1px);
+  outline: none;
+  border-color: #7C3AED;
+  box-shadow: 3px 3px 0px #7C3AED;
+}
+
+.fr-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background-color: #FACC15;
+  color: #121212;
+  border: 1.5px solid #121212;
+}
+
+tbody tr {
+  transition: background-color 0.14s ease;
+}
+
+tbody tr:hover {
+  background-color: rgba(212, 255, 0, 0.2);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
