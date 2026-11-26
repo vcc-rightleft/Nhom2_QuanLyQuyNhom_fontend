@@ -61,8 +61,13 @@ function canViewSquad(role) {
         return !isSquadSignedIn();
     }
 
-    if (role === 'user' || role === 'host') {
+    if (role === 'user') {
         return isSquadSignedIn();
+    }
+    if (role === 'host') {
+        return isSquadSignedIn() &&
+            squadSession.verifiedByServer === true &&
+            userJoinedGroups.some(g => g.role === 'HOST');
     }
 
     if (role === 'admin') {

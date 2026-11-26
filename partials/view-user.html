@@ -91,6 +91,10 @@
                     <h2 class="font-display font-bold text-xl text-ink">Nhóm của tôi đang tham gia</h2>
                     <span class="fr-badge">FR-USER-001</span>
                 </div>
+                <button type="button" onclick="openModal('modalHostCreateGroup')" class="btn-cta-lime px-4 py-2 rounded-xl font-display font-bold text-xs flex items-center gap-1.5">
+    <i data-lucide="folder-plus" class="w-4 h-4"></i>
+    <span>+ Tạo nhóm mới</span>
+</button>
                 <form id="userJoinGroupForm" onsubmit="joinGroupFromUser(event)" class="flex flex-wrap items-center gap-2" autocomplete="off">
                     <label for="userJoinCodeInput" class="sr-only">Mã mời nhóm</label>
                     <input id="userJoinCodeInput" type="text" maxlength="10" required placeholder="Mã nhóm (8 ký tự)" aria-label="Nhập mã mời nhóm" class="input-clean px-3.5 py-2 rounded-xl font-mono font-bold text-xs uppercase tracking-wider max-w-[188px]" />

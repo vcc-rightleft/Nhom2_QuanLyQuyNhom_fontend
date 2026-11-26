@@ -587,11 +587,12 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-ink mb-1">Mật khẩu mới (Tối thiểu 8 ký tự)</label>
-                        <input id="profNewPwd" type="password" required minlength="8" class="input-clean w-full px-3.5 py-2.5 font-mono text-sm">
+                        <input id="profNewPwd" type="password" required class="input-clean w-full px-3.5 py-2.5 font-mono text-sm" minlength="6" maxlength="128">
+<p class="text-xs text-muted mt-1">6-64 ký tự, có chữ và số, không chứa khoảng trắng.</p>
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-ink mb-1">Nhập lại mật khẩu mới</label>
-                        <input id="profConfirmPwd" type="password" required minlength="8" class="input-clean w-full px-3.5 py-2.5 font-mono text-sm">
+                        <input id="profConfirmPwd" type="password" required class="input-clean w-full px-3.5 py-2.5 font-mono text-sm" minlength="6" maxlength="128">
                     </div>
 
                     <div class="flex justify-end gap-2.5 pt-1">

@@ -50,12 +50,46 @@
             } catch (err) { notify('Đăng nhập thất bại: ' + err.message); }
         }
 
-        async function handleRegisterSubmit(e) {
+        
+function validateSquadPassword(password) {
+    const length = Array.from(password).length;
+
+    if (/\s|\u0085|[\u001c-\u001f]/u.test(password)) {
+        return 'M\u1eadt kh\u1ea9u kh\u00f4ng \u0111\u01b0\u1ee3c ch\u1ee9a kho\u1ea3ng tr\u1eafng.';
+    }
+
+    if (length < 6 || length > 64) {
+        return 'M\u1eadt kh\u1ea9u ph\u1ea3i t\u1eeb 6 \u0111\u1ebfn 64 k\u00fd t\u1ef1.';
+    }
+
+    if (new TextEncoder().encode(password).length > 72) {
+        return 'M\u1eadt kh\u1ea9u kh\u00f4ng \u0111\u01b0\u1ee3c v\u01b0\u1ee3t qu\u00e1 72 byte.';
+    }
+
+    if (!/\p{L}/u.test(password)) {
+        return 'M\u1eadt kh\u1ea9u ph\u1ea3i c\u00f3 \u00edt nh\u1ea5t m\u1ed9t ch\u1eef c\u00e1i.';
+    }
+
+    if (!/[\p{Nd}\u00b2\u00b3\u00b9]/u.test(password)) {
+        return 'M\u1eadt kh\u1ea9u ph\u1ea3i c\u00f3 \u00edt nh\u1ea5t m\u1ed9t ch\u1eef s\u1ed1.';
+    }
+
+    return null;
+}
+
+async function handleRegisterSubmit(e) {
             e.preventDefault();
             try {
                 const full_name = document.getElementById('regDisplayNameInput').value.trim();
                 const email = document.getElementById('regContactInput').value.trim().toLowerCase();
                 const password = document.getElementById('regPasswordInput').value;
+                const passwordError = validateSquadPassword(password);
+                if (passwordError) {
+                    notify(passwordError, true);
+                    document.getElementById('regPasswordInput').focus();
+                    return;
+                }
+
                 await squadApi('/auth/register', {method:'POST', body:{full_name,email,password}});
                 const result = await squadApi('/auth/login', {method:'POST',body:{email,password}});
                 sessionStorage.setItem(SQUAD_TOKEN_KEY, result.access_token);

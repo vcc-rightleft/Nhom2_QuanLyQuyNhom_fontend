@@ -42,6 +42,7 @@
             try {
                 const created = await squadApi('/api/groups/', {method:'POST', body:{name, description}});
                 await refreshServerGroups(created.id);
+                refreshSquadNavigation();
                 renderHostWorkspace();
                 closeModal('modalHostCreateGroup');
                 notify('Tạo nhóm thành công và đã lưu vào database.');

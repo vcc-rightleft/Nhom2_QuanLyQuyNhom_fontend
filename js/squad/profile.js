@@ -91,6 +91,13 @@
             e.preventDefault();
             const old_password = document.getElementById('profCurrentPwd').value;
             const new_password = document.getElementById('profNewPwd').value;
+            const passwordError = validateSquadPassword(new_password);
+            if (passwordError) {
+                notify(passwordError, true);
+                document.getElementById('profNewPwd').focus();
+                return;
+            }
+
             const confirm_password = document.getElementById('profConfirmPwd').value;
             if (new_password !== confirm_password) return notify('Mật khẩu xác nhận chưa khớp');
             try {

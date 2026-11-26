@@ -148,7 +148,8 @@
 
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-ink mb-2">Mật khẩu bảo mật</label>
-                            <input id="regPasswordInput" type="password" required minlength="6" autocomplete="new-password" placeholder="Tối thiểu 6 ký tự" class="input-clean w-full px-4 py-3 text-sm font-mono">
+                            <input id="regPasswordInput" type="password" required autocomplete="new-password" placeholder="Tối thiểu 6 ký tự" class="input-clean w-full px-4 py-3 text-sm font-mono" minlength="6" maxlength="128">
+<p class="text-xs text-muted mt-1">6-64 ký tự, có chữ và số, không chứa khoảng trắng.</p>
                         </div>
 
                         <button type="submit" class="btn-cta-indigo w-full py-3.5 rounded-xl font-display font-bold text-sm uppercase tracking-wider">
