@@ -54,8 +54,16 @@ function renderHeaderLayout() {
         : "";
 
     const displayRole = user
-        ? String(user.role || "USER").toUpperCase()
+        ? String(user.role || "USER").trim().toUpperCase()
         : "";
+
+    // ==============================
+    // KIỂM TRA QUYỀN ADMIN
+    // ==============================
+
+    const isLoggedIn = Boolean(user && token);
+
+    const isAdmin = isLoggedIn && displayRole === "ADMIN";
 
     // Ngăn dữ liệu tài khoản bị diễn giải thành HTML
     const escapeHtml = (value) => String(value).replace(
@@ -138,14 +146,19 @@ function renderHeaderLayout() {
 
                 </button>
 
-                <button
-                    id="roleBtn-admin"
-                    onclick="window.location.href='${adminHref}'"
-                    class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all text-muted hover:text-ink">
+                <!-- Chỉ ADMIN mới được hiển thị nút này -->
+                ${isAdmin ? `
 
-                    <span>4. Trang Admin 🛡️</span>
+                    <button
+                        id="roleBtn-admin"
+                        onclick="window.location.href='${adminHref}'"
+                        class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all text-muted hover:text-ink">
 
-                </button>
+                        <span>4. Trang Admin 🛡️</span>
+
+                    </button>
+
+                ` : ""}
 
                 <a
                     href="${homeHref}"
@@ -189,7 +202,7 @@ function renderHeaderLayout() {
 
                 </button>
 
-                ${user && token ? `
+                ${isLoggedIn ? `
 
                     <div class="inline-flex items-center gap-2 bg-indigo-50 px-3 py-1.5 rounded-xl border-2 border-ink text-xs font-mono">
 
