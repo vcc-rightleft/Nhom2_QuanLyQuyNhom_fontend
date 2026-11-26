@@ -212,6 +212,33 @@
             ids.forEach((id, i) => { amounts[id] = base + (i < remainder ? 1 : 0); });
             return amounts;
         }
+        function splitEqualRounded(total, ids, payerId) {
+    const amounts = {};
+    const members = [...new Set(ids.map(Number))];
+
+    if (!Number.isSafeInteger(total) || total <= 0) {
+        return amounts;
+    }
+
+    if (!members.length || !members.includes(payerId)) {
+        return amounts;
+    }
+
+    const base = Math.floor(
+        total / members.length / 1000
+    ) * 1000;
+
+    members.forEach(id => {
+        amounts[id] = base;
+    });
+
+    const remainder = total - base * members.length;
+
+    amounts[payerId] += remainder;
+
+    return amounts;
+}
+
         function recalculateHostInvoicePreview() {
             const fee = Math.max(0, Number(document.getElementById('invFeeTip').value) || 0);
             const discount = Math.max(0, Number(document.getElementById('invDiscount').value) || 0);
@@ -220,7 +247,13 @@
             if (currentSplitMode === 'equal') {
                 subtotal = Math.max(0, Number(document.getElementById('invEqualBaseAmount').value) || 0);
                 const users = Array.from(document.querySelectorAll('.equal-member-cb:checked')).map(cb => Number(cb.dataset.userId));
-                latestAllocationMap = splitVndAcross(Math.max(0, subtotal + fee - discount), users);
+                const payerId = Number(squadSession?.accountId);
+
+                latestAllocationMap = splitEqualRounded(
+                    subtotal + fee - discount,
+                    users,
+                    payerId
+                );
             } else if (currentSplitMode === 'itemized') {
                 for (const row of itemizedRows) {
                     const total = Number(row.qty) * Number(row.price);
@@ -256,6 +289,19 @@
             document.getElementById('previewGrandTotal').textContent = formatVND(total);
             const list = document.getElementById('invoiceAllocationPreviewList');
             const entries = Object.entries(latestAllocationMap);
+
+            if (currentSplitMode === 'equal') {
+                const selectedIds = Array.from(
+                    document.querySelectorAll('.equal-member-cb:checked')
+                ).map(cb => Number(cb.dataset.userId));
+
+                const payerId = Number(squadSession?.accountId);
+
+                if (selectedIds.length && !selectedIds.includes(payerId)) {
+                    list.innerHTML = '<div class="p-4 text-xs text-rose-600 font-semibold">Người ứng tiền phải nằm trong danh sách chia đều.</div>';
+                    return;
+                }
+            }
             list.innerHTML = entries.length ? entries.map(([id, amount]) => {
                 const member = groupMembers.find(m => String(m.id) === String(id));
                 return `<div class="p-3 rounded-xl border border-line bg-canvas flex items-center justify-between"><span class="font-semibold text-xs text-ink">${escapeSquadHtml(member?.name || ('#'+id))}</span><span class="font-mono font-bold text-sm text-indigo">${formatVND(amount)}</span></div>`;
@@ -279,7 +325,13 @@
                 const payload = {group_id: group.id, title, paid_by, split_type: currentSplitMode.toUpperCase(), total_amount, service_fee:fee, discount};
                 if (currentSplitMode === 'equal') {
                     payload.participant_ids = Array.from(document.querySelectorAll('.equal-member-cb:checked')).map(el => Number(el.dataset.userId));
-                    if (!payload.participant_ids.length) throw new Error('Chọn ít nhất một thành viên.');
+                    if (!payload.participant_ids.length) {
+                        throw new Error('Chọn ít nhất một thành viên.');
+                    }
+
+                    if (!payload.participant_ids.includes(paid_by)) {
+                        throw new Error('Người ứng tiền phải nằm trong danh sách chia đều.');
+                    }
                 } else if (currentSplitMode === 'itemized') {
                     if (!itemizedRows.length) throw new Error('Thêm ít nhất một món.');
                     payload.items = itemizedRows.map(r => ({

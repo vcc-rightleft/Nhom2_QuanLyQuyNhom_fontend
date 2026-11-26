@@ -19,26 +19,58 @@
   const $ = (id) => document.getElementById(id);
 
   const getToken = () =>
-    localStorage.getItem('squad_cash_token') ||
-    localStorage.getItem('access_token') ||
-    localStorage.getItem('token') ||
-    sessionStorage.getItem('squad_cash_token') ||
-    sessionStorage.getItem('access_token') ||
-    sessionStorage.getItem('token') ||
-    '';
+    sessionStorage.getItem('squad_cash_token') || '';
 
-  const getStoredUser = () => {
-    for (const key of ['squad_cash_user', 'currentUser', 'user']) {
-      const raw = localStorage.getItem(key) || sessionStorage.getItem(key);
-      if (!raw) continue;
-      try {
-        const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === 'object') return parsed;
-      } catch (_) {}
-    }
-    return null;
-  };
+  let verifiedAdmin = null;
 
+  const getStoredUser = () => verifiedAdmin;
+
+  function clearAdminSession() {
+    const keys = [
+      'squad.cash.session.v1',
+      'squad_cash_token',
+      'squad_cash_user',
+      'access_token',
+      'squadcash_token',
+      'refresh_token',
+      'token',
+      'currentUser',
+      'user'
+    ];
+
+    keys.forEach(key => {
+      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
+    });
+
+    verifiedAdmin = null;
+  }
+
+  function redirectToLogin() {
+    clearAdminSession();
+    window.location.replace('../index.html?view=auth');
+  }
+
+  function redirectToUser() {
+    verifiedAdmin = null;
+
+    try {
+      const key = 'squad.cash.session.v1';
+      const saved = JSON.parse(
+        sessionStorage.getItem(key) || 'null'
+      );
+
+      if (saved) {
+        saved.role = 'user';
+        sessionStorage.setItem(
+          key,
+          JSON.stringify(saved)
+        );
+      }
+    } catch (_) {}
+
+    window.location.replace('../index.html?view=user');
+  }
   const formatNumber = (n) => Math.round(Number(n) || 0).toLocaleString('vi-VN');
   const formatVND = (n) => `${formatNumber(n)} ₫`;
   const formatDate = (iso) => (iso ? new Date(iso).toLocaleDateString('vi-VN') : 'Chưa có');
@@ -84,14 +116,19 @@
     badge.textContent = `${name} (${role})`;
   }
 
-  function logoutAdmin() {
-    for (const key of ['squad_cash_token', 'access_token', 'token', 'squad_cash_user', 'currentUser', 'user']) {
-      localStorage.removeItem(key);
-      sessionStorage.removeItem(key);
+  async function logoutAdmin() {
+    try {
+      if (getToken()) {
+        await request('/auth/logout', {
+          method: 'POST'
+        });
+      }
+    } catch (err) {
+      console.warn('Không thể thu hồi JWT:', err);
+    } finally {
+      redirectToLogin();
     }
-    window.location.href = './auth.html';
   }
-
   async function request(path, opts = {}) {
     const token = getToken();
     if (!token) {
@@ -119,16 +156,29 @@
     } catch (_) {}
 
     if (!response.ok) {
+
+      if (response.status === 401) {
+        redirectToLogin();
+        throw new Error(
+          'Phiên đăng nhập không hợp lệ hoặc đã hết hạn.'
+        );
+      }
+
+      if (response.status === 403) {
+        const err = new Error(
+          'Bạn không có quyền thực hiện thao tác này.'
+        );
+        err.status = 403;
+        throw err;
+      }
+
       const detail = body?.detail;
-      const message =
+
+      throw new Error(
         typeof detail === 'string'
           ? detail
-          : response.status === 403
-          ? 'Tài khoản hiện tại không có quyền ADMIN. Hãy cập nhật role = ADMIN trong MySQL rồi đăng nhập lại.'
-          : response.status === 401
-          ? 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.'
-          : `API lỗi HTTP ${response.status}`;
-      throw new Error(message);
+          : `API lỗi HTTP ${response.status}`
+      );
     }
     return body;
   }
@@ -618,7 +668,57 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
+
+    document.body.style.visibility = 'hidden';
+
+    if (!getToken()) {
+      redirectToLogin();
+      return;
+    }
+
+    try {
+      const user = await request('/auth/me');
+
+      const role = String(
+        user?.role || ''
+      ).trim().toUpperCase();
+
+      if (role !== 'ADMIN') {
+        redirectToUser();
+        return;
+      }
+
+      verifiedAdmin = user;
+
+      sessionStorage.setItem(
+        'squad_cash_user',
+        JSON.stringify(user)
+      );
+
+    } catch (err) {
+
+      if (err.status === 403) {
+        redirectToUser();
+        return;
+      }
+
+      console.error('Admin authentication:', err);
+
+      if (getToken()) {
+        alert(
+          'Không thể xác minh phiên Admin: ' + err.message
+        );
+
+        window.location.replace('../index.html');
+      }
+
+      return;
+    }
+
+    document.body.style.visibility = '';
+
+
     for (const name of ['accounts', 'groups', 'retention']) {
       $('aTabBtn-' + name).addEventListener('click', () => switchTab(name));
     }

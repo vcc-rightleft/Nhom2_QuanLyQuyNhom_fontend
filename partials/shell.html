@@ -47,11 +47,16 @@
                     <i data-lucide="crown" class="w-4 h-4"></i>
                     <span>3. Vai trò Host</span>
                 </button>
-                <button id="roleBtn-admin" onclick="switchRoleView('admin')" 
-                    class="px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm flex items-center gap-2 transition-all text-muted hover:text-ink">
-                    <i data-lucide="shield" class="w-4 h-4"></i>
-                    <span>4. Vai trò Admin</span>
-                </button>
+                <button
+    type="button"
+    id="roleBtn-admin"
+    onclick="openAdminDashboard()"
+    class="hidden px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm items-center gap-2 transition-all text-muted hover:text-ink">
+
+    <i data-lucide="shield" class="w-4 h-4"></i>
+    <span>4. Vai trò Admin</span>
+
+</button>
             </nav>
 
             <button type="button" id="squadLogoutBtn" onclick="logoutSquad()" class="hidden px-3.5 py-2 rounded-lg font-display font-bold text-xs sm:text-sm items-center gap-2 bg-coral text-white border-2 border-ink shadow-bold-sm">
